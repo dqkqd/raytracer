@@ -11,3 +11,5 @@ pub use color::Color;
 
 pub(crate) mod canvas;
 pub use canvas::Canvas;
+
+pub(crate) mod matrix;

@@ -4,6 +4,7 @@ members = [
     "chapter02",
     "chapter04",
     "chapter05",
+    "chapter06",
     ]
 
 [workspace.dependencies]

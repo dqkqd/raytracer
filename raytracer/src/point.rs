@@ -1,40 +1,41 @@
 use std::ops::{Add, Sub};
 
-use crate::{
-    tuples::{apply_equal_vec4, Vec4},
-    vector::Vector,
-};
+use crate::{util::equal, vector::Vector};
 
 #[derive(Debug, Clone, Copy)]
-pub(crate) struct Point {
+pub struct Point {
     x: f64,
     y: f64,
     z: f64,
 }
 
-impl Vec4 for Point {
-    fn x(&self) -> f64 {
+impl Point {
+    pub fn new(x: f64, y: f64, z: f64) -> Point {
+        Point { x, y, z }
+    }
+    pub fn x(&self) -> f64 {
         self.x
     }
 
-    fn y(&self) -> f64 {
+    pub fn y(&self) -> f64 {
         self.y
     }
 
-    fn z(&self) -> f64 {
+    pub fn z(&self) -> f64 {
         self.z
     }
 
-    fn w(&self) -> f64 {
+    pub fn w(&self) -> f64 {
         1.0
     }
 }
 
-apply_equal_vec4!(Point);
-
-impl Point {
-    fn new(x: f64, y: f64, z: f64) -> Point {
-        Point { x, y, z }
+impl PartialEq for Point {
+    fn eq(&self, other: &Self) -> bool {
+        equal(self.x(), other.x())
+            && equal(self.y(), other.y())
+            && equal(self.z(), other.z())
+            && equal(self.w(), other.w())
     }
 }
 

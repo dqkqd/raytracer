@@ -1,6 +1,6 @@
 use std::ops::{Add, Div, Mul, Neg, Sub};
 
-use crate::tuples::{apply_equal_vec4, Vec4};
+use crate::util::equal;
 
 #[derive(Debug, Clone, Copy)]
 pub struct Vector {
@@ -9,31 +9,26 @@ pub struct Vector {
     z: f64,
 }
 
-impl Vec4 for Vector {
-    fn x(&self) -> f64 {
-        self.x
-    }
-
-    fn z(&self) -> f64 {
-        self.z
-    }
-
-    fn y(&self) -> f64 {
-        self.y
-    }
-
-    fn w(&self) -> f64 {
-        0.0
-    }
-}
-
-apply_equal_vec4!(Vector);
-
 impl Vector {
     pub fn new(x: f64, y: f64, z: f64) -> Vector {
         Vector { x, y, z }
     }
 
+    pub fn x(&self) -> f64 {
+        self.x
+    }
+
+    pub fn z(&self) -> f64 {
+        self.z
+    }
+
+    pub fn y(&self) -> f64 {
+        self.y
+    }
+
+    pub fn w(&self) -> f64 {
+        0.0
+    }
     pub fn magnitude(&self) -> f64 {
         (self.x * self.x + self.y * self.y + self.z * self.z).sqrt()
     }
@@ -58,6 +53,15 @@ impl Vector {
     pub fn reflect(&self, normal: &Vector) -> Vector {
         let length = 2.0 * self.dot(normal);
         *self - *normal * length
+    }
+}
+
+impl PartialEq for Vector {
+    fn eq(&self, other: &Self) -> bool {
+        equal(self.x(), other.x())
+            && equal(self.y(), other.y())
+            && equal(self.z(), other.z())
+            && equal(self.w(), other.w())
     }
 }
 

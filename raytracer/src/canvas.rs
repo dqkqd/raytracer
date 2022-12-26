@@ -83,7 +83,7 @@ mod test {
     use tempfile::NamedTempFile;
 
     #[test]
-    fn test_new() {
+    fn default_canvas_has_color_black() {
         let width = 10;
         let height = 20;
         let canvas = Canvas::new(width, height);
@@ -97,7 +97,7 @@ mod test {
     }
 
     #[test]
-    fn test_write_pixel_to_canvas() {
+    fn write_pixel_to_canvas() {
         let width = 10;
         let height = 20;
         let mut canvas = Canvas::new(width, height);
@@ -131,7 +131,7 @@ mod test {
     }
 
     #[test]
-    fn test_write_ppm_content() -> std::io::Result<()> {
+    fn write_ppm_content() -> std::io::Result<()> {
         let testconfig = TestConfig::new();
         let filename = testconfig.filename();
 
@@ -161,7 +161,7 @@ mod test {
     }
 
     #[test]
-    fn test_write_ppm_line_less_than_70_chars() -> std::io::Result<()> {
+    fn write_ppm_line_less_than_70_chars() -> std::io::Result<()> {
         let testconfig = TestConfig::new();
         let filename = testconfig.filename();
 
@@ -192,7 +192,7 @@ mod test {
     }
 
     #[test]
-    fn test_write_ppm_terminated_by_newline() -> std::io::Result<()> {
+    fn write_ppm_terminated_by_newline() -> std::io::Result<()> {
         let testconfig = TestConfig::new();
         let filename = testconfig.filename();
 

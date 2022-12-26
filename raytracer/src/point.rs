@@ -1,6 +1,6 @@
 use std::ops::{Add, Sub};
 
-use crate::{util::equal, vector::Vector};
+use crate::{util::equal, vector::Vector, Transform};
 
 #[derive(Debug, Clone, Copy)]
 pub struct Point {
@@ -27,6 +27,10 @@ impl Point {
 
     pub fn w(&self) -> f64 {
         1.0
+    }
+
+    pub fn transform(self, transformation: Transform) -> Point {
+        transformation * self
     }
 }
 
@@ -58,7 +62,7 @@ mod test {
     use super::*;
 
     #[test]
-    fn test_new() {
+    fn create_new_point() {
         let p = Point::new(1.0, 2.0, 3.0);
         assert_eq!(p.x(), 1.0);
         assert_eq!(p.y(), 2.0);
@@ -66,14 +70,14 @@ mod test {
     }
 
     #[test]
-    fn test_point_sub_point() {
+    fn subtract_two_points() {
         let p1 = Point::new(3.0, 2.0, 1.0);
         let p2 = Point::new(5.0, 6.0, 7.0);
         assert_eq!(p1 - p2, Vector::new(-2.0, -4.0, -6.0));
     }
 
     #[test]
-    fn test_point_add_vector() {
+    fn point_add_vector() {
         let p = Point::new(1.0, 2.0, 3.0);
         let v = Vector::new(1.0, 1.5, 2.0);
         assert_eq!(p + v, Point::new(2.0, 3.5, 5.0));

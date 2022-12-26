@@ -1,6 +1,26 @@
 use std::ops::Mul;
 
-use crate::{matrix::Matrix4, Point, Vector};
+use crate::{matrix::Matrix4, Point, Ray, Vector};
+
+pub trait Transformable {
+    fn inversed_transform(&self) -> Option<Transform>;
+    fn set_transform(&mut self, transform: Transform);
+}
+
+macro_rules! transformable {
+    ($struct_name:ident) => {
+        impl $crate::transform::Transformable for $struct_name {
+            fn inversed_transform(&self) -> Option<$crate::Transform> {
+                self.inversed_transform
+            }
+            fn set_transform(&mut self, transform: $crate::Transform) {
+                self.inversed_transform = transform.inverse();
+            }
+        }
+    };
+}
+
+pub(crate) use transformable;
 
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub struct Transform {
@@ -115,6 +135,16 @@ impl Mul<Vector> for Transform {
     }
 }
 
+impl Mul<Ray> for Transform {
+    type Output = Ray;
+    fn mul(self, ray: Ray) -> Self::Output {
+        Ray::new(
+            ray.origin().transform(self),
+            ray.direction().transform(self),
+        )
+    }
+}
+
 impl Mul for Transform {
     type Output = Self;
     fn mul(self, rhs: Self) -> Self::Output {
@@ -157,21 +187,21 @@ mod test {
     use super::*;
 
     #[test]
-    fn test_identity() {
+    fn transform_identity() {
         let transform = Transform::identity();
         let identity = Matrix4::identity();
         assert_eq!(transform.matrix, identity)
     }
 
     #[test]
-    fn test_translate_point() {
+    fn translate_point() {
         let transform = Transform::translation(5.0, -3.0, 2.0);
         let point = Point::new(-3.0, 4.0, 5.0);
         assert_eq!(transform * point, Point::new(2.0, 1.0, 7.0));
     }
 
     #[test]
-    fn test_inv_translate_point() {
+    fn inversed_translate_point() {
         let transform = Transform::translation(5.0, -3.0, 2.0);
         let point = Point::new(-3.0, 4.0, 5.0);
         assert_eq!(
@@ -181,28 +211,28 @@ mod test {
     }
 
     #[test]
-    fn test_translate_vector() {
+    fn translate_vector() {
         let transform = Transform::translation(5.0, -3.0, 2.0);
         let vector = Vector::new(-3.0, 4.0, 5.0);
         assert_eq!(transform * vector, vector);
     }
 
     #[test]
-    fn test_scale_point() {
+    fn scale_point() {
         let transform = Transform::scaling(2.0, 3.0, 4.0);
         let point = Point::new(-4.0, 6.0, 8.0);
         assert_eq!(transform * point, Point::new(-8.0, 18.0, 32.0));
     }
 
     #[test]
-    fn test_scale_vector() {
+    fn scale_vector() {
         let transform = Transform::scaling(2.0, 3.0, 4.0);
         let vector = Vector::new(-4.0, 6.0, 8.0);
         assert_eq!(transform * vector, Vector::new(-8.0, 18.0, 32.0));
     }
 
     #[test]
-    fn test_inv_scale_vector() {
+    fn inverse_scale_vector() {
         let transform = Transform::scaling(2.0, 3.0, 4.0);
         let vector = Vector::new(-4.0, 6.0, 8.0);
         assert_eq!(
@@ -212,7 +242,7 @@ mod test {
     }
 
     #[test]
-    fn test_reflection_using_scaling() {
+    fn reflection_using_scaling() {
         let transform = Transform::scaling(-1.0, 1.0, 1.0);
         let vector = Point::new(1.0, 2.0, 3.0);
         assert_eq!(
@@ -222,7 +252,7 @@ mod test {
     }
 
     #[test]
-    fn test_rotate_x() {
+    fn rotate_x() {
         let transform = Transform::rotation_x(std::f64::consts::FRAC_PI_4);
         let point = Point::new(0.0, 1.0, 0.0);
         assert_eq!(
@@ -236,7 +266,7 @@ mod test {
     }
 
     #[test]
-    fn test_rotate_y() {
+    fn rotate_y() {
         let transform = Transform::rotation_y(std::f64::consts::FRAC_PI_4);
         let point = Point::new(0.0, 0.0, 1.0);
         assert_eq!(
@@ -250,7 +280,7 @@ mod test {
     }
 
     #[test]
-    fn test_rotate_z() {
+    fn rotate_z() {
         let transform = Transform::rotation_z(std::f64::consts::FRAC_PI_4);
         let point = Point::new(0.0, 1.0, 0.0);
         assert_eq!(
@@ -264,49 +294,49 @@ mod test {
     }
 
     #[test]
-    fn test_shear_xy() {
+    fn shear_xy() {
         let transform = Transform::shearing(1.0, 0.0, 0.0, 0.0, 0.0, 0.0);
         let point = Point::new(2.0, 3.0, 4.0);
         assert_eq!(transform * point, Point::new(5.0, 3.0, 4.0));
     }
 
     #[test]
-    fn test_shear_xz() {
+    fn shear_xz() {
         let transform = Transform::shearing(0.0, 1.0, 0.0, 0.0, 0.0, 0.0);
         let point = Point::new(2.0, 3.0, 4.0);
         assert_eq!(transform * point, Point::new(6.0, 3.0, 4.0));
     }
 
     #[test]
-    fn test_shear_yx() {
+    fn shear_yx() {
         let transform = Transform::shearing(0.0, 0.0, 1.0, 0.0, 0.0, 0.0);
         let point = Point::new(2.0, 3.0, 4.0);
         assert_eq!(transform * point, Point::new(2.0, 5.0, 4.0));
     }
 
     #[test]
-    fn test_shear_yz() {
+    fn shear_yz() {
         let transform = Transform::shearing(0.0, 0.0, 0.0, 1.0, 0.0, 0.0);
         let point = Point::new(2.0, 3.0, 4.0);
         assert_eq!(transform * point, Point::new(2.0, 7.0, 4.0));
     }
 
     #[test]
-    fn test_shear_zx() {
+    fn shear_zx() {
         let transform = Transform::shearing(0.0, 0.0, 0.0, 0.0, 1.0, 0.0);
         let point = Point::new(2.0, 3.0, 4.0);
         assert_eq!(transform * point, Point::new(2.0, 3.0, 6.0));
     }
 
     #[test]
-    fn test_shear_zy() {
+    fn shear_zy() {
         let transform = Transform::shearing(0.0, 0.0, 0.0, 0.0, 0.0, 1.0);
         let point = Point::new(2.0, 3.0, 4.0);
         assert_eq!(transform * point, Point::new(2.0, 3.0, 7.0));
     }
 
     #[test]
-    fn test_chain_individual() {
+    fn chain_individual_point() {
         let point = Point::new(1.0, 0.0, 1.0);
         let rotation = Transform::rotation_x(std::f64::consts::FRAC_PI_2);
         let scaling = Transform::scaling(5.0, 5.0, 5.0);
@@ -323,7 +353,7 @@ mod test {
     }
 
     #[test]
-    fn test_chained() {
+    fn chained_transform() {
         let point = Point::new(1.0, 0.0, 1.0);
         let rotation = Transform::rotation_x(std::f64::consts::FRAC_PI_2);
         let scaling = Transform::scaling(5.0, 5.0, 5.0);
@@ -334,7 +364,7 @@ mod test {
     }
 
     #[test]
-    fn test_chained_fluent_api() {
+    fn chained_fluent_api() {
         let point = Point::new(1.0, 0.0, 1.0);
         let transform = Transform::identity()
             .rotate_x(std::f64::consts::FRAC_PI_2)

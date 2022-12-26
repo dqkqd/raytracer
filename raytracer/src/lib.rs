@@ -16,3 +16,13 @@ pub(crate) mod matrix;
 
 pub(crate) mod transform;
 pub use transform::Transform;
+
+pub(crate) mod ray;
+pub use ray::Ray;
+
+pub(crate) mod shapes;
+pub use shapes::shape::Shape;
+pub use shapes::sphere::Sphere;
+
+pub(crate) mod intersection;
+pub use intersection::Intersections;

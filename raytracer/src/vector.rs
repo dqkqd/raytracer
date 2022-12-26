@@ -1,6 +1,6 @@
 use std::ops::{Add, Div, Mul, Neg, Sub};
 
-use crate::util::equal;
+use crate::{util::equal, Transform};
 
 #[derive(Debug, Clone, Copy)]
 pub struct Vector {
@@ -29,6 +29,7 @@ impl Vector {
     pub fn w(&self) -> f64 {
         0.0
     }
+
     pub fn magnitude(&self) -> f64 {
         (self.x * self.x + self.y * self.y + self.z * self.z).sqrt()
     }
@@ -53,6 +54,10 @@ impl Vector {
     pub fn reflect(&self, normal: &Vector) -> Vector {
         let length = 2.0 * self.dot(normal);
         *self - *normal * length
+    }
+
+    pub fn transform(self, transformation: Transform) -> Vector {
+        transformation * self
     }
 }
 
@@ -104,7 +109,7 @@ mod test {
     use super::*;
 
     #[test]
-    fn test_new() {
+    fn create_vector() {
         let v = Vector::new(1.0, 2.0, 3.0);
         assert_eq!(v.x(), 1.0);
         assert_eq!(v.y(), 2.0);
@@ -112,39 +117,39 @@ mod test {
     }
 
     #[test]
-    fn test_add() {
+    fn add_two_vectors() {
         let v1 = Vector::new(1.0, 2.0, 3.0);
         let v2 = Vector::new(2.0, 3.0, 4.0);
         assert_eq!(v1 + v2, Vector::new(3.0, 5.0, 7.0));
     }
 
     #[test]
-    fn test_sub() {
+    fn subtract_two_vectors() {
         let v1 = Vector::new(3.0, 2.0, 1.0);
         let v2 = Vector::new(5.0, 6.0, 7.0);
         assert_eq!(v1 - v2, Vector::new(-2.0, -4.0, -6.0));
     }
 
     #[test]
-    fn test_neg() {
+    fn minus_vector() {
         let v = Vector::new(1.0, 2.0, 3.0);
         assert_eq!(-v, Vector::new(-1.0, -2.0, -3.0));
     }
 
     #[test]
-    fn test_mul_scalar() {
+    fn vector_multiply_scalar() {
         let v = Vector::new(1.0, -2.0, 3.0);
         assert_eq!(v * 3.5, Vector::new(3.5, -7.0, 10.5));
     }
 
     #[test]
-    fn test_div_scalar() {
+    fn vector_divide_scalar() {
         let v = Vector::new(1.0, -2.0, 3.0);
         assert_eq!(v / 2.0, Vector::new(0.5, -1.0, 1.5));
     }
 
     #[test]
-    fn test_magnitude() {
+    fn vector_magnitude() {
         let v = Vector::new(1.0, 0.0, 0.0);
         assert_eq!(v.magnitude(), 1.0);
 
@@ -162,7 +167,7 @@ mod test {
     }
 
     #[test]
-    fn test_normalize() {
+    fn vector_normalize() {
         let v = Vector::new(4.0, 0.0, 0.0);
         assert_eq!(v.normalize(), Vector::new(1.0, 0.0, 0.0));
 
@@ -175,21 +180,21 @@ mod test {
     }
 
     #[test]
-    fn test_normalized_vector_has_unit_magnitude() {
+    fn normalized_vector_has_unit_magnitude() {
         use crate::util::equal;
         let v = Vector::new(1.0, 2.0, 3.0);
         assert!(equal(v.normalize().magnitude(), 1.0));
     }
 
     #[test]
-    fn test_dot_product() {
+    fn vector_dot_product() {
         let v1 = Vector::new(1.0, 2.0, 3.0);
         let v2 = Vector::new(2.0, 3.0, 4.0);
         assert_eq!(v1.dot(&v2), 20.0);
     }
 
     #[test]
-    fn test_cross_product() {
+    fn vector_cross_product() {
         let v1 = Vector::new(1.0, 2.0, 3.0);
         let v2 = Vector::new(2.0, 3.0, 4.0);
         assert_eq!(v1.cross(&v2), Vector::new(-1.0, 2.0, -1.0));
@@ -197,7 +202,7 @@ mod test {
     }
 
     #[test]
-    fn test_reflect_through_normal_vector() {
+    fn vector_reflected_through_normal_vector() {
         let v = Vector::new(1.0, -1.0, 0.0);
         let normal = Vector::new(0.0, 1.0, 0.0);
         assert_eq!(v.reflect(&normal), Vector::new(1.0, 1.0, 0.0),);

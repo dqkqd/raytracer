@@ -259,7 +259,7 @@ mod test {
     use super::*;
 
     #[test]
-    fn test_new() {
+    fn creat_new_matrix_with_size_4() {
         let matrix = Matrix4::default();
         for r in 0..4 {
             for c in 0..4 {
@@ -269,7 +269,7 @@ mod test {
     }
 
     #[test]
-    fn test_equal() {
+    fn equal_two_matrices() {
         let matrix1 = Matrix4::new([
             [1.0, 2.0, 3.0, 4.0],
             [5.0, 6.0, 7.0, 8.0],
@@ -288,7 +288,7 @@ mod test {
     }
 
     #[test]
-    fn test_non_equal() {
+    fn two_different_matrices() {
         let matrix1 = Matrix4::new([
             [1.0, 2.0, 3.0, 4.0],
             [5.0, 6.0, 7.0, 8.0],
@@ -307,7 +307,7 @@ mod test {
     }
 
     #[test]
-    fn test_add() {
+    fn add_two_matrix() {
         let matrix1 = Matrix4::new([
             [1.0, 2.0, 3.0, 4.0],
             [5.0, 6.0, 7.0, 8.0],
@@ -333,7 +333,7 @@ mod test {
     }
 
     #[test]
-    fn test_add_assign() {
+    fn add_and_assign_a_matrix() {
         let mut matrix1 = Matrix4::new([
             [1.0, 2.0, 3.0, 4.0],
             [5.0, 6.0, 7.0, 8.0],
@@ -360,7 +360,7 @@ mod test {
     }
 
     #[test]
-    fn test_sub() {
+    fn subtract_two_matrices() {
         let matrix1 = Matrix4::new([
             [1.0, 2.0, 3.0, 4.0],
             [5.0, 6.0, 7.0, 8.0],
@@ -386,7 +386,7 @@ mod test {
     }
 
     #[test]
-    fn test_sub_assign() {
+    fn subtract_and_assign_matrix() {
         let mut matrix1 = Matrix4::new([
             [1.0, 2.0, 3.0, 4.0],
             [5.0, 6.0, 7.0, 8.0],
@@ -413,7 +413,7 @@ mod test {
     }
 
     #[test]
-    fn test_mul() {
+    fn mutliply_two_matrices() {
         let matrix1 = Matrix4::new([
             [1.0, 2.0, 3.0, 4.0],
             [5.0, 6.0, 7.0, 8.0],
@@ -439,7 +439,7 @@ mod test {
     }
 
     #[test]
-    fn test_mul_assign() {
+    fn multiply_and_assign_matrix() {
         let mut matrix1 = Matrix4::new([
             [1.0, 2.0, 3.0, 4.0],
             [5.0, 6.0, 7.0, 8.0],
@@ -465,7 +465,7 @@ mod test {
     }
 
     #[test]
-    fn test_mul_identity() {
+    fn matrix_multiply_with_identity() {
         let matrix = Matrix4::new([
             [1.0, 2.0, 3.0, 4.0],
             [5.0, 6.0, 7.0, 8.0],
@@ -477,7 +477,7 @@ mod test {
     }
 
     #[test]
-    fn test_mul_scalar() {
+    fn matrix_multiply_with_scalar() {
         let matrix = Matrix4::new([
             [1.0, 2.0, 3.0, 4.0],
             [5.0, 6.0, 7.0, 8.0],
@@ -496,7 +496,7 @@ mod test {
     }
 
     #[test]
-    fn test_mul_assign_scalar() {
+    fn matrix_multiply_and_assign_with_scalar() {
         let mut matrix = Matrix4::new([
             [1.0, 2.0, 3.0, 4.0],
             [5.0, 6.0, 7.0, 8.0],
@@ -516,7 +516,7 @@ mod test {
     }
 
     #[test]
-    fn test_div_scalar() {
+    fn matrix_divide_to_scalar() {
         let matrix = Matrix4::new([
             [1.0, 2.0, 3.0, 4.0],
             [5.0, 6.0, 7.0, 8.0],
@@ -535,7 +535,7 @@ mod test {
     }
 
     #[test]
-    fn test_div_assign_scalar() {
+    fn matrix_divide_and_assign_scalar() {
         let mut matrix = Matrix4::new([
             [1.0, 2.0, 3.0, 4.0],
             [5.0, 6.0, 7.0, 8.0],
@@ -555,7 +555,7 @@ mod test {
     }
 
     #[test]
-    fn test_element_wise() {
+    fn element_wise_two_matrix() {
         let matrix1 = Matrix4::new([
             [1.0, 2.0, 3.0, 4.0],
             [5.0, 6.0, 7.0, 8.0],
@@ -580,7 +580,7 @@ mod test {
     }
 
     #[test]
-    fn test_element_wise_and_assign() {
+    fn element_wise_and_assign_matrix() {
         let mut matrix1 = Matrix4::new([
             [1.0, 2.0, 3.0, 4.0],
             [5.0, 6.0, 7.0, 8.0],
@@ -606,7 +606,7 @@ mod test {
     }
 
     #[test]
-    fn test_transpose() {
+    fn transpose_matrix() {
         let matrix = Matrix4::new([
             [0.0, 9.0, 3.0, 0.0],
             [9.0, 8.0, 0.0, 8.0],
@@ -626,13 +626,13 @@ mod test {
     }
 
     #[test]
-    fn test_determinant_matrix2() {
+    fn matrix2_determinant() {
         let matrix = Matrix2::new([[1.0, 5.0], [-3.0, 2.0]]);
         assert_eq!(matrix.determinant(), 17.0);
     }
 
     #[test]
-    fn test_submatrix() {
+    fn submatrix_of_matrix() {
         let matrix = Matrix4::new([
             [1.0, 2.0, 3.0, 4.0],
             [5.0, 6.0, 7.0, 8.0],
@@ -650,14 +650,14 @@ mod test {
     }
 
     #[test]
-    fn test_cofactor() {
+    fn matrix3_cofactor() {
         let matrix = Matrix3::new([[3.0, 5.0, 0.0], [2.0, -1.0, -7.0], [6.0, -1.0, 5.0]]);
         assert_eq!(matrix.cofactor(0, 0), -12.0);
         assert_eq!(matrix.cofactor(1, 0), -25.0);
     }
 
     #[test]
-    fn test_determinant() {
+    fn matrix_determinant() {
         let matrix = Matrix2::new([[1.0, 5.0], [-3.0, 2.0]]);
         assert_eq!(matrix.determinant(), 17.0);
 
@@ -674,7 +674,7 @@ mod test {
     }
 
     #[test]
-    fn test_inverse() {
+    fn matrix_inverse() {
         let matrix = Matrix4::new([
             [-5.0, 2.0, 6.0, -8.0],
             [1.0, -5.0, 1.0, 8.0],

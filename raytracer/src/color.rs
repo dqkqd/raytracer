@@ -122,7 +122,7 @@ mod test {
     use super::*;
 
     #[test]
-    fn test_new() {
+    fn create_new_color() {
         let c = Color::new(0.1, 0.2, 0.3);
         assert_eq!(c.r(), 0.1);
         assert_eq!(c.g(), 0.2);
@@ -130,41 +130,41 @@ mod test {
     }
 
     #[test]
-    fn test_add() {
+    fn add_two_colors() {
         let c1 = Color::new(0.9, 0.6, 0.75);
         let c2 = Color::new(0.7, 0.1, 0.25);
         assert_eq!(c1 + c2, Color::new(1.6, 0.7, 1.0));
     }
 
     #[test]
-    fn test_sub() {
+    fn subtract_two_colors() {
         let c1 = Color::new(0.9, 0.6, 0.75);
         let c2 = Color::new(0.7, 0.1, 0.25);
         assert_eq!(c1 - c2, Color::new(0.2, 0.5, 0.5));
     }
 
     #[test]
-    fn test_mul_scalar() {
+    fn color_multiply_with_scalar() {
         let c = Color::new(0.2, 0.3, 0.4);
         assert_eq!(c * 2.0, Color::new(0.4, 0.6, 0.8));
     }
 
     #[test]
-    fn test_wise_color() {
+    fn element_wise_two_colors() {
         let c1 = Color::new(1.0, 0.2, 0.4);
         let c2 = Color::new(0.9, 1.0, 0.1);
         assert_eq!(c1 & c2, Color::new(0.9, 0.2, 0.04));
     }
 
     #[test]
-    fn test_convert_from_u8() {
+    fn convert_from_u8() {
         let color = Color::from((100, 150, 200));
         let expected = Color::new(0.39215687, 0.5882353, 0.78431374);
         assert_eq!(color, expected);
     }
 
     #[test]
-    fn test_convert_from_hex() {
+    fn convert_from_hex() {
         let color = Color::from("#6496C8");
         let expected = Color::new(0.39215687, 0.5882353, 0.78431374);
         assert_eq!(color, expected);

@@ -3,6 +3,7 @@ members = [
     "raytracer",
     "chapter02",
     "chapter04",
+    "chapter05",
     ]
 
 [workspace.dependencies]

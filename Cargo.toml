@@ -1,2 +1,8 @@
 [workspace]
-members = ["raytracer"]
+members = [
+    "raytracer",
+    "chapter02"
+    ]
+
+[workspace.dependencies]
+image = "0.24"

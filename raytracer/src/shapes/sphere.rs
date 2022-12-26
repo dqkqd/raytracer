@@ -1,45 +1,30 @@
 use crate::{
-    intersection::IntersectionsFactor, transform::transformable, util::solve_quadratic_equation,
-    Material, Point, Ray, Transform, Vector,
+    intersection::IntersectionsFactor, object::ObjectLocal, util::solve_quadratic_equation, Point,
+    Ray, Vector,
 };
 
-use super::shape::Shape;
+use super::shape::{Shape, ShapeKind};
 
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub struct Sphere {
     origin: Point,
     radius: f64,
-    inversed_transform: Option<Transform>,
-    material: Material,
 }
-
-transformable!(Sphere);
 
 impl Sphere {
     pub fn shape() -> Shape {
         let origin = Point::new(0.0, 0.0, 0.0);
         let radius = 1.0;
-        Shape::Sphere(Sphere {
-            origin,
-            radius,
-            inversed_transform: Transform::identity().inverse(),
-            material: Material::default(),
-        })
+        Shape::new(ShapeKind::Sphere(Sphere { origin, radius }))
     }
+}
 
-    pub fn material(&self) -> &Material {
-        &self.material
-    }
-
-    pub fn set_material(&mut self, material: Material) {
-        self.material = material
-    }
-
-    pub fn local_normal_at(&self, point: &Point) -> Vector {
+impl ObjectLocal for Sphere {
+    fn local_normal_at(&self, point: &Point) -> Vector {
         (*point - self.origin).normalize()
     }
 
-    pub fn local_intersection(&self, local_ray: &Ray) -> IntersectionsFactor {
+    fn local_intersection(&self, local_ray: &Ray) -> IntersectionsFactor {
         let sphere_to_ray = local_ray.origin() - self.origin;
         let a = local_ray.direction().dot(&local_ray.direction());
         let b = 2.0 * local_ray.direction().dot(&sphere_to_ray);
@@ -51,7 +36,11 @@ impl Sphere {
 #[cfg(test)]
 mod test {
 
-    use crate::{transform::Transformable, Vector};
+    use crate::{
+        shapes::object::{ObjectMaterial, ObjectWorld},
+        transform::Transformable,
+        Material, Transform, Vector,
+    };
 
     use super::*;
 

@@ -1,4 +1,4 @@
-use crate::{Ray, Shape};
+use crate::Shape;
 
 pub(crate) type IntersectionsFactor = Vec<f64>;
 

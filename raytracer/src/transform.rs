@@ -5,6 +5,7 @@ use crate::{matrix::Matrix4, Point, Ray, Vector};
 pub trait Transformable {
     fn inversed_transform(&self) -> Option<Transform>;
     fn set_transform(&mut self, transform: Transform);
+    fn with_transform(self, transform: Transform) -> Self;
 }
 
 macro_rules! transformable {
@@ -15,6 +16,11 @@ macro_rules! transformable {
             }
             fn set_transform(&mut self, transform: $crate::Transform) {
                 self.inversed_transform = transform.inverse();
+            }
+
+            fn with_transform(mut self, transform: Transform) -> Self {
+                self.set_transform(transform);
+                self
             }
         }
     };

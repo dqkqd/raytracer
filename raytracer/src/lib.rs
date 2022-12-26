@@ -21,6 +21,7 @@ pub(crate) mod ray;
 pub use ray::Ray;
 
 pub(crate) mod shapes;
+pub use shapes::object;
 pub use shapes::shape::Shape;
 pub use shapes::sphere::Sphere;
 

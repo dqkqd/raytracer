@@ -1,6 +1,6 @@
 use crate::{
     intersection::IntersectFactor, transform::transformable, util::solve_quadratic_equation, Point,
-    Ray, Transform,
+    Ray, Transform, Vector,
 };
 
 use super::shape::Shape;
@@ -25,6 +25,10 @@ impl Sphere {
         })
     }
 
+    pub fn local_normal_at(&self, point: &Point) -> Vector {
+        (*point - self.origin).normalize()
+    }
+
     pub fn intersect_factor(&self, ray: &Ray) -> IntersectFactor {
         let sphere_to_ray = ray.origin() - self.origin;
         let a = ray.direction().dot(&ray.direction());
@@ -36,7 +40,8 @@ impl Sphere {
 
 #[cfg(test)]
 mod test {
-    use crate::Vector;
+
+    use crate::{transform::Transformable, Vector};
 
     use super::*;
 
@@ -116,5 +121,74 @@ mod test {
         let s = Sphere::shape().with_transform(Transform::scaling(5.0, 0.0, 0.0));
         let xs = s.intersect(&r);
         assert_eq!(xs.count(), 0);
+    }
+
+    #[test]
+    fn normal_on_sphere_at_point_on_x_axis() {
+        let s = Sphere::shape();
+        let n = s.normal_at(&Point::new(1.0, 0.0, 0.0));
+        assert_eq!(n.unwrap(), Vector::new(1.0, 0.0, 0.0));
+    }
+
+    #[test]
+    fn normal_on_sphere_at_point_on_y_axis() {
+        let s = Sphere::shape();
+        let n = s.normal_at(&Point::new(0.0, 1.0, 0.0));
+        assert_eq!(n.unwrap(), Vector::new(0.0, 1.0, 0.0));
+    }
+
+    #[test]
+    fn normal_on_sphere_at_point_on_z_axis() {
+        let s = Sphere::shape();
+        let n = s.normal_at(&Point::new(0.0, 0.0, 1.0));
+        assert_eq!(n.unwrap(), Vector::new(0.0, 0.0, 1.0));
+    }
+
+    #[test]
+    fn normal_on_sphere_at_nonaxial_point() {
+        let s = Sphere::shape();
+        let v = f64::sqrt(3.0) / 3.0;
+        let n = s.normal_at(&Point::new(v, v, v));
+        assert_eq!(n.unwrap(), Vector::new(v, v, v));
+    }
+
+    #[test]
+    fn normal_is_normalized_vector() {
+        let s = Sphere::shape();
+        let v = f64::sqrt(3.0);
+        let n = s.normal_at(&Point::new(v, v, v)).unwrap();
+        assert_eq!(n, n.normalize());
+    }
+
+    #[test]
+    fn normal_on_translated_sphere() {
+        let s = Sphere::shape().with_transform(Transform::translation(0.0, 1.0, 0.0));
+        let n = s.normal_at(&Point::new(
+            0.0,
+            1.0 + std::f64::consts::FRAC_1_SQRT_2,
+            -std::f64::consts::FRAC_1_SQRT_2,
+        ));
+
+        assert_eq!(
+            n.unwrap(),
+            Vector::new(
+                0.0,
+                std::f64::consts::FRAC_1_SQRT_2,
+                -std::f64::consts::FRAC_1_SQRT_2
+            )
+        );
+    }
+
+    #[test]
+    fn normal_on_transformed_sphere() {
+        let m = Transform::rotation_z(std::f64::consts::PI / 5.0).scale(1.0, 0.5, 1.0);
+        let s = Sphere::shape().with_transform(m);
+        let n = s.normal_at(&Point::new(
+            0.0,
+            std::f64::consts::FRAC_1_SQRT_2,
+            -std::f64::consts::FRAC_1_SQRT_2,
+        ));
+
+        assert_eq!(n.unwrap(), Vector::new(0.0, 0.97014, -0.24254));
     }
 }

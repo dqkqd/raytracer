@@ -1,5 +1,6 @@
 use crate::{
-    intersection::IntersectFactor, transform::Transformable, Intersections, Ray, Sphere, Transform,
+    intersection::IntersectFactor, transform::Transformable, Intersections, Point, Ray, Sphere,
+    Transform, Vector,
 };
 
 #[derive(Debug, Clone, Copy, PartialEq)]
@@ -21,6 +22,15 @@ impl Shape {
     pub fn with_transform(mut self, transform: Transform) -> Self {
         self.set_transform(transform);
         self
+    }
+
+    pub fn normal_at(&self, point: &Point) -> Option<Vector> {
+        let object_point = point.transform(self.inversed_transform()?);
+        let local_normal = match self {
+            Shape::Sphere(sphere) => sphere.local_normal_at(&object_point),
+        };
+        let world_normal = self.inversed_transform()?.tranpose() * local_normal;
+        Some(world_normal.normalize())
     }
 }
 

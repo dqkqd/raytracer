@@ -29,3 +29,6 @@ pub use intersection::Intersections;
 
 pub(crate) mod light;
 pub use light::PointLight;
+
+pub(crate) mod phong;
+pub(crate) use phong::PhongReflecionModel;

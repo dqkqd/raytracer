@@ -18,20 +18,22 @@ impl Shape {
         Intersections::intersect(self, ray)
     }
 
-    pub fn inversed_transform(&self) -> Option<Transform> {
+    pub fn with_transform(mut self, transform: Transform) -> Self {
+        self.set_transform(transform);
+        self
+    }
+}
+
+impl Transformable for Shape {
+    fn inversed_transform(&self) -> Option<Transform> {
         match self {
             Shape::Sphere(sphere) => sphere.inversed_transform(),
         }
     }
 
-    pub fn set_transform(&mut self, transform: Transform) {
+    fn set_transform(&mut self, transform: Transform) {
         match self {
             Shape::Sphere(sphere) => sphere.set_transform(transform),
         }
-    }
-
-    pub fn with_transform(mut self, transform: Transform) -> Self {
-        self.set_transform(transform);
-        self
     }
 }

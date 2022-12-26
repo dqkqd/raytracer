@@ -19,10 +19,6 @@ impl Material {
         self.color
     }
 
-    pub(crate) fn model(&self) -> &PhongReflecionModel {
-        &self.model
-    }
-
     pub fn with_ambient(mut self, ambient: f64) -> Material {
         self.model.set_ambient(ambient);
         self
@@ -52,9 +48,9 @@ mod test {
     fn default_material() {
         let m = Material::default();
         assert_eq!(m.color(), color::WHITE);
-        assert_eq!(m.model().ambient(), 0.1);
-        assert_eq!(m.model().diffuse(), 0.9);
-        assert_eq!(m.model().specular(), 0.9);
-        assert_eq!(m.model().shininess(), 200.0);
+        assert_eq!(m.model.ambient(), 0.1);
+        assert_eq!(m.model.diffuse(), 0.9);
+        assert_eq!(m.model.specular(), 0.9);
+        assert_eq!(m.model.shininess(), 200.0);
     }
 }

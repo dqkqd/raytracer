@@ -1,6 +1,6 @@
-use crate::{transform::Transformable, Ray, Shape};
+use crate::{Ray, Shape};
 
-pub(crate) type IntersectFactor = Vec<f64>;
+pub(crate) type IntersectionFactor = Vec<f64>;
 
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub struct Intersection<'a> {
@@ -22,7 +22,7 @@ impl<'a> Intersection<'a> {
     }
 }
 
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, PartialEq, Default)]
 pub struct Intersections<'a> {
     data: Vec<Intersection<'a>>,
 }
@@ -33,19 +33,13 @@ impl<'a> Intersections<'a> {
     }
 
     pub(crate) fn intersect(object: &'a Shape, ray: &Ray) -> Intersections<'a> {
-        match object.inversed_transform() {
-            Some(transformation) => {
-                let translated_ray = ray.transform(transformation);
-                let mut roots = object.intersect_factor(&translated_ray);
-                roots.sort_unstable_by(|a, b| a.partial_cmp(b).unwrap());
-                let data = roots
-                    .iter()
-                    .map(|&t| Intersection::new(t, object))
-                    .collect();
-                Intersections { data }
-            }
-            None => Intersections { data: Vec::new() },
-        }
+        let mut roots = object.local_intersection_factor(ray);
+        roots.sort_unstable_by(|a, b| a.partial_cmp(b).unwrap());
+        let data = roots
+            .iter()
+            .map(|&t| Intersection::new(t, object))
+            .collect();
+        Intersections { data }
     }
 
     pub(crate) fn from_intersection(data: Vec<Intersection>) -> Intersections {

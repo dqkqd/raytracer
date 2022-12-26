@@ -1,5 +1,5 @@
 use crate::{
-    intersection::IntersectFactor, transform::transformable, util::solve_quadratic_equation,
+    intersection::IntersectionFactor, transform::transformable, util::solve_quadratic_equation,
     Material, Point, Ray, Transform, Vector,
 };
 
@@ -39,10 +39,10 @@ impl Sphere {
         (*point - self.origin).normalize()
     }
 
-    pub fn intersect_factor(&self, ray: &Ray) -> IntersectFactor {
-        let sphere_to_ray = ray.origin() - self.origin;
-        let a = ray.direction().dot(&ray.direction());
-        let b = 2.0 * ray.direction().dot(&sphere_to_ray);
+    pub fn local_intersection_factor(&self, local_ray: &Ray) -> IntersectionFactor {
+        let sphere_to_ray = local_ray.origin() - self.origin;
+        let a = local_ray.direction().dot(&local_ray.direction());
+        let b = 2.0 * local_ray.direction().dot(&sphere_to_ray);
         let c = sphere_to_ray.dot(&sphere_to_ray) - 1.0;
         solve_quadratic_equation(a, b, c)
     }

@@ -1,6 +1,6 @@
 use crate::{
-    intersection::IntersectFactor, transform::Transformable, Intersections, Material, Point, Ray,
-    Sphere, Transform, Vector,
+    intersection::IntersectionFactor, transform::Transformable, Intersections, Material, Point,
+    Ray, Sphere, Transform, Vector,
 };
 
 #[derive(Debug, Clone, Copy, PartialEq)]
@@ -9,14 +9,21 @@ pub enum Shape {
 }
 
 impl Shape {
-    pub fn intersect_factor(&self, ray: &Ray) -> IntersectFactor {
+    pub fn local_intersection_factor(&self, local_ray: &Ray) -> IntersectionFactor {
         match self {
-            Shape::Sphere(sphere) => sphere.intersect_factor(ray),
+            Shape::Sphere(sphere) => sphere.local_intersection_factor(local_ray),
         }
     }
 
+    pub fn transform_ray(&self, ray: &Ray) -> Option<Ray> {
+        Some(ray.transform(self.inversed_transform()?))
+    }
+
     pub fn intersect(&self, ray: &Ray) -> Intersections {
-        Intersections::intersect(self, ray)
+        self.transform_ray(ray)
+            .map_or(Default::default(), |transformed_ray| {
+                Intersections::intersect(self, &transformed_ray)
+            })
     }
 
     pub fn with_transform(mut self, transform: Transform) -> Self {

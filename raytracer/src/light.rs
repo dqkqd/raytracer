@@ -1,4 +1,4 @@
-use crate::{color, Color, Material, Point, Vector};
+use crate::{Color, Material, Point, Vector};
 
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub struct PointLight {

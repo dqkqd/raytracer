@@ -8,6 +8,7 @@ pub struct Intersection<'a> {
     t: f64,
 }
 
+#[allow(dead_code)]
 impl<'a> Intersection<'a> {
     pub(crate) fn new(t: f64, object: &Shape) -> Intersection {
         Intersection { t, object }
@@ -27,6 +28,7 @@ pub struct Intersections<'a> {
     data: Vec<Intersection<'a>>,
 }
 
+#[allow(dead_code)]
 impl<'a> Intersections<'a> {
     pub fn count(&self) -> usize {
         self.data.len()

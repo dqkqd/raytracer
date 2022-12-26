@@ -20,6 +20,7 @@ macro_rules! create_simple_matrix {
             }
         }
 
+        #[allow(dead_code)]
         impl $matrix {
             pub fn new(matrix: [[f64; $size]; $size]) -> $matrix {
                 $matrix { matrix }
@@ -189,6 +190,7 @@ macro_rules! create_simple_matrix {
 
 macro_rules! implement_inverse_for_matrix {
     ($matrix:ident, $submatrix:ident) => {
+        #[allow(dead_code)]
         impl $matrix {
             pub fn submatrix(&self, r: usize, c: usize) -> $submatrix {
                 let mut matrix = $submatrix::default();

@@ -1,6 +1,6 @@
 use crate::{Ray, Shape};
 
-pub(crate) type IntersectionFactor = Vec<f64>;
+pub(crate) type IntersectionsFactor = Vec<f64>;
 
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub struct Intersection<'a> {
@@ -32,9 +32,7 @@ impl<'a> Intersections<'a> {
         self.data.len()
     }
 
-    pub(crate) fn intersect(object: &'a Shape, ray: &Ray) -> Intersections<'a> {
-        let mut roots = object.local_intersection_factor(ray);
-        roots.sort_unstable_by(|a, b| a.partial_cmp(b).unwrap());
+    pub(crate) fn intersect(roots: IntersectionsFactor, object: &'a Shape) -> Intersections<'a> {
         let data = roots
             .iter()
             .map(|&t| Intersection::new(t, object))

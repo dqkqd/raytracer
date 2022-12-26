@@ -1,3 +1,4 @@
+#[derive(Debug, Clone, Copy, PartialEq)]
 pub(crate) struct PhongReflecionModel {
     ambient: f64,
     diffuse: f64,

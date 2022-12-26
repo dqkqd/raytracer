@@ -32,3 +32,6 @@ pub use light::PointLight;
 
 pub(crate) mod phong;
 pub(crate) use phong::PhongReflecionModel;
+
+pub(crate) mod material;
+pub use material::Material;

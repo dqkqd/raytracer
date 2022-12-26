@@ -1,6 +1,6 @@
 use crate::{
-    intersection::IntersectFactor, transform::transformable, util::solve_quadratic_equation, Point,
-    Ray, Transform, Vector,
+    intersection::IntersectFactor, transform::transformable, util::solve_quadratic_equation,
+    Material, Point, Ray, Transform, Vector,
 };
 
 use super::shape::Shape;
@@ -10,6 +10,7 @@ pub struct Sphere {
     origin: Point,
     radius: f64,
     inversed_transform: Option<Transform>,
+    material: Material,
 }
 
 transformable!(Sphere);
@@ -22,7 +23,16 @@ impl Sphere {
             origin,
             radius,
             inversed_transform: Transform::identity().inverse(),
+            material: Material::default(),
         })
+    }
+
+    pub fn material(&self) -> &Material {
+        &self.material
+    }
+
+    pub fn set_material(&mut self, material: Material) {
+        self.material = material
     }
 
     pub fn local_normal_at(&self, point: &Point) -> Vector {
@@ -190,5 +200,20 @@ mod test {
         ));
 
         assert_eq!(n.unwrap(), Vector::new(0.0, 0.97014, -0.24254));
+    }
+
+    #[test]
+    fn default_sphere_has_default_material() {
+        let s = Sphere::shape();
+        let m = s.material();
+        assert_eq!(m, &Material::default());
+    }
+
+    #[test]
+    fn sphere_can_assign_material() {
+        let mut s = Sphere::shape();
+        let m = Material::default().with_ambient(1.0);
+        s.set_material(m);
+        assert_eq!(s.material(), &m);
     }
 }

@@ -1,6 +1,6 @@
 use crate::{
-    intersection::IntersectFactor, transform::Transformable, Intersections, Point, Ray, Sphere,
-    Transform, Vector,
+    intersection::IntersectFactor, transform::Transformable, Intersections, Material, Point, Ray,
+    Sphere, Transform, Vector,
 };
 
 #[derive(Debug, Clone, Copy, PartialEq)]
@@ -31,6 +31,18 @@ impl Shape {
         };
         let world_normal = self.inversed_transform()?.tranpose() * local_normal;
         Some(world_normal.normalize())
+    }
+
+    pub fn material(&self) -> &Material {
+        match self {
+            Shape::Sphere(sphere) => sphere.material(),
+        }
+    }
+
+    pub fn set_material(&mut self, material: Material) {
+        match self {
+            Shape::Sphere(sphere) => sphere.set_material(material),
+        }
     }
 }
 

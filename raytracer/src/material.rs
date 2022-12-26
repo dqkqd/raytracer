@@ -1,4 +1,4 @@
-use crate::{color, phong::PhongReflecionModel, Color};
+use crate::{color, phong::PhongReflecionModel, Color, Point, PointLight, Vector};
 
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub struct Material {
@@ -37,6 +37,40 @@ impl Material {
     pub fn with_shininess(mut self, shininess: f64) -> Material {
         self.model.set_shininess(shininess);
         self
+    }
+
+    pub(crate) fn lighting(
+        &self,
+        light: &PointLight,
+        position: &Point,
+        eye_vector: &Vector,
+        normal_vector: &Vector,
+    ) -> Color {
+        let effective_color = self.color & light.intensity();
+        let light_vector = (light.position() - *position).normalize();
+        let ambient = effective_color * self.model.ambient();
+        let light_dot_normal = light_vector.dot(normal_vector);
+
+        let (diffuse, specular) = match light_dot_normal < 0.0 {
+            true => (color::BLACK, color::BLACK),
+            false => {
+                let diffuse = effective_color * self.model.diffuse() * light_dot_normal;
+                let reflected_vector = -light_vector.reflect(normal_vector);
+                let reflected_dot_eye = reflected_vector.dot(eye_vector);
+
+                let specular = match reflected_dot_eye <= 0.0 {
+                    true => color::BLACK,
+                    false => {
+                        let factor = reflected_dot_eye.powf(self.model.shininess());
+                        light.intensity() * self.model.specular() * factor
+                    }
+                };
+
+                (diffuse, specular)
+            }
+        };
+
+        ambient + diffuse + specular
     }
 }
 

@@ -1,11 +1,12 @@
 use crate::{
-    intersection::IntersectionsFactor, transform::Transformable, Intersections, Material, Point,
-    Ray, Vector,
+    intersection::IntersectionsFactor, transform::Transformable, Color, Intersections, Material,
+    Point, Ray, Vector,
 };
 
 pub trait ObjectMaterial {
     fn material(&self) -> &Material;
     fn set_material(&mut self, material: Material);
+    fn with_color(self, color: Color) -> Self;
 }
 
 pub trait ObjectLocal {

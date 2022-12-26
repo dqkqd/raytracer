@@ -1,6 +1,6 @@
 use crate::{
-    intersection::IntersectionsFactor, transform::transformable, Intersections, Material, Point,
-    Ray, Sphere, Transform, Vector,
+    intersection::IntersectionsFactor, transform::transformable, Color, Intersections, Material,
+    Point, Ray, Sphere, Transform, Vector,
 };
 
 use super::object::{ObjectLocal, ObjectMaterial, ObjectWorld};
@@ -61,5 +61,10 @@ impl ObjectMaterial for Shape {
 
     fn set_material(&mut self, material: Material) {
         self.material = material
+    }
+
+    fn with_color(mut self, color: Color) -> Self {
+        self.set_material(self.material.with_color(color));
+        self
     }
 }

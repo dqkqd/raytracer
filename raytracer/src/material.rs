@@ -15,8 +15,13 @@ impl Default for Material {
     }
 }
 impl Material {
-    pub(crate) fn color(&self) -> Color {
+    pub fn color(&self) -> Color {
         self.color
+    }
+
+    pub fn with_color(mut self, color: Color) -> Material {
+        self.color = color;
+        self
     }
 
     pub fn with_ambient(mut self, ambient: f64) -> Material {

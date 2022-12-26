@@ -39,7 +39,7 @@ mod test {
     use crate::{
         shapes::object::{ObjectMaterial, ObjectWorld},
         transform::Transformable,
-        Material, Transform, Vector,
+        Color, Material, Transform, Vector,
     };
 
     use super::*;
@@ -200,9 +200,15 @@ mod test {
 
     #[test]
     fn sphere_can_assign_material() {
-        let mut s = Sphere::shape();
         let m = Material::default().with_ambient(1.0);
-        s.set_material(m);
+        let s = Sphere::shape().with_material(m);
         assert_eq!(s.material(), &m);
+    }
+
+    #[test]
+    fn sphere_with_color() {
+        let color = Color::new(0.1, 0.1, 0.1);
+        let s = Sphere::shape().with_color(color);
+        assert_eq!(s.material().color(), color);
     }
 }

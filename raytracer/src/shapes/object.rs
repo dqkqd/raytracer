@@ -5,8 +5,8 @@ use crate::{
 
 pub trait ObjectMaterial {
     fn material(&self) -> &Material;
-    fn set_material(&mut self, material: Material);
     fn with_color(self, color: Color) -> Self;
+    fn with_material(self, material: Material) -> Self;
 }
 
 pub trait ObjectLocal {

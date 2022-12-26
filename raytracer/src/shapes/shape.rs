@@ -59,12 +59,12 @@ impl ObjectMaterial for Shape {
         &self.material
     }
 
-    fn set_material(&mut self, material: Material) {
-        self.material = material
+    fn with_material(mut self, material: Material) -> Self {
+        self.material = material;
+        self
     }
 
-    fn with_color(mut self, color: Color) -> Self {
-        self.set_material(self.material.with_color(color));
-        self
+    fn with_color(self, color: Color) -> Self {
+        self.with_material(self.material.with_color(color))
     }
 }

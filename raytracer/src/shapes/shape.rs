@@ -66,4 +66,74 @@ impl ObjectMaterial for Shape {
     fn with_color(self, color: Color) -> Self {
         self.with_material(self.material.with_color(color))
     }
+
+    fn with_ambient(self, ambient: f64) -> Self {
+        self.with_material(self.material.with_ambient(ambient))
+    }
+
+    fn with_diffuse(self, diffuse: f64) -> Self {
+        self.with_material(self.material.with_diffuse(diffuse))
+    }
+
+    fn with_specular(self, specular: f64) -> Self {
+        self.with_material(self.material.with_specular(specular))
+    }
+
+    fn with_shininess(self, shininess: f64) -> Self {
+        self.with_material(self.material.with_shininess(shininess))
+    }
+}
+
+#[cfg(test)]
+mod test {
+    use super::*;
+
+    #[test]
+    fn default_shape_has_default_material() {
+        let s = Sphere::shape();
+        let m = s.material;
+        assert_eq!(m, Material::default());
+    }
+
+    #[test]
+    fn shape_with_material() {
+        let m = Material::default().with_ambient(1.0);
+        let s = Sphere::shape().with_material(m);
+        assert_eq!(s.material, m);
+    }
+
+    #[test]
+    fn shape_with_color() {
+        let color = Color::new(0.1, 0.1, 0.1);
+        let s = Sphere::shape().with_color(color);
+        assert_eq!(s.material.color(), color);
+    }
+
+    #[test]
+    fn shape_with_ambient() {
+        let ambient = 0.6;
+        let s = Sphere::shape().with_ambient(ambient);
+        assert_eq!(s.material.ambient(), ambient);
+    }
+
+    #[test]
+    fn shape_with_diffuse() {
+        let diffuse = 0.2;
+        let s = Sphere::shape().with_diffuse(diffuse);
+        assert_eq!(s.material.diffuse(), diffuse);
+    }
+
+    #[test]
+    fn shape_with_specular() {
+        let specular = 0.6;
+        let s = Sphere::shape().with_specular(specular);
+        assert_eq!(s.material.specular(), specular);
+    }
+
+    #[test]
+    fn shape_with_shininess() {
+        let shininess = 1.5;
+        let s = Sphere::shape().with_shininess(shininess);
+        assert_eq!(s.material.shininess(), shininess);
+    }
 }

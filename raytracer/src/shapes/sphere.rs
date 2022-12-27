@@ -35,11 +35,7 @@ impl ObjectLocal for Sphere {
 #[cfg(test)]
 mod test {
 
-    use crate::{
-        shapes::object::{ObjectMaterial, ObjectWorld},
-        transform::Transformable,
-        Color, Material, Transform, Vector,
-    };
+    use crate::{shapes::object::ObjectWorld, transform::Transformable, Transform, Vector};
 
     use super::*;
 
@@ -188,26 +184,5 @@ mod test {
         ));
 
         assert_eq!(n.unwrap(), Vector::new(0.0, 0.97014, -0.24254));
-    }
-
-    #[test]
-    fn default_sphere_has_default_material() {
-        let s = Sphere::shape();
-        let m = s.material();
-        assert_eq!(m, &Material::default());
-    }
-
-    #[test]
-    fn sphere_can_assign_material() {
-        let m = Material::default().with_ambient(1.0);
-        let s = Sphere::shape().with_material(m);
-        assert_eq!(s.material(), &m);
-    }
-
-    #[test]
-    fn sphere_with_color() {
-        let color = Color::new(0.1, 0.1, 0.1);
-        let s = Sphere::shape().with_color(color);
-        assert_eq!(s.material().color(), color);
     }
 }

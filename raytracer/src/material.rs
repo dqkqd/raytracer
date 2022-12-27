@@ -24,9 +24,17 @@ impl Material {
         self
     }
 
+    pub fn ambient(&self) -> f64 {
+        self.model.ambient()
+    }
+
     pub fn with_ambient(mut self, ambient: f64) -> Material {
         self.model.set_ambient(ambient);
         self
+    }
+
+    pub fn diffuse(&self) -> f64 {
+        self.model.diffuse()
     }
 
     pub fn with_diffuse(mut self, diffuse: f64) -> Material {
@@ -34,9 +42,17 @@ impl Material {
         self
     }
 
+    pub fn specular(&self) -> f64 {
+        self.model.specular()
+    }
+
     pub fn with_specular(mut self, specular: f64) -> Material {
         self.model.set_specular(specular);
         self
+    }
+
+    pub fn shininess(&self) -> f64 {
+        self.model.shininess()
     }
 
     pub fn with_shininess(mut self, shininess: f64) -> Material {

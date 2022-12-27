@@ -5,8 +5,13 @@ use crate::{
 
 pub trait ObjectMaterial {
     fn material(&self) -> &Material;
-    fn with_color(self, color: Color) -> Self;
     fn with_material(self, material: Material) -> Self;
+
+    fn with_color(self, color: Color) -> Self;
+    fn with_ambient(self, ambient: f64) -> Self;
+    fn with_diffuse(self, diffuse: f64) -> Self;
+    fn with_specular(self, specular: f64) -> Self;
+    fn with_shininess(self, shininess: f64) -> Self;
 }
 
 pub trait ObjectLocal {

@@ -34,7 +34,7 @@ impl ObjectWorld for Shape {
         self.transform_ray(ray)
             .map_or(Default::default(), |local_ray| {
                 let roots = self.local_intersection(&local_ray);
-                Intersections::new(roots, self)
+                Intersections::new(roots, self, &local_ray)
             })
     }
 }

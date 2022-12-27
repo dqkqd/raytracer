@@ -39,7 +39,7 @@ impl<'a> Intersection<'a> {
 }
 
 #[derive(Debug, Clone, Copy, PartialEq)]
-pub(crate) struct ComputedIntersection<'a> {
+pub struct ComputedIntersection<'a> {
     object: &'a Shape,
     t: f64,
     point: Point,
@@ -47,6 +47,11 @@ pub(crate) struct ComputedIntersection<'a> {
     normal_vector: Vector,
 }
 
+impl<'a> ComputedIntersection<'a> {
+    pub fn t(&self) -> f64 {
+        self.t
+    }
+}
 #[cfg(test)]
 mod test {
     use super::*;

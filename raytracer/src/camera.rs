@@ -1,6 +1,6 @@
 use crate::{
     transform::{transformable, InversedTransform},
-    Point, Ray, Transform,
+    Canvas, Point, Ray, Transform, World,
 };
 
 pub struct Camera {
@@ -50,6 +50,19 @@ impl Camera {
         let direction = (pixel - origin).normalize();
 
         Some(Ray::new(origin, direction))
+    }
+
+    pub fn render(&self, world: &World) -> Canvas {
+        let mut canvas = Canvas::new(self.hsize, self.vsize);
+        for y in 0..self.vsize - 1 {
+            for x in 0..self.hsize - 1 {
+                if let Some(ray) = self.ray_for_pixel(x, y) {
+                    let color = world.color_at(&ray);
+                    canvas.write_pixel(x, y, &color);
+                }
+            }
+        }
+        canvas
     }
 }
 

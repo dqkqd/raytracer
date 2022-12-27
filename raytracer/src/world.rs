@@ -47,7 +47,7 @@ mod test {
 
     use crate::{
         color, intersect::intersection::Intersection, transform::Transformable,
-        util::assert_float_eq, Material, Point, Sphere, Transform, Vector,
+        util::assert_float_eq, Camera, Material, Point, Sphere, Transform, Vector,
     };
 
     use super::*;
@@ -133,5 +133,22 @@ mod test {
         let r = Ray::new(Point::new(0.0, 0.0, 0.75), Vector::new(0.0, 0.0, -1.0));
         let c = w.color_at(&r);
         assert_eq!(c, inner.material().color());
+    }
+
+    #[test]
+    fn rendering_a_world_with_camera() {
+        let w = default_world();
+
+        let from = Point::new(0.0, 0.0, -5.0);
+        let to = Point::new(0.0, 0.0, 0.0);
+        let up = Vector::new(0.0, 1.0, 0.0);
+        let view_transform = Transform::view_transform(from, to, up);
+
+        let c = Camera::new(11, 11, std::f64::consts::FRAC_PI_2).with_transform(view_transform);
+        let image = c.render(&w);
+        assert_eq!(
+            image.color(5, 5).unwrap(),
+            &Color::new(0.38066, 0.47583, 0.2855)
+        );
     }
 }

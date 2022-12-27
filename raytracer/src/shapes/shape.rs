@@ -33,9 +33,8 @@ impl ObjectWorld for Shape {
     fn intersect(&self, ray: &Ray) -> Intersections {
         self.transform_ray(ray)
             .map_or(Default::default(), |local_ray| {
-                let mut roots = self.local_intersection(&local_ray);
-                roots.sort_unstable_by(|a, b| a.partial_cmp(b).unwrap());
-                Intersections::intersect(roots, self)
+                let roots = self.local_intersection(&local_ray);
+                Intersections::new(roots, self)
             })
     }
 }

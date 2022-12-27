@@ -13,7 +13,8 @@ impl<'a> Intersections<'a> {
         self.data.len()
     }
 
-    pub(crate) fn intersect(roots: IntersectionsFactor, object: &'a Shape) -> Intersections<'a> {
+    pub(crate) fn new(mut roots: IntersectionsFactor, object: &'a Shape) -> Intersections<'a> {
+        roots.sort_unstable_by(|a, b| a.partial_cmp(b).unwrap());
         let data = roots
             .iter()
             .map(|&t| Intersection::new(t, object))

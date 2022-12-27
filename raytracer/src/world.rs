@@ -41,13 +41,24 @@ impl World {
             .map(|hit| self.shade_hit(hit).unwrap_or_default())
             .unwrap_or_default()
     }
+
+    pub fn is_shadowed(&self, point: &Point) -> bool {
+        self.light_source.map_or(true, |light| {
+            let v = light.position() - *point;
+            let distance = v.magnitude();
+            let direction = v.normalize();
+            let r = Ray::new(*point, direction);
+            let intersections = self.intersect(&r);
+            intersections.hit().map_or(false, |hit| hit.t() < distance)
+        })
+    }
 }
 #[cfg(test)]
 mod test {
 
     use crate::{
         color, intersect::intersection::Intersection, transform::Transformable,
-        util::assert_float_eq, Camera, Material, Point, Sphere, Transform, Vector,
+        util::assert_float_eq, Camera, Material, Sphere, Transform, Vector,
     };
 
     use super::*;
@@ -150,5 +161,33 @@ mod test {
             image.color(5, 5).unwrap(),
             &Color::new(0.38066, 0.47583, 0.2855)
         );
+    }
+
+    #[test]
+    fn no_shadow_when_nothing_is_collinear_with_point_and_light() {
+        let w = default_world();
+        let p = Point::new(0.0, 10.0, 0.0);
+        assert!(!w.is_shadowed(&p));
+    }
+
+    #[test]
+    fn shadowed_when_object_between_point_and_light() {
+        let w = default_world();
+        let p = Point::new(10.0, -10.0, 10.0);
+        assert!(w.is_shadowed(&p));
+    }
+
+    #[test]
+    fn no_shadow_when_object_behind_light() {
+        let w = default_world();
+        let p = Point::new(-20.0, 20.0, -20.0);
+        assert!(!w.is_shadowed(&p))
+    }
+
+    #[test]
+    fn no_shadow_when_object_behind_point() {
+        let w = default_world();
+        let p = Point::new(-2.0, 2.0, -2.0);
+        assert!(!w.is_shadowed(&p));
     }
 }

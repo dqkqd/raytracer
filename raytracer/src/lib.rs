@@ -16,7 +16,7 @@ pub(crate) mod matrix;
 
 pub(crate) mod transform;
 pub(crate) use transform::InversedTransform;
-pub use transform::Transform;
+pub use transform::{Transform, Transformable};
 
 pub(crate) mod ray;
 pub use ray::Ray;

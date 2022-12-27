@@ -1,6 +1,7 @@
 use std::{
     fs::File,
     io::{BufWriter, Write},
+    ops::{Deref, DerefMut},
 };
 
 use crate::color::{self, Color, MAX_COLOR};
@@ -73,6 +74,20 @@ impl Canvas {
         }
 
         Ok(())
+    }
+}
+
+impl Deref for Canvas {
+    type Target = Vec<Vec<Color>>;
+
+    fn deref(&self) -> &Self::Target {
+        &self.canvas
+    }
+}
+
+impl DerefMut for Canvas {
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        &mut self.canvas
     }
 }
 

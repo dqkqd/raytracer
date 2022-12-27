@@ -1,3 +1,5 @@
+use rayon::prelude::{IndexedParallelIterator, IntoParallelRefMutIterator, ParallelIterator};
+
 use crate::{
     transform::{transformable, InversedTransform},
     Canvas, Point, Ray, Transform, World,
@@ -54,14 +56,16 @@ impl Camera {
 
     pub fn render(&self, world: &World) -> Canvas {
         let mut canvas = Canvas::new(self.hsize, self.vsize);
-        for y in 0..self.vsize - 1 {
-            for x in 0..self.hsize - 1 {
-                if let Some(ray) = self.ray_for_pixel(x, y) {
-                    let color = world.color_at(&ray);
-                    canvas.write_pixel(x, y, &color);
-                }
-            }
-        }
+        canvas
+            .par_iter_mut()
+            .enumerate()
+            .for_each(|(y, vec_color)| {
+                vec_color.par_iter_mut().enumerate().for_each(|(x, color)| {
+                    if let Some(ray) = self.ray_for_pixel(x, y) {
+                        *color = world.color_at(&ray);
+                    }
+                })
+            });
         canvas
     }
 }

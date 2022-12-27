@@ -35,10 +35,7 @@ impl ObjectLocal for Sphere {
 #[cfg(test)]
 mod test {
 
-    use crate::{
-        shapes::object::ObjectWorld, transform::Transformable, util::assert_float_eq, Transform,
-        Vector,
-    };
+    use crate::{shapes::object::ObjectWorld, util::assert_float_eq, Vector};
 
     use super::*;
 
@@ -90,37 +87,6 @@ mod test {
     }
 
     #[test]
-    fn sphere_default_transformation() {
-        let s = Sphere::shape();
-        assert_eq!(s.inversed_transform(), Some(Transform::identity()));
-    }
-
-    #[test]
-    fn changing_sphere_transformation() {
-        let t = Transform::translation(2.0, 3.0, 4.0);
-        let s = Sphere::shape().with_transform(t);
-        assert_eq!(s.inversed_transform(), t.inverse());
-    }
-
-    #[test]
-    fn intersecting_a_scaled_sphere_with_a_ray() {
-        let r = Ray::new(Point::new(0.0, 0.0, -5.0), Vector::new(0.0, 0.0, 1.0));
-        let s = Sphere::shape().with_transform(Transform::scaling(2.0, 2.0, 2.0));
-        let xs = s.intersect(&r);
-        assert_eq!(xs.count(), 2);
-        assert_float_eq!(xs.get(0).unwrap().t(), 3.0);
-        assert_float_eq!(xs.get(1).unwrap().t(), 7.0);
-    }
-
-    #[test]
-    fn intersecting_a_translated_sphere_with_a_ray() {
-        let r = Ray::new(Point::new(0.0, 0.0, -5.0), Vector::new(0.0, 0.0, 1.0));
-        let s = Sphere::shape().with_transform(Transform::scaling(5.0, 0.0, 0.0));
-        let xs = s.intersect(&r);
-        assert_eq!(xs.count(), 0);
-    }
-
-    #[test]
     fn normal_on_sphere_at_point_on_x_axis() {
         let s = Sphere::shape();
         let n = s.normal_at(&Point::new(1.0, 0.0, 0.0));
@@ -155,37 +121,5 @@ mod test {
         let v = f64::sqrt(3.0);
         let n = s.normal_at(&Point::new(v, v, v)).unwrap();
         assert_eq!(n, n.normalize());
-    }
-
-    #[test]
-    fn normal_on_translated_sphere() {
-        let s = Sphere::shape().with_transform(Transform::translation(0.0, 1.0, 0.0));
-        let n = s.normal_at(&Point::new(
-            0.0,
-            1.0 + std::f64::consts::FRAC_1_SQRT_2,
-            -std::f64::consts::FRAC_1_SQRT_2,
-        ));
-
-        assert_eq!(
-            n.unwrap(),
-            Vector::new(
-                0.0,
-                std::f64::consts::FRAC_1_SQRT_2,
-                -std::f64::consts::FRAC_1_SQRT_2
-            )
-        );
-    }
-
-    #[test]
-    fn normal_on_transformed_sphere() {
-        let m = Transform::rotation_z(std::f64::consts::PI / 5.0).scale(1.0, 0.5, 1.0);
-        let s = Sphere::shape().with_transform(m);
-        let n = s.normal_at(&Point::new(
-            0.0,
-            std::f64::consts::FRAC_1_SQRT_2,
-            -std::f64::consts::FRAC_1_SQRT_2,
-        ));
-
-        assert_eq!(n.unwrap(), Vector::new(0.0, 0.97014, -0.24254));
     }
 }

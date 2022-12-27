@@ -170,6 +170,14 @@ mod test {
     }
 
     #[test]
+    fn intersections_contain_object() {
+        let r = Ray::new(Point::new(0.0, 0.0, -5.0), Vector::new(0.0, 0.0, 1.0));
+        let s = TestShape::shape().with_transform(Transform::scaling(2.0, 2.0, 2.0));
+        let i = s.intersect(&r);
+        assert_eq!(i.get(0).unwrap().object(), &s);
+    }
+
+    #[test]
     fn intersecting_a_scaled_shape_with_a_ray() {
         let r = Ray::new(Point::new(0.0, 0.0, -5.0), Vector::new(0.0, 0.0, 1.0));
         let s = TestShape::shape().with_transform(Transform::scaling(2.0, 2.0, 2.0));

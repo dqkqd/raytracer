@@ -2,8 +2,9 @@ use std::ops::Mul;
 
 use crate::{matrix::Matrix4, Point, Ray, Vector};
 
+pub(crate) type InversedTransform = Option<Transform>;
 pub trait Transformable {
-    fn inversed_transform(&self) -> Option<Transform>;
+    fn inversed_transform(&self) -> InversedTransform;
     fn set_transform(&mut self, transform: Transform);
     fn with_transform(self, transform: Transform) -> Self;
 }
@@ -11,7 +12,7 @@ pub trait Transformable {
 macro_rules! transformable {
     ($struct_name:ident) => {
         impl $crate::transform::Transformable for $struct_name {
-            fn inversed_transform(&self) -> Option<$crate::Transform> {
+            fn inversed_transform(&self) -> $crate::InversedTransform {
                 self.inversed_transform
             }
             fn set_transform(&mut self, transform: $crate::Transform) {
@@ -100,7 +101,7 @@ impl Transform {
         Transform { matrix }
     }
 
-    pub(crate) fn inverse(self) -> Option<Transform> {
+    pub(crate) fn inverse(self) -> InversedTransform {
         let matrix = self.matrix.inverse()?;
         Some(Transform { matrix })
     }

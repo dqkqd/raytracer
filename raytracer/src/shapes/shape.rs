@@ -1,6 +1,6 @@
 use crate::{
-    transform::transformable, Color, Intersections, IntersectionsFactor, Material, Point, Ray,
-    Sphere, Transform, Vector,
+    transform::{transformable, InversedTransform},
+    Color, Intersections, IntersectionsFactor, Material, Point, Ray, Sphere, Transform, Vector,
 };
 
 use super::object::{ObjectLocal, ObjectMaterial, ObjectWorld};
@@ -13,7 +13,7 @@ pub enum ShapeKind {
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub struct Shape {
     shape: ShapeKind,
-    inversed_transform: Option<Transform>,
+    inversed_transform: InversedTransform,
     material: Material,
 }
 

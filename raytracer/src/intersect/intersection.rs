@@ -2,6 +2,8 @@ use crate::{object::ObjectWorld, Point, Ray, Shape, Vector};
 
 pub(crate) type IntersectionsFactor = Vec<f64>;
 
+const OFFSET_FACTOR: f64 = 1E-12;
+
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub struct Intersection<'a> {
     object: &'a Shape,
@@ -29,10 +31,13 @@ impl<'a> Intersection<'a> {
             }
         };
 
+        let over_point = point + normal_vector * OFFSET_FACTOR;
+
         Some(ComputedIntersection {
             t,
             object,
             point,
+            over_point,
             eye_vector,
             normal_vector,
             inside,
@@ -45,6 +50,7 @@ pub struct ComputedIntersection<'a> {
     object: &'a Shape,
     t: f64,
     point: Point,
+    over_point: Point,
     eye_vector: Vector,
     normal_vector: Vector,
     inside: bool,
@@ -74,7 +80,7 @@ impl<'a> ComputedIntersection<'a> {
 #[cfg(test)]
 mod test {
     use super::*;
-    use crate::{util::assert_float_eq, Sphere};
+    use crate::{util::assert_float_eq, Sphere, Transform, Transformable};
 
     #[test]
     fn intersection_encapsulates_t_and_object() {
@@ -114,5 +120,14 @@ mod test {
         assert_eq!(comp.eye_vector, Vector::new(0.0, 0.0, -1.0));
         assert!(comp.inside);
         assert_eq!(comp.normal_vector, Vector::new(0.0, 0.0, -1.0));
+    }
+
+    #[test]
+    fn hit_should_offset_point() {
+        let r = Ray::new(Point::new(0.0, 0.0, -5.0), Vector::new(0.0, 0.0, 1.0));
+        let s = Sphere::shape().with_transform(Transform::translation(0.0, 0.0, 1.0));
+        let comps = Intersection::new(5.0, &s).prepare_computations(&r).unwrap();
+        assert!(comps.over_point.z() < -OFFSET_FACTOR / 2.0);
+        assert!(comps.point.z() > comps.over_point.z());
     }
 }

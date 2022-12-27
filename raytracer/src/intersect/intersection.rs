@@ -25,15 +25,26 @@ impl<'a> Intersection<'a> {
     pub(crate) fn prepare_computations(self, ray: &Ray) -> Option<ComputedIntersection<'a>> {
         let t = self.t;
         let object = self.object;
+
         let point = ray.position(t);
         let eye_vector = -ray.direction();
-        let normal_vector = object.normal_at(&point)?;
+        let mut normal_vector = object.normal_at(&point)?;
+
+        let inside = match normal_vector.dot(&eye_vector) < 0.0 {
+            false => false,
+            true => {
+                normal_vector = -normal_vector;
+                true
+            }
+        };
+
         Some(ComputedIntersection {
             t,
             object,
             point,
             eye_vector,
             normal_vector,
+            inside,
         })
     }
 }
@@ -45,6 +56,7 @@ pub struct ComputedIntersection<'a> {
     point: Point,
     eye_vector: Vector,
     normal_vector: Vector,
+    inside: bool,
 }
 
 impl<'a> ComputedIntersection<'a> {
@@ -76,5 +88,24 @@ mod test {
         assert_eq!(comps.point, Point::new(0.0, 0.0, -1.0));
         assert_eq!(comps.eye_vector, Vector::new(0.0, 0.0, -1.0));
         assert_eq!(comps.normal_vector, Vector::new(0.0, 0.0, -1.0));
+    }
+
+    #[test]
+    fn hit_when_intersection_occurs_on_the_outside() {
+        let r = Ray::new(Point::new(0.0, 0.0, -5.0), Vector::new(0.0, 0.0, 1.0));
+        let s = Sphere::shape();
+        let comp = Intersection::new(4.0, &s).prepare_computations(&r).unwrap();
+        assert!(!comp.inside);
+    }
+
+    #[test]
+    fn hit_when_intersection_occurs_on_the_inside() {
+        let r = Ray::new(Point::new(0.0, 0.0, 0.0), Vector::new(0.0, 0.0, 1.0));
+        let s = Sphere::shape();
+        let comp = Intersection::new(1.0, &s).prepare_computations(&r).unwrap();
+        assert_eq!(comp.point, Point::new(0.0, 0.0, 1.0));
+        assert_eq!(comp.eye_vector, Vector::new(0.0, 0.0, -1.0));
+        assert!(comp.inside);
+        assert_eq!(comp.normal_vector, Vector::new(0.0, 0.0, -1.0));
     }
 }

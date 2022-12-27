@@ -64,6 +64,34 @@ impl<'a> Intersections<'a> {
         let non_negative_index = self.data.partition_point(|i| i.t() < 0.0);
         self.get(non_negative_index)
     }
+
+    pub(crate) fn merge(mut self, mut other: Intersections<'a>) -> Intersections {
+        // use merge like merge sort but push backward
+        let mut merged_data = Vec::with_capacity(self.data.len() + other.data.len());
+
+        while !self.data.is_empty() && !other.data.is_empty() {
+            let t1 = self.data.last().unwrap().t();
+            let t2 = other.data.last().unwrap().t();
+            if t1 > t2 {
+                merged_data.push(self.data.pop().unwrap());
+            } else {
+                merged_data.push(other.data.pop().unwrap());
+            }
+        }
+
+        while !self.data.is_empty() {
+            merged_data.push(self.data.pop().unwrap());
+        }
+
+        while !other.data.is_empty() {
+            merged_data.push(other.data.pop().unwrap());
+        }
+
+        merged_data.reverse();
+
+        self.data = merged_data;
+        self
+    }
 }
 
 #[cfg(test)]

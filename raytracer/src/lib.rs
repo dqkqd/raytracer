@@ -35,3 +35,6 @@ pub(crate) mod phong;
 
 pub(crate) mod material;
 pub use material::Material;
+
+pub mod world;
+pub use world::World;

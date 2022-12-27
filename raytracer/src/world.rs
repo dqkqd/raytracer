@@ -1,0 +1,68 @@
+use crate::{object::ObjectWorld, Intersections, PointLight, Ray, Shape};
+
+#[derive(Debug, Clone, PartialEq, Default)]
+pub struct World {
+    light_source: Option<PointLight>,
+    objects: Vec<Shape>,
+}
+
+impl World {
+    pub fn new(light_source: PointLight, objects: Vec<Shape>) -> World {
+        World {
+            light_source: Some(light_source),
+            objects,
+        }
+    }
+
+    pub fn intersect(&self, ray: &Ray) -> Intersections {
+        self.objects
+            .iter()
+            .map(|object| object.intersect(ray))
+            .reduce(|merged_intersections, intersections| merged_intersections.merge(intersections))
+            .unwrap_or_default()
+    }
+}
+#[cfg(test)]
+mod test {
+    use crate::{
+        color, object::ObjectMaterial, transform::Transformable, Color, Material, Point, Sphere,
+        Transform, Vector,
+    };
+
+    use super::*;
+
+    fn default_world() -> World {
+        let point_light = PointLight::new(Point::new(-10.0, 10.0, -10.0), color::WHITE);
+        let s1 = Sphere::shape().with_material(
+            Material::default()
+                .with_color(Color::new(0.8, 1.0, 0.6))
+                .with_diffuse(0.7)
+                .with_specular(0.2),
+        );
+        let s2 = Sphere::shape().with_transform(Transform::scaling(0.5, 0.5, 0.5));
+
+        World {
+            light_source: Some(point_light),
+            objects: vec![s1, s2],
+        }
+    }
+
+    #[test]
+    fn create_world() {
+        let w = World::default();
+        assert!(w.light_source.is_none());
+        assert_eq!(w.objects.len(), 0);
+    }
+
+    #[test]
+    fn intersect_word_with_a_ray() {
+        let w = default_world();
+        let r = Ray::new(Point::new(0.0, 0.0, -5.0), Vector::new(0.0, 0.0, 1.0));
+        let xs = w.intersect(&r);
+        assert_eq!(xs.count(), 4);
+        assert_eq!(xs.get(0).unwrap().t(), 4.0);
+        assert_eq!(xs.get(1).unwrap().t(), 4.5);
+        assert_eq!(xs.get(2).unwrap().t(), 5.5);
+        assert_eq!(xs.get(3).unwrap().t(), 6.0);
+    }
+}

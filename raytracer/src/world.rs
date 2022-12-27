@@ -1,5 +1,4 @@
 use crate::{
-    color,
     intersect::intersection::ComputedIntersection,
     object::{ObjectMaterial, ObjectWorld},
     Color, Intersections, PointLight, Ray, Shape,
@@ -37,17 +36,18 @@ impl World {
     }
 
     pub fn color_at(&self, ray: &Ray) -> Color {
-        self.intersect(ray).hit().map_or(color::BLACK, |hit| {
-            self.shade_hit(hit).unwrap_or(color::BLACK)
-        })
+        self.intersect(ray)
+            .hit()
+            .map(|hit| self.shade_hit(hit).unwrap_or_default())
+            .unwrap_or_default()
     }
 }
 #[cfg(test)]
 mod test {
 
     use crate::{
-        intersect::intersection::Intersection, transform::Transformable, Material, Point, Sphere,
-        Transform, Vector,
+        color, intersect::intersection::Intersection, transform::Transformable, Material, Point,
+        Sphere, Transform, Vector,
     };
 
     use super::*;

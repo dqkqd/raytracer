@@ -17,7 +17,8 @@ pub const WHITE: Color = Color {
     b: 1.0,
 };
 
-#[derive(Debug, Clone, Copy)]
+// default color is BLACK
+#[derive(Debug, Clone, Copy, Default)]
 pub struct Color {
     r: f64,
     g: f64,

@@ -1,8 +1,4 @@
-use crate::{
-    intersect::IntersectionsFactor,
-    util::{equal, solve_linear_equation},
-    Point, Vector,
-};
+use crate::{intersect::IntersectionsFactor, util::solve_linear_equation, Point, Vector};
 
 use super::{
     object::ObjectLocal,

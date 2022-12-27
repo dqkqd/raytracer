@@ -55,7 +55,7 @@ impl Canvas {
             let mut chunk_size = 0;
             let mut chunks = vec![];
 
-            for color in colors.iter() {
+            for color in colors {
                 let (r, g, b) = color.to_u8();
                 for c in [r, g, b] {
                     let s = c.to_string();

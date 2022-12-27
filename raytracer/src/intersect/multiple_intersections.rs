@@ -22,16 +22,6 @@ impl<'a> Intersections<'a> {
         Intersections { data }
     }
 
-    pub(crate) fn from_intersection(data: Vec<Intersection>) -> Intersections {
-        let mut sorted_data = data;
-        sorted_data.sort_unstable_by(|a, b| {
-            let x = a.t();
-            let y = b.t();
-            x.partial_cmp(&y).unwrap()
-        });
-        Intersections { data: sorted_data }
-    }
-
     pub(crate) fn get(&self, index: usize) -> Option<&Intersection> {
         self.data.get(index)
     }
@@ -83,9 +73,9 @@ mod test {
     #[test]
     fn aggregating_intersections() {
         let s = Sphere::shape();
-        let i1 = Intersection::new(1.0, &s);
-        let i2 = Intersection::new(2.0, &s);
-        let xs = Intersections::from_intersection(vec![i1, i2]);
+        let i1 = Intersections::new(vec![1.0], &s);
+        let i2 = Intersections::new(vec![2.0], &s);
+        let xs = i1.merge(i2);
         assert_eq!(xs.count(), 2);
         assert_eq!(xs.get(0).unwrap().t(), 1.0);
         assert_eq!(xs.get(1).unwrap().t(), 2.0);
@@ -94,41 +84,41 @@ mod test {
     #[test]
     fn hit_when_all_intersections_have_positive_t() {
         let s = Sphere::shape();
-        let i1 = Intersection::new(1.0, &s);
-        let i2 = Intersection::new(2.0, &s);
-        let xs = Intersections::from_intersection(vec![i1, i2]);
-        let i = xs.hit().unwrap();
-        assert_eq!(*i, i1);
+        let i1 = Intersections::new(vec![1.0], &s);
+        let i2 = Intersections::new(vec![2.0], &s);
+        let xs = i1.clone().merge(i2);
+        let i = xs.hit();
+        assert_eq!(i, i1.get(0));
     }
 
     #[test]
     fn hit_when_some_intersections_have_negative_t() {
         let s = Sphere::shape();
-        let i1 = Intersection::new(-1.0, &s);
-        let i2 = Intersection::new(2.0, &s);
-        let xs = Intersections::from_intersection(vec![i1, i2]);
-        let i = xs.hit().unwrap();
-        assert_eq!(*i, i2);
+        let i1 = Intersections::new(vec![-1.0], &s);
+        let i2 = Intersections::new(vec![2.0], &s);
+        let xs = i1.merge(i2.clone());
+        let i = xs.hit();
+        assert_eq!(i, i2.get(0));
     }
 
     #[test]
     fn hit_when_all_intersections_have_negative_t() {
         let s = Sphere::shape();
-        let i1 = Intersection::new(-1.0, &s);
-        let i2 = Intersection::new(-2.0, &s);
-        let xs = Intersections::from_intersection(vec![i1, i2]);
+        let i1 = Intersections::new(vec![-1.0], &s);
+        let i2 = Intersections::new(vec![-2.0], &s);
+        let xs = i1.merge(i2);
         assert!(xs.hit().is_none());
     }
 
     #[test]
     fn hit_is_lowest_nonnegative_intersection() {
         let s = Sphere::shape();
-        let i1 = Intersection::new(5.0, &s);
-        let i2 = Intersection::new(7.0, &s);
-        let i3 = Intersection::new(-3.0, &s);
-        let i4 = Intersection::new(2.0, &s);
-        let xs = Intersections::from_intersection(vec![i1, i2, i3, i4]);
-        let i = xs.hit().unwrap();
-        assert_eq!(*i, i4);
+        let i1 = Intersections::new(vec![5.0], &s);
+        let i2 = Intersections::new(vec![7.0], &s);
+        let i3 = Intersections::new(vec![-3.0], &s);
+        let i4 = Intersections::new(vec![2.0], &s);
+        let xs = i1.merge(i2).merge(i3).merge(i4.clone());
+        let i = xs.hit();
+        assert_eq!(i, i4.get(0));
     }
 }

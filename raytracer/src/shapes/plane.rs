@@ -1,6 +1,9 @@
-use crate::{object::ObjectLocal, Point, Vector};
+use crate::{Point, Vector};
 
-use super::shape::{Shape, ShapeKind};
+use super::{
+    object::ObjectLocal,
+    shape::{Shape, ShapeKind},
+};
 
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub struct Plane {}

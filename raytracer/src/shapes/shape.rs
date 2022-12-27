@@ -1,12 +1,13 @@
 use crate::{
     transform::{transformable, InversedTransform},
-    Color, Intersections, IntersectionsFactor, Material, Point, Ray, Sphere, Transform, Vector,
+    Color, Intersections, IntersectionsFactor, Material, Point, Ray, Transform, Vector,
 };
 
 use super::{
     dummy_shape::TestShape,
     object::{ObjectLocal, ObjectMaterial, ObjectWorld},
     plane::Plane,
+    sphere::Sphere,
 };
 
 #[derive(Debug, Clone, Copy, PartialEq)]

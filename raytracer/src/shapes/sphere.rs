@@ -1,8 +1,9 @@
-use crate::{
-    object::ObjectLocal, util::solve_quadratic_equation, IntersectionsFactor, Point, Ray, Vector,
-};
+use crate::{util::solve_quadratic_equation, IntersectionsFactor, Point, Ray, Vector};
 
-use super::shape::{Shape, ShapeKind};
+use super::{
+    object::ObjectLocal,
+    shape::{Shape, ShapeKind},
+};
 
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub struct Sphere {

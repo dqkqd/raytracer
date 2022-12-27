@@ -6,11 +6,13 @@ use crate::{
 use super::{
     dummy_shape::TestShape,
     object::{ObjectLocal, ObjectMaterial, ObjectWorld},
+    plane::Plane,
 };
 
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub enum ShapeKind {
     Sphere(Sphere),
+    Plane(Plane),
     TestShape(TestShape),
 }
 
@@ -48,6 +50,7 @@ impl ObjectLocal for Shape {
         match self.shape {
             ShapeKind::Sphere(s) => s.local_intersection(local_ray),
             ShapeKind::TestShape(s) => s.local_intersection(local_ray),
+            ShapeKind::Plane(p) => p.local_intersection(local_ray),
         }
     }
 
@@ -55,6 +58,7 @@ impl ObjectLocal for Shape {
         match self.shape {
             ShapeKind::Sphere(s) => s.local_normal_at(object_point),
             ShapeKind::TestShape(s) => s.local_normal_at(object_point),
+            ShapeKind::Plane(p) => p.local_normal_at(object_point),
         }
     }
 }

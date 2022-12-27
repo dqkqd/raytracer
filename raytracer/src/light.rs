@@ -28,8 +28,9 @@ impl PointLight {
         position: &Point,
         eye_vector: &Vector,
         normal_vector: &Vector,
+        shadowed: bool,
     ) -> Color {
-        material.lighting(self, position, eye_vector, normal_vector)
+        material.lighting(self, position, eye_vector, normal_vector, shadowed)
     }
 }
 
@@ -59,7 +60,7 @@ mod test {
         let normalv = Vector::new(0.0, 0.0, -1.0);
         let light = PointLight::new(Point::new(0.0, 0.0, -10.0), color::WHITE);
         let (m, position) = material_and_point_setup();
-        let result = light.lighting(&m, &position, &eyev, &normalv);
+        let result = light.lighting(&m, &position, &eyev, &normalv, false);
         assert_eq!(result, Color::new(1.9, 1.9, 1.9));
     }
 
@@ -73,7 +74,7 @@ mod test {
         let normalv = Vector::new(0.0, 0.0, -1.0);
         let light = PointLight::new(Point::new(0.0, 0.0, -10.0), color::WHITE);
         let (m, position) = material_and_point_setup();
-        let result = light.lighting(&m, &position, &eyev, &normalv);
+        let result = light.lighting(&m, &position, &eyev, &normalv, false);
         assert_eq!(result, Color::new(1.0, 1.0, 1.0));
     }
 
@@ -83,7 +84,7 @@ mod test {
         let normalv = Vector::new(0.0, 0.0, -1.0);
         let light = PointLight::new(Point::new(0.0, 10.0, -10.0), color::WHITE);
         let (m, position) = material_and_point_setup();
-        let result = light.lighting(&m, &position, &eyev, &normalv);
+        let result = light.lighting(&m, &position, &eyev, &normalv, false);
         assert_eq!(result, Color::new(0.7364, 0.7364, 0.7364));
     }
 
@@ -97,7 +98,7 @@ mod test {
         let normalv = Vector::new(0.0, 0.0, -1.0);
         let light = PointLight::new(Point::new(0.0, 10.0, -10.0), color::WHITE);
         let (m, position) = material_and_point_setup();
-        let result = light.lighting(&m, &position, &eyev, &normalv);
+        let result = light.lighting(&m, &position, &eyev, &normalv, false);
         assert_eq!(result, Color::new(1.6364, 1.6364, 1.6364));
     }
 
@@ -107,7 +108,18 @@ mod test {
         let normalv = Vector::new(0.0, 0.0, -1.0);
         let light = PointLight::new(Point::new(0.0, 0.0, 10.0), color::WHITE);
         let (m, position) = material_and_point_setup();
-        let result = light.lighting(&m, &position, &eyev, &normalv);
+        let result = light.lighting(&m, &position, &eyev, &normalv, false);
+        assert_eq!(result, Color::new(0.1, 0.1, 0.1));
+    }
+
+    #[test]
+    fn lighting_with_the_surface_in_shadow() {
+        let eyev = Vector::new(0.0, 0.0, -1.0);
+        let normalv = Vector::new(0.0, 0.0, -1.0);
+        let light = PointLight::new(Point::new(0.0, 0.0, -10.0), color::WHITE);
+        let shadowed = true;
+        let (m, position) = material_and_point_setup();
+        let result = light.lighting(&m, &position, &eyev, &normalv, shadowed);
         assert_eq!(result, Color::new(0.1, 0.1, 0.1));
     }
 }

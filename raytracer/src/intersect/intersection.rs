@@ -76,6 +76,10 @@ impl<'a> ComputedIntersection<'a> {
     pub(crate) fn normal_vector(&self) -> &Vector {
         &self.normal_vector
     }
+
+    pub(crate) fn over_point(&self) -> &Point {
+        &self.over_point
+    }
 }
 #[cfg(test)]
 mod test {

@@ -1,7 +1,7 @@
 use crate::{
     intersect::intersection::ComputedIntersection,
     object::{ObjectMaterial, ObjectWorld},
-    Color, Intersections, PointLight, Ray, Shape,
+    Color, Intersections, Point, PointLight, Ray, Shape,
 };
 
 #[derive(Debug, Clone, PartialEq, Default)]
@@ -27,11 +27,13 @@ impl World {
     }
 
     pub fn shade_hit(&self, comp: &ComputedIntersection) -> Option<Color> {
+        let shadowed = self.is_shadowed(comp.over_point());
         Some(self.light_source?.lighting(
             comp.object().material(),
             comp.point(),
             comp.eye_vector(),
             comp.normal_vector(),
+            shadowed,
         ))
     }
 
@@ -189,5 +191,22 @@ mod test {
         let w = default_world();
         let p = Point::new(-2.0, 2.0, -2.0);
         assert!(!w.is_shadowed(&p));
+    }
+
+    #[test]
+    fn shade_hit_with_intersection_in_shadow() {
+        let light_source = PointLight::new(Point::new(0.0, 0.0, -10.0), color::WHITE);
+        let s1 = Sphere::shape();
+        let s2 = Sphere::shape().with_transform(Transform::translation(0.0, 0.0, 10.0));
+        let w = World {
+            light_source: Some(light_source),
+            objects: vec![s1, s2],
+        };
+        let r = Ray::new(Point::new(0.0, 0.0, 5.0), Vector::new(0.0, 0.0, 1.0));
+        let comp = Intersection::new(4.0, &s2)
+            .prepare_computations(&r)
+            .unwrap();
+        let c = w.shade_hit(&comp).unwrap();
+        assert_eq!(c, Color::new(0.1, 0.1, 0.1));
     }
 }

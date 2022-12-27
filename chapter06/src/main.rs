@@ -41,7 +41,7 @@ fn main() {
                 let point = r.position(i.t());
                 let normal = shape.normal_at(&point);
                 if let Some(normal) = normal {
-                    let color = light.lighting(shape.material(), &point, &eye, &normal);
+                    let color = light.lighting(shape.material(), &point, &eye, &normal, false);
                     canvas.write_pixel(x, y, &color);
                 }
             }

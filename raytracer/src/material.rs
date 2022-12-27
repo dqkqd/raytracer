@@ -66,10 +66,16 @@ impl Material {
         position: &Point,
         eye_vector: &Vector,
         normal_vector: &Vector,
+        shadowed: bool,
     ) -> Color {
         let effective_color = self.color & light.intensity();
         let light_vector = (light.position() - *position).normalize();
         let ambient = effective_color * self.model.ambient();
+
+        if shadowed {
+            return ambient;
+        }
+
         let light_dot_normal = light_vector.dot(normal_vector);
 
         let (diffuse, specular) = match light_dot_normal < 0.0 {

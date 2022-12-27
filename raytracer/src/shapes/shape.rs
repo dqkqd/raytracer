@@ -8,6 +8,7 @@ use super::object::{ObjectLocal, ObjectMaterial, ObjectWorld};
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub enum ShapeKind {
     Sphere(Sphere),
+    TestShape,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq)]
@@ -43,12 +44,14 @@ impl ObjectLocal for Shape {
     fn local_intersection(&self, local_ray: &Ray) -> IntersectionsFactor {
         match self.shape {
             ShapeKind::Sphere(sphere) => sphere.local_intersection(local_ray),
+            ShapeKind::TestShape => panic!("`TestShape` should only be used when testing"),
         }
     }
 
     fn local_normal_at(&self, object_point: &Point) -> Vector {
         match self.shape {
             ShapeKind::Sphere(sphere) => sphere.local_normal_at(object_point),
+            ShapeKind::TestShape => panic!("`TestShape` should only be used when testing"),
         }
     }
 }
@@ -86,13 +89,13 @@ impl ObjectMaterial for Shape {
 
 #[cfg(test)]
 mod test {
-    use crate::util::assert_float_eq;
+    use crate::{shapes::dummy_shape::TestShape, util::assert_float_eq};
 
     use super::*;
 
     #[test]
     fn default_shape_has_default_material() {
-        let s = Sphere::shape();
+        let s = TestShape::shape();
         let m = s.material;
         assert_eq!(m, Material::default());
     }
@@ -100,42 +103,42 @@ mod test {
     #[test]
     fn shape_with_material() {
         let m = Material::default().with_ambient(1.0);
-        let s = Sphere::shape().with_material(m);
+        let s = TestShape::shape().with_material(m);
         assert_eq!(s.material, m);
     }
 
     #[test]
     fn shape_with_color() {
         let color = Color::new(0.1, 0.1, 0.1);
-        let s = Sphere::shape().with_color(color);
+        let s = TestShape::shape().with_color(color);
         assert_eq!(s.material.color(), color);
     }
 
     #[test]
     fn shape_with_ambient() {
         let ambient = 0.6;
-        let s = Sphere::shape().with_ambient(ambient);
+        let s = TestShape::shape().with_ambient(ambient);
         assert_float_eq!(s.material.ambient(), ambient);
     }
 
     #[test]
     fn shape_with_diffuse() {
         let diffuse = 0.2;
-        let s = Sphere::shape().with_diffuse(diffuse);
+        let s = TestShape::shape().with_diffuse(diffuse);
         assert_float_eq!(s.material.diffuse(), diffuse);
     }
 
     #[test]
     fn shape_with_specular() {
         let specular = 0.6;
-        let s = Sphere::shape().with_specular(specular);
+        let s = TestShape::shape().with_specular(specular);
         assert_float_eq!(s.material.specular(), specular);
     }
 
     #[test]
     fn shape_with_shininess() {
         let shininess = 1.5;
-        let s = Sphere::shape().with_shininess(shininess);
+        let s = TestShape::shape().with_shininess(shininess);
         assert_float_eq!(s.material.shininess(), shininess);
     }
 }

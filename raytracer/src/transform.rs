@@ -111,7 +111,7 @@ impl Transform {
         Transform { matrix }
     }
 
-    pub(crate) fn view_transform(from: Point, to: Point, up: Vector) -> Transform {
+    pub fn view_transform(from: Point, to: Point, up: Vector) -> Transform {
         let forward = (to - from).normalize();
         let upn = up.normalize();
         let left = forward.cross(&upn);

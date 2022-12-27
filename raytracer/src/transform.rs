@@ -109,6 +109,24 @@ impl Transform {
         let matrix = self.matrix.tranpose();
         Transform { matrix }
     }
+
+    pub(crate) fn view_transform(from: Point, to: Point, up: Vector) -> Transform {
+        let forward = (to - from).normalize();
+        let upn = up.normalize();
+        let left = forward.cross(&upn);
+        let true_up = left.cross(&forward);
+
+        let orientation = Transform {
+            matrix: Matrix4::new([
+                [left.x(), left.y(), left.z(), 0.0],
+                [true_up.x(), true_up.y(), true_up.z(), 0.0],
+                [-forward.x(), -forward.y(), -forward.z(), 0.0],
+                [0.0, 0.0, 0.0, 1.0],
+            ]),
+        };
+
+        orientation * Transform::translation(-from.x(), -from.y(), -from.z())
+    }
 }
 
 impl Mul<Point> for Transform {
@@ -377,5 +395,51 @@ mod test {
             .scale(5.0, 5.0, 5.0)
             .translate(10.0, 5.0, 7.0);
         assert_eq!(transform * point, Point::new(15.0, 0.0, 7.0));
+    }
+
+    #[test]
+    fn view_transform_for_default_orientation() {
+        let from = Point::new(0.0, 0.0, 0.0);
+        let to = Point::new(0.0, 0.0, -1.0);
+        let up = Vector::new(0.0, 1.0, 0.0);
+        let t = Transform::view_transform(from, to, up);
+        assert_eq!(t, Transform::identity());
+    }
+
+    #[test]
+    fn view_transform_looking_in_positive_z_direction() {
+        let from = Point::new(0.0, 0.0, 0.0);
+        let to = Point::new(0.0, 0.0, 1.0);
+        let up = Vector::new(0.0, 1.0, 0.0);
+        let t = Transform::view_transform(from, to, up);
+        assert_eq!(t, Transform::scaling(-1.0, 1.0, -1.0));
+    }
+
+    #[test]
+    fn view_transform_move_the_world() {
+        let from = Point::new(0.0, 0.0, 8.0);
+        let to = Point::new(0.0, 0.0, 0.0);
+        let up = Vector::new(0.0, 1.0, 0.0);
+        let t = Transform::view_transform(from, to, up);
+        assert_eq!(t, Transform::translation(0.0, 0.0, -8.0));
+    }
+
+    #[test]
+    fn arbitrary_view_transform() {
+        let from = Point::new(1.0, 3.0, 2.0);
+        let to = Point::new(4.0, -2.0, 8.0);
+        let up = Vector::new(1.0, 1.0, 0.0);
+        let t = Transform::view_transform(from, to, up);
+
+        let expected = Transform {
+            matrix: Matrix4::new([
+                [-0.50709, 0.50709, 0.67612, -2.36643],
+                [0.76772, 0.60609, 0.12122, -2.82843],
+                [-0.35857, 0.59761, -0.71714, 0.00000],
+                [0.00000, 0.00000, 0.00000, 1.00000],
+            ]),
+        };
+
+        assert_eq!(t, expected);
     }
 }

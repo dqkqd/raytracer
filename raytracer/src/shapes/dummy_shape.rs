@@ -19,6 +19,6 @@ impl ObjectLocal for TestShape {
     }
 
     fn local_intersection(&self, _: &Ray) -> IntersectionsFactor {
-        unimplemented!("`TestShape` intersection should not be called")
+        vec![1.0]
     }
 }

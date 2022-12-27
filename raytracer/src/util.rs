@@ -23,6 +23,10 @@ pub(crate) fn solve_quadratic_equation(a: f64, b: f64, c: f64) -> Vec<f64> {
     }
 }
 
+pub(crate) fn solve_linear_equation(a: f64, b: f64) -> Vec<f64> {
+    solve_quadratic_equation(0.0, a, b)
+}
+
 #[allow(unused_macros)]
 macro_rules! assert_float_eq {
     ($left:expr, $right: expr) => {

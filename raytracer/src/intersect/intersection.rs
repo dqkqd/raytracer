@@ -8,18 +8,9 @@ pub struct Intersection<'a> {
     t: f64,
 }
 
-#[allow(dead_code)]
 impl<'a> Intersection<'a> {
     pub(crate) fn new(t: f64, object: &Shape) -> Intersection {
         Intersection { t, object }
-    }
-
-    pub fn t(&self) -> f64 {
-        self.t
-    }
-
-    pub(crate) fn object(&self) -> &Shape {
-        self.object
     }
 
     pub(crate) fn prepare_computations(self, ray: &Ray) -> Option<ComputedIntersection<'a>> {
@@ -73,8 +64,8 @@ mod test {
     fn intersection_encapsulates_t_and_object() {
         let s = Sphere::shape();
         let i = Intersection::new(3.5, &s);
-        assert_eq!(i.t(), 3.5);
-        assert_eq!(i.object(), &s);
+        assert_eq!(i.t, 3.5);
+        assert_eq!(i.object, &s);
     }
 
     #[test]

@@ -1,4 +1,5 @@
 use crate::{
+    color,
     intersect::intersection::ComputedIntersection,
     object::{ObjectMaterial, ObjectWorld},
     Color, Intersections, PointLight, Ray, Shape,
@@ -34,12 +35,19 @@ impl World {
             comp.normal_vector(),
         ))
     }
+
+    pub fn color_at(&self, ray: &Ray) -> Color {
+        self.intersect(ray).hit().map_or(color::BLACK, |hit| {
+            self.shade_hit(hit).unwrap_or(color::BLACK)
+        })
+    }
 }
 #[cfg(test)]
 mod test {
+
     use crate::{
-        color, intersect::intersection::Intersection, object::ObjectMaterial,
-        transform::Transformable, Color, Material, Point, Sphere, Transform, Vector,
+        intersect::intersection::Intersection, transform::Transformable, Material, Point, Sphere,
+        Transform, Vector,
     };
 
     use super::*;
@@ -98,5 +106,32 @@ mod test {
         let comp = Intersection::new(0.5, &s).prepare_computations(&r).unwrap();
         let c = w.shade_hit(&comp).unwrap();
         assert_eq!(c, Color::new(0.90498, 0.90498, 0.90498));
+    }
+
+    #[test]
+    fn color_when_a_ray_misses() {
+        let w = default_world();
+        let r = Ray::new(Point::new(0.0, 0.0, -5.0), Vector::new(0.0, 1.0, 0.0));
+        let c = w.color_at(&r);
+        assert_eq!(c, color::BLACK)
+    }
+
+    #[test]
+    fn color_when_a_ray_hit() {
+        let w = default_world();
+        let r = Ray::new(Point::new(0.0, 0.0, -5.0), Vector::new(0.0, 0.0, 1.0));
+        let c = w.color_at(&r);
+        assert_eq!(c, Color::new(0.38066, 0.475833, 0.2855));
+    }
+
+    #[test]
+    fn color_with_intersection_behind_the_ray() {
+        let mut w = default_world();
+        w.objects[0] = w.objects[0].with_ambient(1.0);
+        w.objects[1] = w.objects[1].with_ambient(1.0);
+        let inner = w.objects[1];
+        let r = Ray::new(Point::new(0.0, 0.0, 0.75), Vector::new(0.0, 0.0, -1.0));
+        let c = w.color_at(&r);
+        assert_eq!(c, inner.material().color());
     }
 }

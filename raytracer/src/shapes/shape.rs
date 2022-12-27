@@ -1,6 +1,6 @@
 use crate::{
-    intersection::IntersectionsFactor, transform::transformable, Color, Intersections, Material,
-    Point, Ray, Sphere, Transform, Vector,
+    transform::transformable, Color, Intersections, IntersectionsFactor, Material, Point, Ray,
+    Sphere, Transform, Vector,
 };
 
 use super::object::{ObjectLocal, ObjectMaterial, ObjectWorld};

@@ -1,6 +1,5 @@
 use crate::{
-    intersection::IntersectionsFactor, object::ObjectLocal, util::solve_quadratic_equation, Point,
-    Ray, Vector,
+    object::ObjectLocal, util::solve_quadratic_equation, IntersectionsFactor, Point, Ray, Vector,
 };
 
 use super::shape::{Shape, ShapeKind};

@@ -1,6 +1,6 @@
 use crate::{
-    intersection::IntersectionsFactor, transform::Transformable, Color, Intersections, Material,
-    Point, Ray, Vector,
+    transform::Transformable, Color, Intersections, IntersectionsFactor, Material, Point, Ray,
+    Vector,
 };
 
 pub trait ObjectMaterial {

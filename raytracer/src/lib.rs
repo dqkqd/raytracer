@@ -25,8 +25,8 @@ pub use shapes::object;
 pub use shapes::shape::Shape;
 pub use shapes::sphere::Sphere;
 
-pub(crate) mod intersection;
-pub use intersection::Intersections;
+pub(crate) mod intersect;
+pub(crate) use intersect::{Intersections, IntersectionsFactor};
 
 pub(crate) mod light;
 pub use light::PointLight;

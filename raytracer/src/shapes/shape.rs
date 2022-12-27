@@ -23,7 +23,7 @@ impl Shape {
     pub fn new(shape: ShapeKind) -> Shape {
         Shape {
             shape,
-            inversed_transform: Transform::identity().inverse(),
+            inversed_transform: Some(Transform::identity()),
             material: Material::default(),
         }
     }

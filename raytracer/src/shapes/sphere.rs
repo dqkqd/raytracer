@@ -89,7 +89,7 @@ mod test {
     #[test]
     fn sphere_default_transformation() {
         let s = Sphere::shape();
-        assert_eq!(s.inversed_transform(), Transform::identity().inverse());
+        assert_eq!(s.inversed_transform(), Some(Transform::identity()));
     }
 
     #[test]

@@ -1,4 +1,8 @@
-use crate::{object::ObjectWorld, Intersections, PointLight, Ray, Shape};
+use crate::{
+    intersect::intersection::ComputedIntersection,
+    object::{ObjectMaterial, ObjectWorld},
+    Color, Intersections, PointLight, Ray, Shape,
+};
 
 #[derive(Debug, Clone, PartialEq, Default)]
 pub struct World {
@@ -21,12 +25,21 @@ impl World {
             .reduce(|merged_intersections, intersections| merged_intersections.merge(intersections))
             .unwrap_or_default()
     }
+
+    pub fn shade_hit(&self, comp: &ComputedIntersection) -> Option<Color> {
+        Some(self.light_source?.lighting(
+            comp.object().material(),
+            comp.point(),
+            comp.eye_vector(),
+            comp.normal_vector(),
+        ))
+    }
 }
 #[cfg(test)]
 mod test {
     use crate::{
-        color, object::ObjectMaterial, transform::Transformable, Color, Material, Point, Sphere,
-        Transform, Vector,
+        color, intersect::intersection::Intersection, object::ObjectMaterial,
+        transform::Transformable, Color, Material, Point, Sphere, Transform, Vector,
     };
 
     use super::*;
@@ -64,5 +77,26 @@ mod test {
         assert_eq!(xs.get(1).unwrap().t(), 4.5);
         assert_eq!(xs.get(2).unwrap().t(), 5.5);
         assert_eq!(xs.get(3).unwrap().t(), 6.0);
+    }
+
+    #[test]
+    fn shading_an_intersection() {
+        let w = default_world();
+        let r = Ray::new(Point::new(0.0, 0.0, -5.0), Vector::new(0.0, 0.0, 1.0));
+        let s = w.objects[0];
+        let comp = Intersection::new(4.0, &s).prepare_computations(&r).unwrap();
+        let c = w.shade_hit(&comp).unwrap();
+        assert_eq!(c, Color::new(0.38066, 0.47583, 0.2855));
+    }
+
+    #[test]
+    fn shading_an_intersection_from_the_inside() {
+        let mut w = default_world();
+        w.light_source = Some(PointLight::new(Point::new(0.0, 0.25, 0.0), color::WHITE));
+        let r = Ray::new(Point::new(0.0, 0.0, 0.0), Vector::new(0.0, 0.0, 1.0));
+        let s = w.objects[1];
+        let comp = Intersection::new(0.5, &s).prepare_computations(&r).unwrap();
+        let c = w.shade_hit(&comp).unwrap();
+        assert_eq!(c, Color::new(0.90498, 0.90498, 0.90498));
     }
 }

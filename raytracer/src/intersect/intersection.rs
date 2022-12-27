@@ -54,6 +54,22 @@ impl<'a> ComputedIntersection<'a> {
     pub fn t(&self) -> f64 {
         self.t
     }
+
+    pub(crate) fn object(&self) -> &Shape {
+        self.object
+    }
+
+    pub(crate) fn point(&self) -> &Point {
+        &self.point
+    }
+
+    pub(crate) fn eye_vector(&self) -> &Vector {
+        &self.eye_vector
+    }
+
+    pub(crate) fn normal_vector(&self) -> &Vector {
+        &self.normal_vector
+    }
 }
 #[cfg(test)]
 mod test {

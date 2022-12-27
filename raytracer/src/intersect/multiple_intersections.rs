@@ -72,7 +72,7 @@ impl<'a> Intersections<'a> {
 
 #[cfg(test)]
 mod test {
-    use crate::{Point, Sphere, Vector};
+    use crate::{util::assert_float_eq, Point, Sphere, Vector};
 
     use super::*;
 
@@ -88,8 +88,8 @@ mod test {
         let i2 = Intersections::new(vec![2.0], &s, &r);
         let xs = i1.merge(i2);
         assert_eq!(xs.count(), 2);
-        assert_eq!(xs.get(0).unwrap().t(), 1.0);
-        assert_eq!(xs.get(1).unwrap().t(), 2.0);
+        assert_float_eq!(xs.get(0).unwrap().t(), 1.0);
+        assert_float_eq!(xs.get(1).unwrap().t(), 2.0);
     }
 
     #[test]

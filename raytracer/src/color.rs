@@ -120,14 +120,16 @@ impl BitAnd<Color> for Color {
 
 #[cfg(test)]
 mod test {
+    use crate::util::assert_float_eq;
+
     use super::*;
 
     #[test]
     fn create_new_color() {
         let c = Color::new(0.1, 0.2, 0.3);
-        assert_eq!(c.r(), 0.1);
-        assert_eq!(c.g(), 0.2);
-        assert_eq!(c.b(), 0.3);
+        assert_float_eq!(c.r(), 0.1);
+        assert_float_eq!(c.g(), 0.2);
+        assert_float_eq!(c.b(), 0.3);
     }
 
     #[test]

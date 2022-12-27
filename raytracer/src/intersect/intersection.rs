@@ -74,13 +74,13 @@ impl<'a> ComputedIntersection<'a> {
 #[cfg(test)]
 mod test {
     use super::*;
-    use crate::Sphere;
+    use crate::{util::assert_float_eq, Sphere};
 
     #[test]
     fn intersection_encapsulates_t_and_object() {
         let s = Sphere::shape();
         let i = Intersection::new(3.5, &s);
-        assert_eq!(i.t, 3.5);
+        assert_float_eq!(i.t, 3.5);
         assert_eq!(i.object, &s);
     }
 
@@ -90,7 +90,7 @@ mod test {
         let s = Sphere::shape();
         let i = Intersection::new(4.0, &s);
         let comps = i.prepare_computations(&r).unwrap();
-        assert_eq!(comps.t, i.t);
+        assert_float_eq!(comps.t, i.t);
         assert_eq!(comps.object, i.object);
         assert_eq!(comps.point, Point::new(0.0, 0.0, -1.0));
         assert_eq!(comps.eye_vector, Vector::new(0.0, 0.0, -1.0));

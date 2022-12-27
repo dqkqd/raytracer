@@ -258,6 +258,8 @@ implement_inverse_for_matrix!(Matrix4, Matrix3);
 
 #[cfg(test)]
 mod test {
+    use crate::util::assert_float_eq;
+
     use super::*;
 
     #[test]
@@ -265,7 +267,7 @@ mod test {
         let matrix = Matrix4::default();
         for r in 0..4 {
             for c in 0..4 {
-                assert_eq!(matrix[r][c], 0.0);
+                assert_float_eq!(matrix[r][c], 0.0);
             }
         }
     }
@@ -630,7 +632,7 @@ mod test {
     #[test]
     fn matrix2_determinant() {
         let matrix = Matrix2::new([[1.0, 5.0], [-3.0, 2.0]]);
-        assert_eq!(matrix.determinant(), 17.0);
+        assert_float_eq!(matrix.determinant(), 17.0);
     }
 
     #[test]
@@ -654,17 +656,17 @@ mod test {
     #[test]
     fn matrix3_cofactor() {
         let matrix = Matrix3::new([[3.0, 5.0, 0.0], [2.0, -1.0, -7.0], [6.0, -1.0, 5.0]]);
-        assert_eq!(matrix.cofactor(0, 0), -12.0);
-        assert_eq!(matrix.cofactor(1, 0), -25.0);
+        assert_float_eq!(matrix.cofactor(0, 0), -12.0);
+        assert_float_eq!(matrix.cofactor(1, 0), -25.0);
     }
 
     #[test]
     fn matrix_determinant() {
         let matrix = Matrix2::new([[1.0, 5.0], [-3.0, 2.0]]);
-        assert_eq!(matrix.determinant(), 17.0);
+        assert_float_eq!(matrix.determinant(), 17.0);
 
         let matrix = Matrix3::new([[1.0, 2.0, 6.0], [-5.0, 8.0, -4.0], [2.0, 6.0, 4.0]]);
-        assert_eq!(matrix.determinant(), -196.0);
+        assert_float_eq!(matrix.determinant(), -196.0);
 
         let matrix = Matrix4::new([
             [-2.0, -8.0, 3.0, 5.0],
@@ -672,7 +674,7 @@ mod test {
             [1.0, 2.0, -9.0, 6.0],
             [-6.0, 7.0, 7.0, -9.],
         ]);
-        assert_eq!(matrix.determinant(), -4071.0);
+        assert_float_eq!(matrix.determinant(), -4071.0);
     }
 
     #[test]

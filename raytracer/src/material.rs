@@ -97,15 +97,17 @@ impl Material {
 
 #[cfg(test)]
 mod test {
+    use crate::util::assert_float_eq;
+
     use super::*;
 
     #[test]
     fn default_material() {
         let m = Material::default();
         assert_eq!(m.color(), color::WHITE);
-        assert_eq!(m.model.ambient(), 0.1);
-        assert_eq!(m.model.diffuse(), 0.9);
-        assert_eq!(m.model.specular(), 0.9);
-        assert_eq!(m.model.shininess(), 200.0);
+        assert_float_eq!(m.model.ambient(), 0.1);
+        assert_float_eq!(m.model.diffuse(), 0.9);
+        assert_float_eq!(m.model.specular(), 0.9);
+        assert_float_eq!(m.model.shininess(), 200.0);
     }
 }

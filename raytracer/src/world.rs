@@ -46,8 +46,8 @@ impl World {
 mod test {
 
     use crate::{
-        color, intersect::intersection::Intersection, transform::Transformable, Material, Point,
-        Sphere, Transform, Vector,
+        color, intersect::intersection::Intersection, transform::Transformable,
+        util::assert_float_eq, Material, Point, Sphere, Transform, Vector,
     };
 
     use super::*;
@@ -81,10 +81,10 @@ mod test {
         let r = Ray::new(Point::new(0.0, 0.0, -5.0), Vector::new(0.0, 0.0, 1.0));
         let xs = w.intersect(&r);
         assert_eq!(xs.count(), 4);
-        assert_eq!(xs.get(0).unwrap().t(), 4.0);
-        assert_eq!(xs.get(1).unwrap().t(), 4.5);
-        assert_eq!(xs.get(2).unwrap().t(), 5.5);
-        assert_eq!(xs.get(3).unwrap().t(), 6.0);
+        assert_float_eq!(xs.get(0).unwrap().t(), 4.0);
+        assert_float_eq!(xs.get(1).unwrap().t(), 4.5);
+        assert_float_eq!(xs.get(2).unwrap().t(), 5.5);
+        assert_float_eq!(xs.get(3).unwrap().t(), 6.0);
     }
 
     #[test]

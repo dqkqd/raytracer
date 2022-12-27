@@ -22,3 +22,15 @@ pub(crate) fn solve_quadratic_equation(a: f64, b: f64, c: f64) -> Vec<f64> {
         vec![]
     }
 }
+
+macro_rules! assert_float_eq {
+    ($left:expr, $right: expr) => {
+        if !$crate::util::equal($left, $right) {
+            panic!(
+                "float equal: `(left == right)`\nleft: `{}`,\nright: `{}`,",
+                $left, $right
+            );
+        }
+    };
+}
+pub(crate) use assert_float_eq;

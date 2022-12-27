@@ -86,6 +86,8 @@ impl ObjectMaterial for Shape {
 
 #[cfg(test)]
 mod test {
+    use crate::util::assert_float_eq;
+
     use super::*;
 
     #[test]
@@ -113,27 +115,27 @@ mod test {
     fn shape_with_ambient() {
         let ambient = 0.6;
         let s = Sphere::shape().with_ambient(ambient);
-        assert_eq!(s.material.ambient(), ambient);
+        assert_float_eq!(s.material.ambient(), ambient);
     }
 
     #[test]
     fn shape_with_diffuse() {
         let diffuse = 0.2;
         let s = Sphere::shape().with_diffuse(diffuse);
-        assert_eq!(s.material.diffuse(), diffuse);
+        assert_float_eq!(s.material.diffuse(), diffuse);
     }
 
     #[test]
     fn shape_with_specular() {
         let specular = 0.6;
         let s = Sphere::shape().with_specular(specular);
-        assert_eq!(s.material.specular(), specular);
+        assert_float_eq!(s.material.specular(), specular);
     }
 
     #[test]
     fn shape_with_shininess() {
         let shininess = 1.5;
         let s = Sphere::shape().with_shininess(shininess);
-        assert_eq!(s.material.shininess(), shininess);
+        assert_float_eq!(s.material.shininess(), shininess);
     }
 }

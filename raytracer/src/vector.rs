@@ -106,14 +106,16 @@ impl Div<f64> for Vector {
 
 #[cfg(test)]
 mod test {
+    use crate::util::assert_float_eq;
+
     use super::*;
 
     #[test]
     fn create_vector() {
         let v = Vector::new(1.0, 2.0, 3.0);
-        assert_eq!(v.x(), 1.0);
-        assert_eq!(v.y(), 2.0);
-        assert_eq!(v.z(), 3.0);
+        assert_float_eq!(v.x(), 1.0);
+        assert_float_eq!(v.y(), 2.0);
+        assert_float_eq!(v.z(), 3.0);
     }
 
     #[test]
@@ -163,7 +165,7 @@ mod test {
         assert_eq!(v.magnitude(), f64::sqrt(14.0));
 
         let v = Vector::new(-1.0, -2.0, -3.0);
-        assert_eq!(v.magnitude(), f64::sqrt(14.0));
+        assert_float_eq!(v.magnitude(), f64::sqrt(14.0));
     }
 
     #[test]
@@ -181,16 +183,15 @@ mod test {
 
     #[test]
     fn normalized_vector_has_unit_magnitude() {
-        use crate::util::equal;
         let v = Vector::new(1.0, 2.0, 3.0);
-        assert!(equal(v.normalize().magnitude(), 1.0));
+        assert_float_eq!(v.normalize().magnitude(), 1.0);
     }
 
     #[test]
     fn vector_dot_product() {
         let v1 = Vector::new(1.0, 2.0, 3.0);
         let v2 = Vector::new(2.0, 3.0, 4.0);
-        assert_eq!(v1.dot(&v2), 20.0);
+        assert_float_eq!(v1.dot(&v2), 20.0);
     }
 
     #[test]

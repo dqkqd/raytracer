@@ -35,7 +35,10 @@ impl ObjectLocal for Sphere {
 #[cfg(test)]
 mod test {
 
-    use crate::{shapes::object::ObjectWorld, transform::Transformable, Transform, Vector};
+    use crate::{
+        shapes::object::ObjectWorld, transform::Transformable, util::assert_float_eq, Transform,
+        Vector,
+    };
 
     use super::*;
 
@@ -45,8 +48,8 @@ mod test {
         let sphere = Sphere::shape();
         let intersections = sphere.intersect(&ray);
         assert_eq!(intersections.count(), 2);
-        assert_eq!(intersections.get(0).unwrap().t(), 4.0);
-        assert_eq!(intersections.get(1).unwrap().t(), 6.0);
+        assert_float_eq!(intersections.get(0).unwrap().t(), 4.0);
+        assert_float_eq!(intersections.get(1).unwrap().t(), 6.0);
     }
 
     #[test]
@@ -55,7 +58,7 @@ mod test {
         let sphere = Sphere::shape();
         let intersections = sphere.intersect(&ray);
         assert_eq!(intersections.count(), 1);
-        assert_eq!(intersections.get(0).unwrap().t(), 5.0);
+        assert_float_eq!(intersections.get(0).unwrap().t(), 5.0);
     }
 
     #[test]
@@ -72,8 +75,8 @@ mod test {
         let sphere = Sphere::shape();
         let intersections = sphere.intersect(&ray);
         assert_eq!(intersections.count(), 2);
-        assert_eq!(intersections.get(0).unwrap().t(), -1.0);
-        assert_eq!(intersections.get(1).unwrap().t(), 1.0);
+        assert_float_eq!(intersections.get(0).unwrap().t(), -1.0);
+        assert_float_eq!(intersections.get(1).unwrap().t(), 1.0);
     }
 
     #[test]
@@ -82,8 +85,8 @@ mod test {
         let sphere = Sphere::shape();
         let intersections = sphere.intersect(&ray);
         assert_eq!(intersections.count(), 2);
-        assert_eq!(intersections.get(0).unwrap().t(), -6.0);
-        assert_eq!(intersections.get(1).unwrap().t(), -4.0);
+        assert_float_eq!(intersections.get(0).unwrap().t(), -6.0);
+        assert_float_eq!(intersections.get(1).unwrap().t(), -4.0);
     }
 
     #[test]
@@ -105,8 +108,8 @@ mod test {
         let s = Sphere::shape().with_transform(Transform::scaling(2.0, 2.0, 2.0));
         let xs = s.intersect(&r);
         assert_eq!(xs.count(), 2);
-        assert_eq!(xs.get(0).unwrap().t(), 3.0);
-        assert_eq!(xs.get(1).unwrap().t(), 7.0);
+        assert_float_eq!(xs.get(0).unwrap().t(), 3.0);
+        assert_float_eq!(xs.get(1).unwrap().t(), 7.0);
     }
 
     #[test]

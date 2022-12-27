@@ -41,7 +41,7 @@ transformable!(Camera);
 
 #[cfg(test)]
 mod test {
-    use crate::util::equal;
+    use crate::util::assert_float_eq;
 
     use super::*;
 
@@ -54,19 +54,19 @@ mod test {
         let c = Camera::new(hsize, vsize, field_of_view);
         assert_eq!(c.hsize, hsize);
         assert_eq!(c.vsize, vsize);
-        assert_eq!(c.field_of_view, field_of_view);
+        assert_float_eq!(c.field_of_view, field_of_view);
         assert_eq!(c.inversed_transform, Some(Transform::identity()));
     }
 
     #[test]
     fn pixel_size_for_horizontal_canvas() {
         let c = Camera::new(200, 125, std::f64::consts::FRAC_PI_2);
-        assert!(equal(c.pixel_size, 0.01));
+        assert_float_eq!(c.pixel_size, 0.01);
     }
 
     #[test]
     fn pixel_size_for_vertical_canvas() {
         let c = Camera::new(125, 200, std::f64::consts::FRAC_PI_2);
-        assert!(equal(c.pixel_size, 0.01));
+        assert_float_eq!(c.pixel_size, 0.01);
     }
 }

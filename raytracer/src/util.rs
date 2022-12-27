@@ -23,6 +23,7 @@ pub(crate) fn solve_quadratic_equation(a: f64, b: f64, c: f64) -> Vec<f64> {
     }
 }
 
+#[allow(unused_macros)]
 macro_rules! assert_float_eq {
     ($left:expr, $right: expr) => {
         if !$crate::util::equal($left, $right) {
@@ -33,4 +34,6 @@ macro_rules! assert_float_eq {
         }
     };
 }
+
+#[allow(unused_imports)]
 pub(crate) use assert_float_eq;

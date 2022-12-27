@@ -2,7 +2,7 @@ use crate::{object::ObjectWorld, Point, Ray, Shape, Vector};
 
 pub(crate) type IntersectionsFactor = Vec<f64>;
 
-const OFFSET_FACTOR: f64 = 1E-12;
+const OFFSET_FACTOR: f64 = 1E-10;
 
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub struct Intersection<'a> {

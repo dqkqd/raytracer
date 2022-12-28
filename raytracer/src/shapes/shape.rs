@@ -4,10 +4,7 @@ use crate::{
 };
 
 use super::{
-    dummy_shape::TestShape,
-    object::{ObjectLocal, ObjectMaterial, ObjectWorld},
-    plane::Plane,
-    sphere::Sphere,
+    dummy_shape::TestShape, plane::Plane, sphere::Sphere, ShapeLocal, ShapeMaterial, ShapeWorld,
 };
 
 #[derive(Debug, Clone, Copy, PartialEq)]
@@ -36,7 +33,7 @@ impl Shape {
     }
 }
 
-impl ObjectWorld for Shape {
+impl ShapeWorld for Shape {
     fn intersect(&self, ray: &Ray) -> Intersections {
         self.transform_ray(ray)
             .map_or(Default::default(), |local_ray| {
@@ -46,7 +43,7 @@ impl ObjectWorld for Shape {
     }
 }
 
-impl ObjectLocal for Shape {
+impl ShapeLocal for Shape {
     fn local_intersection(&self, local_ray: &Ray) -> IntersectionsFactor {
         match self.shape {
             ShapeKind::Sphere(s) => s.local_intersection(local_ray),
@@ -64,7 +61,7 @@ impl ObjectLocal for Shape {
     }
 }
 
-impl ObjectMaterial for Shape {
+impl ShapeMaterial for Shape {
     fn material(&self) -> &Material {
         &self.material
     }

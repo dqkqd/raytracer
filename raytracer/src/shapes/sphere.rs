@@ -1,8 +1,8 @@
 use crate::{util::solve_quadratic_equation, IntersectionsFactor, Point, Ray, Vector};
 
 use super::{
-    object::ObjectLocal,
     shape::{Shape, ShapeKind},
+    ShapeLocal,
 };
 
 #[derive(Debug, Clone, Copy, PartialEq)]
@@ -19,7 +19,7 @@ impl Sphere {
     }
 }
 
-impl ObjectLocal for Sphere {
+impl ShapeLocal for Sphere {
     fn local_normal_at(&self, point: &Point) -> Vector {
         (*point - self.origin).normalize()
     }

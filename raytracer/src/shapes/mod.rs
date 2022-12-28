@@ -1,9 +1,43 @@
+use crate::{
+    transform::Transformable, Color, Intersections, IntersectionsFactor, Material, Point, Ray,
+    Vector,
+};
+
 pub(super) mod dummy_shape;
 
 pub(crate) mod shape;
 
 pub mod sphere;
 
-pub mod object;
-
 pub mod plane;
+
+pub trait ShapeMaterial {
+    fn material(&self) -> &Material;
+    fn with_material(self, material: Material) -> Self;
+
+    fn with_color(self, color: Color) -> Self;
+    fn with_ambient(self, ambient: f64) -> Self;
+    fn with_diffuse(self, diffuse: f64) -> Self;
+    fn with_specular(self, specular: f64) -> Self;
+    fn with_shininess(self, shininess: f64) -> Self;
+}
+
+pub trait ShapeLocal {
+    fn local_normal_at(&self, local_point: &Point) -> Vector;
+    fn local_intersection(&self, local_ray: &Ray) -> IntersectionsFactor;
+}
+
+pub trait ShapeWorld: Transformable + ShapeLocal {
+    fn transform_ray(&self, ray: &Ray) -> Option<Ray> {
+        Some(ray.transform(self.inversed_transform()?))
+    }
+
+    fn normal_at(&self, point: &Point) -> Option<Vector> {
+        let object_point = point.transform(self.inversed_transform()?);
+        let local_normal = self.local_normal_at(&object_point);
+        let world_normal = self.inversed_transform()?.tranpose() * local_normal;
+        Some(world_normal.normalize())
+    }
+
+    fn intersect(&self, ray: &Ray) -> Intersections;
+}

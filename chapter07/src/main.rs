@@ -1,5 +1,5 @@
 use raytracer::{
-    color, object::ObjectMaterial, Camera, Color, Point, PointLight, Sphere, Transform,
+    color, shapes::ShapeMaterial, Camera, Color, Point, PointLight, Sphere, Transform,
     Transformable, Vector, World,
 };
 

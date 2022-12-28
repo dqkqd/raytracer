@@ -1,6 +1,6 @@
 use raytracer::{
     color,
-    object::{ObjectMaterial, ObjectWorld},
+    shapes::{ShapeMaterial, ShapeWorld},
     Canvas, Color, Point, PointLight, Ray, Sphere,
 };
 

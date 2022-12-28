@@ -21,8 +21,7 @@ pub use transform::{Transform, Transformable};
 pub(crate) mod ray;
 pub use ray::Ray;
 
-pub(crate) mod shapes;
-pub use shapes::object;
+pub mod shapes;
 pub use shapes::plane::Plane;
 pub use shapes::shape::Shape;
 pub use shapes::sphere::Sphere;

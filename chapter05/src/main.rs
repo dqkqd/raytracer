@@ -1,4 +1,4 @@
-use raytracer::{object::ObjectWorld, Canvas, Color, Point, Ray, Sphere};
+use raytracer::{shapes::ShapeWorld, Canvas, Color, Point, Ray, Sphere};
 
 const IMAGE_PPM: &str = "test.ppm";
 const IMAGE_PNG: &str = "test.png";

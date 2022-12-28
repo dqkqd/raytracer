@@ -1,4 +1,4 @@
-use crate::{object::ObjectWorld, Point, Ray, Shape, Vector};
+use crate::{shapes::ShapeWorld, Point, Ray, Shape, Vector};
 
 pub(crate) type IntersectionsFactor = Vec<f64>;
 

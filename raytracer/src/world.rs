@@ -1,6 +1,6 @@
 use crate::{
     intersect::intersection::ComputedIntersection,
-    object::{ObjectMaterial, ObjectWorld},
+    shapes::{ShapeMaterial, ShapeWorld},
     Color, Intersections, Point, PointLight, Ray, Shape,
 };
 

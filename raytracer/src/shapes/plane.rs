@@ -1,8 +1,8 @@
 use crate::{intersect::IntersectionsFactor, util::solve_linear_equation, Point, Vector};
 
 use super::{
-    object::ObjectLocal,
     shape::{Shape, ShapeKind},
+    ShapeLocal,
 };
 
 #[derive(Debug, Clone, Copy, PartialEq)]
@@ -13,7 +13,7 @@ impl Plane {
         Shape::new(ShapeKind::Plane(Plane {}))
     }
 }
-impl ObjectLocal for Plane {
+impl ShapeLocal for Plane {
     fn local_normal_at(&self, _: &Point) -> Vector {
         Vector::new(0.0, 1.0, 0.0)
     }

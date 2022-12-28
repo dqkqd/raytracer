@@ -1,6 +1,6 @@
 use crate::{intersect::IntersectionsFactor, Point, Ray, Shape, Vector};
 
-use super::{object::ObjectLocal, shape::ShapeKind};
+use super::{shape::ShapeKind, ShapeLocal};
 
 // use for test shape's behavior
 #[derive(Debug, Clone, Copy, PartialEq)]
@@ -13,7 +13,7 @@ impl TestShape {
     }
 }
 
-impl ObjectLocal for TestShape {
+impl ShapeLocal for TestShape {
     fn local_normal_at(&self, point: &Point) -> Vector {
         Vector::new(point.x(), point.y(), point.z())
     }

@@ -26,3 +26,6 @@ I implemented ray tracing following the awesome book [The Ray Tracer Challenge](
 
 ### Chapter 10:
 ![](./chapter10/test.png)
+
+### Chapter 11:
+![](./chapter11/test.png)

@@ -3,16 +3,7 @@ use crate::{
     Color, Intersections, IntersectionsFactor, Material, Point, Ray, Transform, Vector,
 };
 
-use super::{
-    dummy_shape::TestShape, plane::Plane, sphere::Sphere, ShapeLocal, ShapeMaterial, ShapeWorld,
-};
-
-#[derive(Debug, Clone, Copy, PartialEq)]
-pub enum ShapeKind {
-    Sphere(Sphere),
-    Plane(Plane),
-    TestShape(TestShape),
-}
+use super::{ShapeKind, ShapeLocal, ShapeMaterial, ShapeWorld};
 
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub struct Shape {
@@ -94,7 +85,7 @@ impl ShapeMaterial for Shape {
 
 #[cfg(test)]
 mod test {
-    use crate::{util::assert_float_eq, Transformable};
+    use crate::{shapes::dummy_shape::TestShape, util::assert_float_eq, Sphere, Transformable};
 
     use super::*;
 

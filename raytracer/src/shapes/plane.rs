@@ -1,9 +1,6 @@
 use crate::{intersect::IntersectionsFactor, util::solve_linear_equation, Point, Vector};
 
-use super::{
-    shape::{Shape, ShapeKind},
-    ShapeLocal,
-};
+use super::{shape::Shape, ShapeKind, ShapeLocal};
 
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub struct Plane {}

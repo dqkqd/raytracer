@@ -1,6 +1,6 @@
 use crate::{intersect::IntersectionsFactor, Point, Ray, Shape, Vector};
 
-use super::{shape::ShapeKind, ShapeLocal};
+use super::{ShapeKind, ShapeLocal};
 
 // use for test shape's behavior
 #[derive(Debug, Clone, Copy, PartialEq)]

@@ -3,6 +3,8 @@ use crate::{
     Vector,
 };
 
+use self::{dummy_shape::TestShape, plane::Plane, sphere::Sphere};
+
 pub(super) mod dummy_shape;
 
 pub(crate) mod shape;
@@ -11,6 +13,12 @@ pub mod sphere;
 
 pub mod plane;
 
+#[derive(Debug, Clone, Copy, PartialEq)]
+pub enum ShapeKind {
+    Sphere(Sphere),
+    Plane(Plane),
+    TestShape(TestShape),
+}
 pub trait ShapeMaterial {
     fn material(&self) -> &Material;
     fn with_material(self, material: Material) -> Self;

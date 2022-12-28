@@ -33,7 +33,7 @@ impl<'a> Intersection<'a> {
         };
 
         let over_point = point + normal_vector * OFFSET_FACTOR;
-
+        let under_point = point + normal_vector * (-OFFSET_FACTOR);
         let reflect_vector = ray.direction().reflect(&normal_vector);
 
         Some(ComputedIntersection {
@@ -41,6 +41,7 @@ impl<'a> Intersection<'a> {
             object,
             point,
             over_point,
+            under_point,
             eye_vector,
             normal_vector,
             reflect_vector,
@@ -57,6 +58,7 @@ pub struct ComputedIntersection<'a> {
     t: f64,
     point: Point,
     over_point: Point,
+    under_point: Point,
     eye_vector: Vector,
     normal_vector: Vector,
     reflect_vector: Vector,
@@ -88,6 +90,10 @@ impl<'a> ComputedIntersection<'a> {
 
     pub(crate) fn over_point(&self) -> &Point {
         &self.over_point
+    }
+
+    pub(crate) fn under_point(&self) -> &Point {
+        &self.under_point
     }
 
     pub(crate) fn n1(&self) -> Option<f64> {
@@ -158,6 +164,15 @@ mod test {
         let comp = Intersection::new(5.0, &s).prepare_computations(&r).unwrap();
         assert!(comp.over_point.z() < -OFFSET_FACTOR / 2.0);
         assert!(comp.point.z() > comp.over_point.z());
+    }
+
+    #[test]
+    fn under_point_is_offset_below_surface() {
+        let r = Ray::new(Point::new(0.0, 0.0, -5.0), Vector::new(0.0, 0.0, 1.0));
+        let s = Sphere::shape().with_transform(Transform::translation(0.0, 0.0, 1.0));
+        let comp = Intersection::new(5.0, &s).prepare_computations(&r).unwrap();
+        assert!(comp.under_point.z() > OFFSET_FACTOR / 2.0);
+        assert!(comp.point.z() < comp.under_point.z());
     }
 
     #[test]

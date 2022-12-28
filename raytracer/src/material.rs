@@ -1,9 +1,10 @@
-use crate::{color, phong::PhongReflecionModel, Color, Point, PointLight, Vector};
+use crate::{color, phong::PhongReflecionModel, Color, Pattern, Point, PointLight, Vector};
 
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub struct Material {
     color: Color,
     model: PhongReflecionModel,
+    pattern: Option<Pattern>,
 }
 
 impl Default for Material {
@@ -11,9 +12,11 @@ impl Default for Material {
         Material {
             color: color::WHITE,
             model: PhongReflecionModel::default(),
+            pattern: None,
         }
     }
 }
+
 impl Material {
     pub fn color(&self) -> Color {
         self.color
@@ -21,6 +24,11 @@ impl Material {
 
     pub fn with_color(mut self, color: Color) -> Material {
         self.color = color;
+        self
+    }
+
+    pub fn with_pattern(mut self, pattern: Pattern) -> Material {
+        self.pattern = Some(pattern);
         self
     }
 
@@ -103,7 +111,7 @@ impl Material {
 
 #[cfg(test)]
 mod test {
-    use crate::util::assert_float_eq;
+    use crate::{patterns::stripe::StripedPattern, util::assert_float_eq};
 
     use super::*;
 
@@ -115,5 +123,13 @@ mod test {
         assert_float_eq!(m.model.diffuse(), 0.9);
         assert_float_eq!(m.model.specular(), 0.9);
         assert_float_eq!(m.model.shininess(), 200.0);
+        assert!(m.pattern.is_none());
+    }
+
+    #[test]
+    fn assigning_pattern() {
+        let p = StripedPattern::pattern(color::WHITE, color::BLACK);
+        let m = Material::default().with_pattern(p);
+        assert_eq!(m.pattern, Some(p));
     }
 }

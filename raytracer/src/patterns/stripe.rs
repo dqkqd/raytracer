@@ -1,5 +1,7 @@
 use crate::{color, util::equal, Color, Point};
 
+use super::pattern::{Pattern, PatternKind};
+
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub struct StripedPattern {
     left_color: Color,
@@ -16,11 +18,18 @@ impl Default for StripedPattern {
 }
 
 impl StripedPattern {
-    pub fn new(left_color: Color, right_color: Color) -> StripedPattern {
+    pub(crate) fn new(left_color: Color, right_color: Color) -> StripedPattern {
         StripedPattern {
             left_color,
             right_color,
         }
+    }
+
+    pub fn pattern(left_color: Color, right_color: Color) -> Pattern {
+        Pattern::new(PatternKind::StripedPattern(StripedPattern::new(
+            left_color,
+            right_color,
+        )))
     }
 
     pub fn stripe_at(&self, point: &Point) -> Color {

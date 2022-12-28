@@ -27,19 +27,17 @@ impl Pattern {
         }
     }
 
-    pub fn color_at(&self, point: &Point) -> Color {
-        match self.pattern {
-            PatternKind::StripedPattern(s) => s.stripe_at(point),
-            PatternKind::TestPattern(_) => unimplemented!(),
-        }
-    }
-
     pub fn color_at_object(&self, object: &Shape, world_point: &Point) -> Color {
-        let color = match self.pattern {
-            PatternKind::StripedPattern(s) => s.stripe_at_object(object, world_point),
-            PatternKind::TestPattern(_) => unimplemented!(),
+        let color_at = || {
+            let object_point = world_point.transform(object.inversed_transform()?);
+            let pattern_point = object_point.transform(self.inversed_transform()?);
+            let c = match self.pattern {
+                PatternKind::StripedPattern(s) => s.stripe_at(&pattern_point),
+                PatternKind::TestPattern(p) => unimplemented!(),
+            };
+            Some(c)
         };
-        color.unwrap_or_default()
+        color_at().unwrap_or_default()
     }
 }
 

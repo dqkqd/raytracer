@@ -1,58 +1,52 @@
 use raytracer::{
-    color, shapes::ShapeMaterial, Camera, CheckerPattern, Color, GradientPattern, Plane, Point,
-    PointLight, RingPattern, Sphere, Transform, Transformable, Vector, World,
+    color, shapes::ShapeMaterial, Camera, CheckerPattern, Color, Plane, Point, PointLight, Sphere,
+    Transform, Transformable, Vector, World,
 };
 
 const IMAGE_PPM: &str = "test.ppm";
 const IMAGE_PNG: &str = "test.png";
 
 fn main() {
-    let floor = Plane::shape()
-        .with_color(Color::new(1.0, 0.9, 0.9))
+    let wall = Plane::shape()
+        .with_ambient(0.8)
+        .with_diffuse(0.2)
         .with_specular(0.0)
-        .with_pattern(
-            CheckerPattern::pattern(color::WHITE, color::BLACK)
-                .with_transform(Transform::scaling(0.4, 0.4, 0.4)),
-        )
-        .with_reflective(1.0);
+        .with_pattern(CheckerPattern::pattern(
+            Color::new(0.15, 0.15, 0.15),
+            Color::new(0.85, 0.85, 0.85),
+        ))
+        .with_transform(
+            Transform::rotation_x(std::f64::consts::FRAC_PI_2).translate(0.0, 0.0, 10.0),
+        );
 
-    let middle = Sphere::shape()
-        .with_color(Color::from("#ff0000"))
-        .with_diffuse(0.7)
-        .with_specular(0.3)
-        .with_transform(Transform::translation(-0.5, 1.0, 0.5))
-        .with_reflective(1.0);
+    let glass_ball = Sphere::shape()
+        .with_ambient(0.0)
+        .with_diffuse(0.0)
+        .with_specular(0.9)
+        .with_shininess(300.0)
+        .with_reflective(0.9)
+        .with_transparency(0.9)
+        .with_refractive_index(1.5)
+        .with_color(color::WHITE);
 
-    let right = Sphere::shape()
-        .with_color(Color::new(0.5, 1.0, 0.1))
-        .with_diffuse(0.7)
-        .with_specular(0.3)
-        .with_transform(Transform::scaling(0.5, 0.5, 0.5).translate(1.5, 0.5, -0.5))
-        .with_pattern(
-            RingPattern::pattern(Color::from("#ff0000"), Color::from("#0000ff"))
-                .with_transform(Transform::scaling(0.05, 1.0, 1.0).rotate_y(1.6)),
-        )
-        .with_reflective(0.5);
+    let center = Sphere::shape()
+        .with_ambient(0.0)
+        .with_diffuse(0.0)
+        .with_specular(0.9)
+        .with_shininess(300.0)
+        .with_reflective(0.9)
+        .with_transparency(0.9)
+        .with_refractive_index(1.0000034)
+        .with_transform(Transform::scaling(0.5, 0.5, 0.5))
+        .with_color(color::WHITE);
 
-    let left = Sphere::shape()
-        .with_color(Color::new(1.0, 0.8, 0.1))
-        .with_diffuse(0.7)
-        .with_specular(0.3)
-        .with_transform(Transform::scaling(0.33, 0.33, 0.33).translate(-1.5, 0.33, -0.75))
-        .with_pattern(
-            GradientPattern::pattern(color::BLACK, Color::from("#00ffff"))
-                .with_transform(Transform::rotation_y(std::f64::consts::FRAC_PI_2 * 0.8)),
-        )
-        .with_reflective(0.7);
+    let light = PointLight::new(Point::new(2.0, 10.0, -5.0), Color::new(0.9, 0.9, 0.9));
+    let world = World::new(vec![light], vec![wall, glass_ball, center]);
 
-    let light1 = PointLight::new(Point::new(-10.0, 10.0, -10.0), color::WHITE);
-    let light2 = PointLight::new(Point::new(15.0, 10.0, -10.0), color::WHITE);
-    let world = World::new(vec![light1, light2], vec![floor, middle, right, left]);
-
-    let mut camera = Camera::new(800, 500, std::f64::consts::FRAC_PI_3);
+    let mut camera = Camera::new(800, 800, 0.45);
     let view_transform = Transform::view_transform(
-        Point::new(0.0, 1.5, -5.0),
-        Point::new(0.0, 1.0, 0.0),
+        Point::new(0.0, 0.0, -5.0),
+        Point::new(0.0, 0.0, 0.0),
         Vector::new(0.0, 1.0, 0.0),
     );
     camera.set_transform(view_transform);

@@ -65,10 +65,6 @@ impl<'a> ComputedIntersection<'a> {
         self.object
     }
 
-    pub(crate) fn point(&self) -> &Point {
-        &self.point
-    }
-
     pub(crate) fn eye_vector(&self) -> &Vector {
         &self.eye_vector
     }

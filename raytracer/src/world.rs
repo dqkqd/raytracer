@@ -31,7 +31,7 @@ impl World {
         Some(self.light_source?.lighting(
             comp.object(),
             comp.object().material(),
-            comp.point(),
+            comp.over_point(),
             comp.eye_vector(),
             comp.normal_vector(),
             shadowed,

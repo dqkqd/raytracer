@@ -8,6 +8,7 @@ pub struct Material {
     color: Color,
     model: PhongReflecionModel,
     pattern: Option<Pattern>,
+    reflective: f64,
 }
 
 impl Default for Material {
@@ -16,6 +17,7 @@ impl Default for Material {
             color: color::WHITE,
             model: PhongReflecionModel::default(),
             pattern: None,
+            reflective: 0.0,
         }
     }
 }
@@ -76,6 +78,15 @@ impl Material {
         self
     }
 
+    pub fn reflective(&self) -> f64 {
+        self.reflective
+    }
+
+    pub fn with_reflective(mut self, reflective: f64) -> Material {
+        self.reflective = reflective;
+        self
+    }
+
     pub(crate) fn lighting(
         &self,
         object: &Shape,
@@ -125,7 +136,9 @@ impl Material {
 
 #[cfg(test)]
 mod test {
-    use crate::{patterns::stripe::StripedPattern, shapes::dummy_shape::TestShape};
+    use crate::{
+        patterns::stripe::StripedPattern, shapes::dummy_shape::TestShape, util::assert_float_eq,
+    };
 
     use super::*;
 
@@ -135,6 +148,7 @@ mod test {
         assert_eq!(m.color(), color::WHITE);
         assert_eq!(m.model, PhongReflecionModel::default());
         assert!(m.pattern.is_none());
+        assert_float_eq!(m.reflective, 0.0);
     }
 
     #[test]

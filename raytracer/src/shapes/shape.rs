@@ -82,6 +82,10 @@ impl ShapeMaterial for Shape {
         self.with_material(self.material.with_shininess(shininess))
     }
 
+    fn with_reflective(self, reflective: f64) -> Self {
+        self.with_material(self.material.with_reflective(reflective))
+    }
+
     fn with_pattern(self, pattern: Pattern) -> Self {
         self.with_material(self.material.with_pattern(pattern))
     }
@@ -162,6 +166,13 @@ mod test {
         let shininess = 1.5;
         let s = TestShape::shape().with_shininess(shininess);
         assert_float_eq!(s.material.shininess(), shininess);
+    }
+
+    #[test]
+    fn shape_with_reflective() {
+        let reflective = 0.5;
+        let s = TestShape::shape().with_reflective(reflective);
+        assert_float_eq!(s.material.reflective(), reflective);
     }
 
     #[test]

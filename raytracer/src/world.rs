@@ -26,22 +26,26 @@ impl World {
             .unwrap_or_default()
     }
 
-    pub fn shade_hit(&self, comp: &ComputedIntersection) -> Option<Color> {
+    pub fn shade_hit(&self, comp: &ComputedIntersection) -> Color {
         let shadowed = self.is_shadowed(comp.over_point());
-        Some(self.light_source?.lighting(
-            comp.object(),
-            comp.object().material(),
-            comp.over_point(),
-            comp.eye_vector(),
-            comp.normal_vector(),
-            shadowed,
-        ))
+
+        let color_at_hit = || {
+            Some(self.light_source?.lighting(
+                comp.object(),
+                comp.object().material(),
+                comp.over_point(),
+                comp.eye_vector(),
+                comp.normal_vector(),
+                shadowed,
+            ))
+        };
+        color_at_hit().unwrap_or_default()
     }
 
     pub fn color_at(&self, ray: &Ray) -> Color {
         self.intersect(ray)
             .hit()
-            .map(|hit| self.shade_hit(hit).unwrap_or_default())
+            .map(|hit| self.shade_hit(hit))
             .unwrap_or_default()
     }
 
@@ -107,7 +111,7 @@ mod test {
         let r = Ray::new(Point::new(0.0, 0.0, -5.0), Vector::new(0.0, 0.0, 1.0));
         let s = w.objects[0];
         let comp = Intersection::new(4.0, &s).prepare_computations(&r).unwrap();
-        let c = w.shade_hit(&comp).unwrap();
+        let c = w.shade_hit(&comp);
         assert_eq!(c, Color::new(0.38066, 0.47583, 0.2855));
     }
 
@@ -118,7 +122,7 @@ mod test {
         let r = Ray::new(Point::new(0.0, 0.0, 0.0), Vector::new(0.0, 0.0, 1.0));
         let s = w.objects[1];
         let comp = Intersection::new(0.5, &s).prepare_computations(&r).unwrap();
-        let c = w.shade_hit(&comp).unwrap();
+        let c = w.shade_hit(&comp);
         assert_eq!(c, Color::new(0.90498, 0.90498, 0.90498));
     }
 
@@ -207,7 +211,7 @@ mod test {
         let comp = Intersection::new(4.0, &s2)
             .prepare_computations(&r)
             .unwrap();
-        let c = w.shade_hit(&comp).unwrap();
+        let c = w.shade_hit(&comp);
         assert_eq!(c, Color::new(0.1, 0.1, 0.1));
     }
 }

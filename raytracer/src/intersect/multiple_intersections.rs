@@ -10,6 +10,7 @@ pub struct Intersections<'a> {
     data: Vec<ComputedIntersection<'a>>,
 }
 
+#[allow(dead_code)]
 impl<'a> Intersections<'a> {
     pub fn count(&self) -> usize {
         self.data.len()

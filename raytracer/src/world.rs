@@ -227,10 +227,10 @@ mod test {
         let r = Ray::new(Point::new(0.0, 0.0, 0.0), Vector::new(0.0, 0.0, 1.0));
         let mut w = default_world();
         w.objects[1] = w.objects[1].with_ambient(1.0);
-        let comps = Intersection::new(1.0, &w.objects[1])
+        let comp = Intersection::new(1.0, &w.objects[1])
             .prepare_computations(&r)
             .unwrap();
-        let color = w.reflected_color(&comps);
+        let color = w.reflected_color(&comp);
         assert_eq!(color, color::BLACK);
     }
 
@@ -251,10 +251,10 @@ mod test {
             ),
         );
 
-        let comps = Intersection::new(std::f64::consts::SQRT_2, &w.objects[2])
+        let comp = Intersection::new(std::f64::consts::SQRT_2, &w.objects[2])
             .prepare_computations(&r)
             .unwrap();
-        let color = w.reflected_color(&comps);
+        let color = w.reflected_color(&comp);
         assert_eq!(color, Color::new(0.19033, 0.23791, 0.14274));
     }
 
@@ -275,10 +275,10 @@ mod test {
             ),
         );
 
-        let comps = Intersection::new(std::f64::consts::SQRT_2, &w.objects[2])
+        let comp = Intersection::new(std::f64::consts::SQRT_2, &w.objects[2])
             .prepare_computations(&r)
             .unwrap();
-        let color = w.shade_hit(&comps);
+        let color = w.shade_hit(&comp);
         assert_eq!(color, Color::new(0.87675, 0.92433, 0.82917));
     }
 }

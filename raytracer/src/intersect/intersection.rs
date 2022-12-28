@@ -103,12 +103,12 @@ mod test {
         let r = Ray::new(Point::new(0.0, 0.0, -5.0), Vector::new(0.0, 0.0, 1.0));
         let s = Sphere::shape();
         let i = Intersection::new(4.0, &s);
-        let comps = i.prepare_computations(&r).unwrap();
-        assert_float_eq!(comps.t, i.t);
-        assert_eq!(comps.object, i.object);
-        assert_eq!(comps.point, Point::new(0.0, 0.0, -1.0));
-        assert_eq!(comps.eye_vector, Vector::new(0.0, 0.0, -1.0));
-        assert_eq!(comps.normal_vector, Vector::new(0.0, 0.0, -1.0));
+        let comp = i.prepare_computations(&r).unwrap();
+        assert_float_eq!(comp.t, i.t);
+        assert_eq!(comp.object, i.object);
+        assert_eq!(comp.point, Point::new(0.0, 0.0, -1.0));
+        assert_eq!(comp.eye_vector, Vector::new(0.0, 0.0, -1.0));
+        assert_eq!(comp.normal_vector, Vector::new(0.0, 0.0, -1.0));
     }
 
     #[test]
@@ -134,9 +134,9 @@ mod test {
     fn hit_should_offset_point() {
         let r = Ray::new(Point::new(0.0, 0.0, -5.0), Vector::new(0.0, 0.0, 1.0));
         let s = Sphere::shape().with_transform(Transform::translation(0.0, 0.0, 1.0));
-        let comps = Intersection::new(5.0, &s).prepare_computations(&r).unwrap();
-        assert!(comps.over_point.z() < -OFFSET_FACTOR / 2.0);
-        assert!(comps.point.z() > comps.over_point.z());
+        let comp = Intersection::new(5.0, &s).prepare_computations(&r).unwrap();
+        assert!(comp.over_point.z() < -OFFSET_FACTOR / 2.0);
+        assert!(comp.point.z() > comp.over_point.z());
     }
 
     #[test]
@@ -150,11 +150,11 @@ mod test {
                 std::f64::consts::FRAC_1_SQRT_2,
             ),
         );
-        let comps = Intersection::new(2.0, &shape)
+        let comp = Intersection::new(2.0, &shape)
             .prepare_computations(&r)
             .unwrap();
         assert_eq!(
-            comps.reflect_vector,
+            comp.reflect_vector,
             Vector::new(
                 0.0,
                 std::f64::consts::FRAC_1_SQRT_2,

@@ -1,8 +1,4 @@
-use crate::{
-    transform::{transformable, InversedTransform},
-    util::equal,
-    Color, Point, Shape, Transform, Transformable,
-};
+use crate::{transform::InversedTransform, util::equal, Color, Point, Transform};
 
 use super::pattern::{Pattern, PatternKind};
 
@@ -12,8 +8,6 @@ pub struct StripedPattern {
     right_color: Color,
     inversed_transform: InversedTransform,
 }
-
-transformable!(StripedPattern);
 
 impl StripedPattern {
     pub(crate) fn new(left_color: Color, right_color: Color) -> StripedPattern {
@@ -36,12 +30,6 @@ impl StripedPattern {
             true => self.left_color,
             false => self.right_color,
         }
-    }
-
-    pub fn stripe_at_object(&self, object: &Shape, world_point: &Point) -> Option<Color> {
-        let object_point = object.inversed_transform()? * *world_point;
-        let pattern_point = self.inversed_transform? * object_point;
-        Some(self.pattern_at(&pattern_point))
     }
 }
 

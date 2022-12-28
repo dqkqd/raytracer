@@ -6,6 +6,7 @@ use crate::{
 };
 
 const REFLECTION_LIMIT: usize = 5;
+const REFRACTION_LIMIT: usize = 5;
 
 #[derive(Debug, Clone, PartialEq, Default)]
 pub struct World {
@@ -76,15 +77,41 @@ impl World {
         let color = self.recursive_color_at(&reflect_ray, depth + 1);
         color * comp.object().material().reflective()
     }
+
+    pub(crate) fn refracted_color(&self, comp: &ComputedIntersection, depth: usize) -> Color {
+        if depth >= REFRACTION_LIMIT || equal(comp.object().material().transparency(), 0.0) {
+            return Color::default();
+        }
+
+        let n1 = comp.n1().expect("n1 should be already calculated");
+        let n2 = comp.n2().expect("n1 should be already calculated");
+
+        let n_ratio = n1 / n2;
+        let cos_i = comp.eye_vector().dot(comp.normal_vector());
+        let sin2_t = n_ratio * n_ratio * (1.0 - cos_i * cos_i);
+
+        if sin2_t >= 1.0 {
+            return Color::default();
+        }
+
+        let cos_t = (1.0 - sin2_t).sqrt();
+        let direction =
+            *comp.normal_vector() * (n_ratio * cos_i - cos_t) - *comp.eye_vector() * n_ratio;
+
+        let refract_ray = Ray::new(*comp.under_point(), direction);
+        let color = self.recursive_color_at(&refract_ray, depth + 1);
+
+        color * comp.object().material().transparency()
+    }
 }
 
 #[cfg(test)]
 mod test {
 
     use crate::{
-        color, intersect::intersection::Intersection, shapes::ShapeMaterial,
-        transform::Transformable, util::assert_float_eq, Camera, Material, Plane, Sphere,
-        Transform, Vector,
+        color, intersect::intersection::Intersection, patterns::dummy_pattern::TestPattern,
+        shapes::ShapeMaterial, transform::Transformable, util::assert_float_eq, Camera, Material,
+        Plane, Sphere, Transform, Vector,
     };
 
     use super::*;
@@ -328,5 +355,66 @@ mod test {
 
         let color = w.reflected_color(&comp, REFLECTION_LIMIT);
         assert_eq!(color, color::BLACK);
+    }
+
+    #[test]
+    fn refracted_color_with_an_opaque_surface() {
+        let w = default_world();
+        let s = w.objects[0];
+        let r = Ray::new(Point::new(0.0, 0.0, -5.0), Vector::new(0.0, 0.0, 1.0));
+        let comps = Intersections::new(vec![4.0, 6.0], &s, &r).update_refractive_index();
+        let c = w.refracted_color(comps.get(0).unwrap(), 0);
+        assert_eq!(c, color::BLACK);
+    }
+
+    #[test]
+    fn refracted_color_at_the_maximum_recursive_depth() {
+        let mut w = default_world();
+        w.objects[0] = w.objects[0]
+            .with_transparency(1.0)
+            .with_refractive_index(1.5);
+        let r = Ray::new(Point::new(0.0, 0.0, -5.0), Vector::new(0.0, 0.0, 1.0));
+        let comps = Intersections::new(vec![4.0, 6.0], &w.objects[0], &r).update_refractive_index();
+        let c = w.refracted_color(comps.get(0).unwrap(), REFRACTION_LIMIT);
+        assert_eq!(c, color::BLACK);
+    }
+
+    #[test]
+    fn refracted_color_under_total_internal_reflection() {
+        let mut w = default_world();
+        w.objects[0] = w.objects[0]
+            .with_transparency(1.0)
+            .with_refractive_index(1.5);
+        let r = Ray::new(
+            Point::new(0.0, 0.0, std::f64::consts::FRAC_1_SQRT_2),
+            Vector::new(0.0, 1.0, 0.0),
+        );
+        let comps = Intersections::new(
+            vec![
+                -std::f64::consts::FRAC_1_SQRT_2,
+                std::f64::consts::FRAC_1_SQRT_2,
+            ],
+            &w.objects[1],
+            &r,
+        )
+        .update_refractive_index();
+        let c = w.refracted_color(comps.get(0).unwrap(), 0);
+        assert_eq!(c, color::BLACK);
+    }
+
+    #[test]
+    fn refracted_color_with_refracted_ray() {
+        let mut w = default_world();
+        w.objects[0] = w.objects[0]
+            .with_ambient(1.0)
+            .with_pattern(TestPattern::pattern());
+        w.objects[1] = w.objects[1]
+            .with_transparency(1.0)
+            .with_refractive_index(1.5);
+
+        let r = Ray::new(Point::new(0.0, 0.0, 0.1), Vector::new(0.0, 1.0, 0.0));
+        let xs = w.intersect(&r);
+        let c = w.refracted_color(xs.get(2).unwrap(), 0);
+        assert_eq!(c, Color::new(0.0, 0.99888, 0.04722));
     }
 }

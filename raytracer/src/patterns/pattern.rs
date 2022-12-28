@@ -3,12 +3,16 @@ use crate::{
     Color, Point, Shape, Transform, Transformable,
 };
 
-use super::{dummy_pattern::TestPattern, stripe::StripedPattern, PatternLocal, PatternWorld};
+use super::{
+    dummy_pattern::TestPattern, gradient::GradientPattern, stripe::StripedPattern, PatternLocal,
+    PatternWorld,
+};
 
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub enum PatternKind {
     StripedPattern(StripedPattern),
     TestPattern(TestPattern),
+    GradientPattern(GradientPattern),
 }
 
 #[derive(Debug, Clone, Copy, PartialEq)]
@@ -33,6 +37,7 @@ impl PatternLocal for Pattern {
         match self.pattern {
             PatternKind::StripedPattern(p) => p.pattern_at(point),
             PatternKind::TestPattern(p) => p.pattern_at(point),
+            PatternKind::GradientPattern(p) => p.pattern_at(point),
         }
     }
 }

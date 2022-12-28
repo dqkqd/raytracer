@@ -1,8 +1,10 @@
 use crate::{Color, Point, Shape};
 
+pub mod pattern;
+
 pub mod stripe;
 
-pub mod pattern;
+pub mod gradient;
 
 pub mod dummy_pattern;
 

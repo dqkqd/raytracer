@@ -77,6 +77,10 @@ impl<'a> ComputedIntersection<'a> {
         &self.normal_vector
     }
 
+    pub(crate) fn reflect_vector(&self) -> &Vector {
+        &self.reflect_vector
+    }
+
     pub(crate) fn over_point(&self) -> &Point {
         &self.over_point
     }

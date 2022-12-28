@@ -1,6 +1,7 @@
 use crate::{
     intersect::intersection::ComputedIntersection,
     shapes::{ShapeMaterial, ShapeWorld},
+    util::equal,
     Color, Intersections, Point, PointLight, Ray, Shape,
 };
 
@@ -52,6 +53,16 @@ impl World {
         let intersections = self.intersect(&r);
         intersections.hit().map_or(false, |hit| hit.t() < distance)
     }
+
+    pub(crate) fn reflected_color(&self, comp: &ComputedIntersection) -> Color {
+        if equal(comp.object().material().reflective(), 0.0) {
+            return Color::default();
+        }
+
+        let reflect_ray = Ray::new(*comp.over_point(), *comp.reflect_vector());
+        let color = self.color_at(&reflect_ray);
+        color * comp.object().material().reflective()
+    }
 }
 
 #[cfg(test)]
@@ -59,8 +70,8 @@ mod test {
 
     use crate::{
         color, intersect::intersection::Intersection, shapes::ShapeMaterial,
-        transform::Transformable, util::assert_float_eq, Camera, Material, Sphere, Transform,
-        Vector,
+        transform::Transformable, util::assert_float_eq, Camera, Material, Plane, Sphere,
+        Transform, Vector,
     };
 
     use super::*;
@@ -202,5 +213,41 @@ mod test {
             .unwrap();
         let c = w.shade_hit(&comp);
         assert_eq!(c, Color::new(0.1, 0.1, 0.1));
+    }
+
+    #[test]
+    fn reflected_color_for_a_nonreflective_material() {
+        let r = Ray::new(Point::new(0.0, 0.0, 0.0), Vector::new(0.0, 0.0, 1.0));
+        let mut w = default_world();
+        w.objects[1] = w.objects[1].with_ambient(1.0);
+        let comps = Intersection::new(1.0, &w.objects[1])
+            .prepare_computations(&r)
+            .unwrap();
+        let color = w.reflected_color(&comps);
+        assert_eq!(color, color::BLACK);
+    }
+
+    #[test]
+    fn reflected_color_for_a_reflective_material() {
+        let mut w = default_world();
+        let shape = Plane::shape()
+            .with_reflective(0.5)
+            .with_transform(Transform::translation(0.0, -1.0, 0.0));
+        w.objects.push(shape);
+
+        let r = Ray::new(
+            Point::new(0.0, 0.0, -3.0),
+            Vector::new(
+                0.0,
+                -std::f64::consts::FRAC_1_SQRT_2,
+                std::f64::consts::FRAC_1_SQRT_2,
+            ),
+        );
+
+        let comps = Intersection::new(std::f64::consts::SQRT_2, &w.objects[2])
+            .prepare_computations(&r)
+            .unwrap();
+        let color = w.reflected_color(&comps);
+        assert_eq!(color, Color::new(0.19033, 0.23791, 0.14274));
     }
 }

@@ -111,7 +111,7 @@ impl Material {
 
 #[cfg(test)]
 mod test {
-    use crate::{patterns::stripe::StripedPattern, util::assert_float_eq};
+    use crate::patterns::stripe::StripedPattern;
 
     use super::*;
 
@@ -119,10 +119,7 @@ mod test {
     fn default_material() {
         let m = Material::default();
         assert_eq!(m.color(), color::WHITE);
-        assert_float_eq!(m.model.ambient(), 0.1);
-        assert_float_eq!(m.model.diffuse(), 0.9);
-        assert_float_eq!(m.model.specular(), 0.9);
-        assert_float_eq!(m.model.shininess(), 200.0);
+        assert_eq!(m.model, PhongReflecionModel::default());
         assert!(m.pattern.is_none());
     }
 

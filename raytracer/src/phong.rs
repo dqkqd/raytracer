@@ -53,3 +53,19 @@ impl PhongReflecionModel {
         self.shininess = shininess
     }
 }
+
+#[cfg(test)]
+mod test {
+    use crate::util::assert_float_eq;
+
+    use super::*;
+
+    #[test]
+    fn default_phong_attribute() {
+        let model = PhongReflecionModel::default();
+        assert_float_eq!(model.ambient(), 0.1);
+        assert_float_eq!(model.diffuse(), 0.9);
+        assert_float_eq!(model.specular(), 0.9);
+        assert_float_eq!(model.shininess(), 200.0);
+    }
+}

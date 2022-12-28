@@ -1,4 +1,4 @@
-use crate::{color, util::equal, Color, Point};
+use crate::{util::equal, Color, Point};
 
 use super::pattern::{Pattern, PatternKind};
 
@@ -6,15 +6,6 @@ use super::pattern::{Pattern, PatternKind};
 pub struct StripedPattern {
     left_color: Color,
     right_color: Color,
-}
-
-impl Default for StripedPattern {
-    fn default() -> Self {
-        StripedPattern {
-            left_color: color::WHITE,
-            right_color: color::BLACK,
-        }
-    }
 }
 
 impl StripedPattern {
@@ -42,6 +33,8 @@ impl StripedPattern {
 
 #[cfg(test)]
 mod test {
+    use crate::color;
+
     use super::*;
 
     #[test]

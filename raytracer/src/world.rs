@@ -25,17 +25,24 @@ impl World {
     }
 
     pub fn shade_hit(&self, comp: &ComputedIntersection) -> Color {
-        self.lights.iter().fold(Color::default(), |acc, light| {
-            let shadowed = self.is_shadowed(light, comp.over_point());
-            acc + light.lighting(
-                comp.object(),
-                comp.object().material(),
-                comp.over_point(),
-                comp.eye_vector(),
-                comp.normal_vector(),
-                shadowed,
-            )
-        })
+        self.lights
+            .iter()
+            .fold(Color::default(), |total_color, light| {
+                let shadowed = self.is_shadowed(light, comp.over_point());
+
+                let surface = light.lighting(
+                    comp.object(),
+                    comp.object().material(),
+                    comp.over_point(),
+                    comp.eye_vector(),
+                    comp.normal_vector(),
+                    shadowed,
+                );
+
+                let reflected_color = self.reflected_color(comp);
+
+                total_color + surface + reflected_color
+            })
     }
 
     pub fn color_at(&self, ray: &Ray) -> Color {
@@ -249,5 +256,29 @@ mod test {
             .unwrap();
         let color = w.reflected_color(&comps);
         assert_eq!(color, Color::new(0.19033, 0.23791, 0.14274));
+    }
+
+    #[test]
+    fn shade_hit_with_reflective_material() {
+        let mut w = default_world();
+        let shape = Plane::shape()
+            .with_reflective(0.5)
+            .with_transform(Transform::translation(0.0, -1.0, 0.0));
+        w.objects.push(shape);
+
+        let r = Ray::new(
+            Point::new(0.0, 0.0, -3.0),
+            Vector::new(
+                0.0,
+                -std::f64::consts::FRAC_1_SQRT_2,
+                std::f64::consts::FRAC_1_SQRT_2,
+            ),
+        );
+
+        let comps = Intersection::new(std::f64::consts::SQRT_2, &w.objects[2])
+            .prepare_computations(&r)
+            .unwrap();
+        let color = w.shade_hit(&comps);
+        assert_eq!(color, Color::new(0.87675, 0.92433, 0.82917));
     }
 }

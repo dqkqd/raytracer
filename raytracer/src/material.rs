@@ -78,7 +78,7 @@ impl Material {
         shadowed: bool,
     ) -> Color {
         if let Some(pattern) = self.pattern {
-            let color = pattern.color_at_object(object, position);
+            let color = pattern.pattern_at_shape(object, position);
             return color;
         }
 

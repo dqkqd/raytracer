@@ -27,12 +27,12 @@ impl Pattern {
         }
     }
 
-    pub fn color_at_object(&self, object: &Shape, world_point: &Point) -> Color {
+    pub fn pattern_at_shape(&self, object: &Shape, world_point: &Point) -> Color {
         let color_at = || {
             let object_point = world_point.transform(object.inversed_transform()?);
             let pattern_point = object_point.transform(self.inversed_transform()?);
             let c = match self.pattern {
-                PatternKind::StripedPattern(s) => s.stripe_at(&pattern_point),
+                PatternKind::StripedPattern(s) => s.pattern_at(&pattern_point),
                 PatternKind::TestPattern(p) => unimplemented!(),
             };
             Some(c)

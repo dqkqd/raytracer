@@ -85,12 +85,12 @@ impl Material {
         normal_vector: &Vector,
         shadowed: bool,
     ) -> Color {
-        if let Some(pattern) = self.pattern {
-            let color = pattern.pattern_at_shape(object, position);
-            return color;
-        }
+        let color = match self.pattern {
+            Some(pattern) => pattern.pattern_at_shape(object, position),
+            None => self.color,
+        };
 
-        let effective_color = self.color & light.intensity();
+        let effective_color = color & light.intensity();
         let light_vector = (light.position() - *position).normalize();
         let ambient = effective_color * self.model.ambient();
 

@@ -20,6 +20,7 @@ impl Default for Material {
     }
 }
 
+#[allow(dead_code)]
 impl Material {
     pub fn color(&self) -> Color {
         self.color
@@ -28,6 +29,10 @@ impl Material {
     pub fn with_color(mut self, color: Color) -> Material {
         self.color = color;
         self
+    }
+
+    pub(crate) fn pattern(&self) -> Option<&Pattern> {
+        self.pattern.as_ref()
     }
 
     pub fn with_pattern(mut self, pattern: Pattern) -> Material {

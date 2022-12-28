@@ -1,6 +1,6 @@
 use crate::{
-    transform::Transformable, Color, Intersections, IntersectionsFactor, Material, Point, Ray,
-    Vector,
+    transform::Transformable, Color, Intersections, IntersectionsFactor, Material, Pattern, Point,
+    Ray, Vector,
 };
 
 use self::{dummy_shape::TestShape, plane::Plane, sphere::Sphere};
@@ -28,6 +28,8 @@ pub trait ShapeMaterial {
     fn with_diffuse(self, diffuse: f64) -> Self;
     fn with_specular(self, specular: f64) -> Self;
     fn with_shininess(self, shininess: f64) -> Self;
+
+    fn with_pattern(self, pattern: Pattern) -> Self;
 }
 
 pub trait ShapeLocal {

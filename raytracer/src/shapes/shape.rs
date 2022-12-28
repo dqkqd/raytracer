@@ -1,6 +1,6 @@
 use crate::{
     transform::{transformable, InversedTransform},
-    Color, Intersections, IntersectionsFactor, Material, Point, Ray, Transform, Vector,
+    Color, Intersections, IntersectionsFactor, Material, Pattern, Point, Ray, Transform, Vector,
 };
 
 use super::{ShapeKind, ShapeLocal, ShapeMaterial, ShapeWorld};
@@ -81,11 +81,18 @@ impl ShapeMaterial for Shape {
     fn with_shininess(self, shininess: f64) -> Self {
         self.with_material(self.material.with_shininess(shininess))
     }
+
+    fn with_pattern(self, pattern: Pattern) -> Self {
+        self.with_material(self.material.with_pattern(pattern))
+    }
 }
 
 #[cfg(test)]
 mod test {
-    use crate::{shapes::dummy_shape::TestShape, util::assert_float_eq, Sphere, Transformable};
+    use crate::{
+        patterns::dummy_pattern::TestPattern, shapes::dummy_shape::TestShape,
+        util::assert_float_eq, Sphere, Transformable,
+    };
 
     use super::*;
 
@@ -155,6 +162,13 @@ mod test {
         let shininess = 1.5;
         let s = TestShape::shape().with_shininess(shininess);
         assert_float_eq!(s.material.shininess(), shininess);
+    }
+
+    #[test]
+    fn shape_with_default_pattern() {
+        let p = TestPattern::pattern();
+        let s = TestShape::shape().with_pattern(p);
+        assert_eq!(s.material.pattern(), Some(&p));
     }
 
     #[test]

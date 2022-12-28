@@ -11,7 +11,7 @@ fn main() {
         .with_color(Color::new(1.0, 0.9, 0.9))
         .with_specular(0.0)
         .with_pattern(
-            CheckerPattern::pattern(color::WHITE, Color::from("#ff00ff"))
+            CheckerPattern::pattern(color::WHITE, color::BLACK)
                 .with_transform(Transform::scaling(0.4, 0.4, 0.4)),
         );
 
@@ -42,10 +42,11 @@ fn main() {
         .with_specular(0.3)
         .with_transform(Transform::scaling(0.33, 0.33, 0.33).translate(-1.5, 0.33, -0.75));
 
-    let light = PointLight::new(Point::new(-10.0, 10.0, -10.0), color::WHITE);
-    let world = World::new(light, vec![floor, middle, right, left]);
+    let light1 = PointLight::new(Point::new(-10.0, 10.0, -10.0), color::WHITE);
+    let light2 = PointLight::new(Point::new(20.0, 10.0, -10.0), color::WHITE);
+    let world = World::new(vec![light1, light2], vec![floor, middle, right, left]);
 
-    let mut camera = Camera::new(500, 300, std::f64::consts::FRAC_PI_3);
+    let mut camera = Camera::new(800, 500, std::f64::consts::FRAC_PI_3);
     let view_transform = Transform::view_transform(
         Point::new(0.0, 1.5, -5.0),
         Point::new(0.0, 1.0, 0.0),

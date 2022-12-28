@@ -50,7 +50,7 @@ fn main() {
 
     let light = PointLight::new(Point::new(-10.0, 10.0, -10.0), color::WHITE);
     let world = World::new(
-        light,
+        vec![light],
         vec![floor, left_wall, right_wall, middle, right, left],
     );
 

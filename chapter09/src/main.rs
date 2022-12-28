@@ -30,7 +30,7 @@ fn main() {
         .with_transform(Transform::scaling(0.33, 0.33, 0.33).translate(-1.5, 0.33, -0.75));
 
     let light = PointLight::new(Point::new(-10.0, 10.0, -10.0), color::WHITE);
-    let world = World::new(light, vec![floor, middle, right, left]);
+    let world = World::new(vec![light], vec![floor, middle, right, left]);
 
     let mut camera = Camera::new(500, 300, std::f64::consts::FRAC_PI_3);
     let view_transform = Transform::view_transform(

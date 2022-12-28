@@ -29,6 +29,7 @@ impl PatternLocal for Pattern {
             PatternKind::TestPattern(p) => p.pattern_at(point),
             PatternKind::GradientPattern(p) => p.pattern_at(point),
             PatternKind::RingPattern(p) => p.pattern_at(point),
+            PatternKind::CheckerPattern(p) => p.pattern_at(point),
         }
     }
 }

@@ -44,8 +44,9 @@ impl World {
                 );
 
                 let reflected_color = self.reflected_color(comp, depth);
+                let refracted_color = self.refracted_color(comp, depth);
 
-                total_color + surface + reflected_color
+                total_color + surface + reflected_color + refracted_color
             })
     }
 
@@ -416,5 +417,33 @@ mod test {
         let xs = w.intersect(&r);
         let c = w.refracted_color(xs.get(2).unwrap(), 0);
         assert_eq!(c, Color::new(0.0, 0.99888, 0.04722));
+    }
+
+    #[test]
+    fn shade_hit_with_transparent_material() {
+        let mut w = default_world();
+        let floor = Plane::shape()
+            .with_transparency(0.5)
+            .with_refractive_index(1.5)
+            .with_transform(Transform::translation(0.0, -1.0, 0.0));
+        let ball = Sphere::shape()
+            .with_color(Color::new(1.0, 0.0, 0.0))
+            .with_ambient(0.5)
+            .with_transform(Transform::translation(0.0, -3.5, -0.5));
+
+        w.objects.push(floor);
+        w.objects.push(ball);
+
+        let r = Ray::new(
+            Point::new(0.0, 0.0, -3.0),
+            Vector::new(
+                0.0,
+                -std::f64::consts::FRAC_1_SQRT_2,
+                std::f64::consts::FRAC_1_SQRT_2,
+            ),
+        );
+        let xs = w.intersect(&r);
+        let color = w.shade_hit(xs.get(0).unwrap(), 0);
+        assert_eq!(color, Color::new(0.93642, 0.68642, 0.68642));
     }
 }

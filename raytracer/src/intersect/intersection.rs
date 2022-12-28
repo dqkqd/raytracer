@@ -33,6 +33,8 @@ impl<'a> Intersection<'a> {
 
         let over_point = point + normal_vector * OFFSET_FACTOR;
 
+        let reflect_vector = ray.direction().reflect(&normal_vector);
+
         Some(ComputedIntersection {
             t,
             object,
@@ -40,6 +42,7 @@ impl<'a> Intersection<'a> {
             over_point,
             eye_vector,
             normal_vector,
+            reflect_vector,
             inside,
         })
     }
@@ -53,6 +56,7 @@ pub struct ComputedIntersection<'a> {
     over_point: Point,
     eye_vector: Vector,
     normal_vector: Vector,
+    reflect_vector: Vector,
     inside: bool,
 }
 
@@ -80,7 +84,7 @@ impl<'a> ComputedIntersection<'a> {
 #[cfg(test)]
 mod test {
     use super::*;
-    use crate::{util::assert_float_eq, Sphere, Transform, Transformable};
+    use crate::{util::assert_float_eq, Plane, Sphere, Transform, Transformable};
 
     #[test]
     fn intersection_encapsulates_t_and_object() {
@@ -129,5 +133,29 @@ mod test {
         let comps = Intersection::new(5.0, &s).prepare_computations(&r).unwrap();
         assert!(comps.over_point.z() < -OFFSET_FACTOR / 2.0);
         assert!(comps.point.z() > comps.over_point.z());
+    }
+
+    #[test]
+    fn precomputing_reflection_vector() {
+        let shape = Plane::shape();
+        let r = Ray::new(
+            Point::new(0.0, 1.0, -1.0),
+            Vector::new(
+                0.0,
+                -std::f64::consts::FRAC_1_SQRT_2,
+                std::f64::consts::FRAC_1_SQRT_2,
+            ),
+        );
+        let comps = Intersection::new(2.0, &shape)
+            .prepare_computations(&r)
+            .unwrap();
+        assert_eq!(
+            comps.reflect_vector,
+            Vector::new(
+                0.0,
+                std::f64::consts::FRAC_1_SQRT_2,
+                std::f64::consts::FRAC_1_SQRT_2
+            )
+        );
     }
 }

@@ -43,3 +43,5 @@ pub use world::World;
 
 pub mod camera;
 pub use camera::Camera;
+
+pub mod patterns;

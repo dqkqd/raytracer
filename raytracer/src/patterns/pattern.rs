@@ -1,6 +1,6 @@
 use crate::{
     transform::{transformable, InversedTransform},
-    Color, Point, Shape, Transform,
+    Color, Point, Shape, Transform, Transformable,
 };
 
 use super::{dummy_pattern::TestPattern, stripe::StripedPattern};
@@ -33,7 +33,7 @@ impl Pattern {
             let pattern_point = object_point.transform(self.inversed_transform()?);
             let c = match self.pattern {
                 PatternKind::StripedPattern(s) => s.pattern_at(&pattern_point),
-                PatternKind::TestPattern(p) => unimplemented!(),
+                PatternKind::TestPattern(p) => p.pattern_at(&pattern_point),
             };
             Some(c)
         };
@@ -43,7 +43,7 @@ impl Pattern {
 
 #[cfg(test)]
 mod test {
-    use crate::Transformable;
+    use crate::{Sphere, Transformable};
 
     use super::*;
 
@@ -58,5 +58,29 @@ mod test {
         let m = Transform::scaling(1.0, 2.0, 3.0);
         let p = TestPattern::pattern().with_transform(m);
         assert_eq!(p.inversed_transform, m.inverse());
+    }
+
+    #[test]
+    fn pattern_with_an_object_transformation() {
+        let s = Sphere::shape().with_transform(Transform::scaling(2.0, 2.0, 2.0));
+        let p = TestPattern::pattern();
+        let c = p.pattern_at_shape(&s, &Point::new(2.0, 3.0, 4.0));
+        assert_eq!(c, Color::new(1.0, 1.5, 2.0));
+    }
+
+    #[test]
+    fn pattern_with_a_pattern_transformation() {
+        let s = Sphere::shape();
+        let p = TestPattern::pattern().with_transform(Transform::scaling(2.0, 2.0, 2.0));
+        let c = p.pattern_at_shape(&s, &Point::new(2.0, 3.0, 4.0));
+        assert_eq!(c, Color::new(1.0, 1.5, 2.0));
+    }
+
+    #[test]
+    fn stripe_with_both_an_object_and_a_pattern_transformation() {
+        let s = Sphere::shape().with_transform(Transform::scaling(2.0, 2.0, 2.0));
+        let p = TestPattern::pattern().with_transform(Transform::translation(0.5, 1.0, 1.5));
+        let c = p.pattern_at_shape(&s, &Point::new(2.5, 3.0, 3.5));
+        assert_eq!(c, Color::new(0.75, 0.5, 0.25));
     }
 }

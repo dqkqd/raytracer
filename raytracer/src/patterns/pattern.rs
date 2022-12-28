@@ -3,7 +3,7 @@ use crate::{
     Color, Point, Shape, Transform, Transformable,
 };
 
-use super::{dummy_pattern::TestPattern, stripe::StripedPattern};
+use super::{dummy_pattern::TestPattern, stripe::StripedPattern, PatternLocal, PatternWorld};
 
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub enum PatternKind {
@@ -26,15 +26,19 @@ impl Pattern {
             inversed_transform: Some(Transform::identity()),
         }
     }
+}
 
-    pub fn pattern_at(&self, point: &Point) -> Color {
+impl PatternLocal for Pattern {
+    fn pattern_at(&self, point: &Point) -> Color {
         match self.pattern {
             PatternKind::StripedPattern(p) => p.pattern_at(point),
             PatternKind::TestPattern(p) => p.pattern_at(point),
         }
     }
+}
 
-    pub fn pattern_at_shape(&self, object: &Shape, world_point: &Point) -> Color {
+impl PatternWorld for Pattern {
+    fn pattern_at_shape(&self, object: &Shape, world_point: &Point) -> Color {
         let color_at = || {
             let object_point = world_point.transform(object.inversed_transform()?);
             let pattern_point = object_point.transform(self.inversed_transform()?);

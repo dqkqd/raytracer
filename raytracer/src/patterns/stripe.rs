@@ -1,6 +1,9 @@
 use crate::{transform::InversedTransform, util::equal, Color, Point, Transform};
 
-use super::pattern::{Pattern, PatternKind};
+use super::{
+    pattern::{Pattern, PatternKind},
+    PatternLocal,
+};
 
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub struct StripedPattern {
@@ -24,8 +27,10 @@ impl StripedPattern {
             right_color,
         )))
     }
+}
 
-    pub fn pattern_at(&self, point: &Point) -> Color {
+impl PatternLocal for StripedPattern {
+    fn pattern_at(&self, point: &Point) -> Color {
         match equal(point.x().floor() % 2.0, 0.0) {
             true => self.left_color,
             false => self.right_color,

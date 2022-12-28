@@ -1,4 +1,7 @@
-use crate::{color, phong::PhongReflecionModel, Color, Pattern, Point, PointLight, Shape, Vector};
+use crate::{
+    color, patterns::PatternWorld, phong::PhongReflecionModel, Color, Pattern, Point, PointLight,
+    Shape, Vector,
+};
 
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub struct Material {

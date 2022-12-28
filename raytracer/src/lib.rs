@@ -45,4 +45,4 @@ pub mod camera;
 pub use camera::Camera;
 
 pub mod patterns;
-pub use patterns::pattern::{Pattern, PatternKind};
+pub use patterns::pattern::Pattern;

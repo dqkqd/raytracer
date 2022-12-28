@@ -215,4 +215,48 @@ mod test {
             assert_float_eq!(n2, i.n2().unwrap());
         }
     }
+
+    #[test]
+    fn schlick_approximation_under_total_internal_reflection() {
+        let shape = glassy_sphere();
+
+        let r = Ray::new(
+            Point::new(0.0, 0.0, std::f64::consts::FRAC_1_SQRT_2),
+            Vector::new(0.0, 1.0, 0.0),
+        );
+
+        let xs = Intersections::new(
+            vec![
+                -std::f64::consts::FRAC_1_SQRT_2,
+                std::f64::consts::FRAC_1_SQRT_2,
+            ],
+            &shape,
+            &r,
+        )
+        .update_refractive_index();
+
+        let comp = xs.get(1).unwrap();
+        let reflectance = comp.schlick();
+        assert_float_eq!(reflectance, 1.0);
+    }
+
+    #[test]
+    fn schlick_approximation_with_a_perpendicular_viewing_angle() {
+        let shape = glassy_sphere();
+        let r = Ray::new(Point::new(0.0, 0.0, 0.0), Vector::new(0.0, 1.0, 0.0));
+        let xs = Intersections::new(vec![-1.0, 1.0], &shape, &r).update_refractive_index();
+        let comp = xs.get(1).unwrap();
+        let reflectance = comp.schlick();
+        assert_float_eq!(reflectance, 0.04);
+    }
+
+    #[test]
+    fn schlick_approximation_with_small_angle_and_n2_higher_than_n1() {
+        let shape = glassy_sphere();
+        let r = Ray::new(Point::new(0.0, 0.99, -2.0), Vector::new(0.0, 0.0, 1.0));
+        let xs = Intersections::new(vec![1.8589], &shape, &r).update_refractive_index();
+        let comp = xs.get(0).unwrap();
+        let reflectance = comp.schlick();
+        assert_float_eq!(reflectance, 0.48873);
+    }
 }

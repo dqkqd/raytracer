@@ -111,7 +111,33 @@ impl<'a> ComputedIntersection<'a> {
     pub(crate) fn set_n2(&mut self, n2: f64) {
         self.n2 = Some(n2);
     }
+
+    pub(crate) fn schlick(&self) -> f64 {
+        let n1 = self
+            .n1
+            .expect("`schlick` should only be called after n1 calculated");
+        let n2 = self
+            .n2
+            .expect("`schlick` should only be called after n2 calculated");
+
+        let mut cos = self.eye_vector.dot(&self.normal_vector);
+
+        if n1 > n2 {
+            let n = n1 / n2;
+            let sin2_t = n * n * (1.0 - cos * cos);
+            if sin2_t > 1.0 {
+                return 1.0;
+            }
+            cos = (1.0 - sin2_t).sqrt();
+        }
+
+        let r0 = (n1 - n2) / (n1 + n2);
+        let r0 = r0 * r0;
+
+        r0 + (1.0 - r0) * (1.0 - cos).powi(5)
+    }
 }
+
 #[cfg(test)]
 mod test {
     use super::*;

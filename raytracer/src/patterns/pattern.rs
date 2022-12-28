@@ -1,4 +1,4 @@
-use crate::{Color, Point};
+use crate::{Color, Point, Shape};
 
 use super::stripe::StripedPattern;
 
@@ -21,5 +21,12 @@ impl Pattern {
         match self.pattern {
             PatternKind::StripedPattern(s) => s.stripe_at(point),
         }
+    }
+
+    pub fn color_at_object(&self, object: &Shape, world_point: &Point) -> Color {
+        let color = match self.pattern {
+            PatternKind::StripedPattern(s) => s.stripe_at_object(object, world_point),
+        };
+        color.unwrap_or_default()
     }
 }

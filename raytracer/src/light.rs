@@ -1,4 +1,4 @@
-use crate::{Color, Material, Point, Vector};
+use crate::{Color, Material, Point, Shape, Vector};
 
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub struct PointLight {
@@ -24,25 +24,30 @@ impl PointLight {
 
     pub fn lighting(
         &self,
+        object: &Shape,
         material: &Material,
         position: &Point,
         eye_vector: &Vector,
         normal_vector: &Vector,
         shadowed: bool,
     ) -> Color {
-        material.lighting(self, position, eye_vector, normal_vector, shadowed)
+        material.lighting(object, self, position, eye_vector, normal_vector, shadowed)
     }
 }
 
 #[cfg(test)]
 mod test {
 
-    use crate::color;
+    use crate::{color, shapes::dummy_shape::TestShape};
 
     use super::*;
 
-    fn material_and_point_setup() -> (Material, Point) {
-        (Material::default(), Point::new(0.0, 0.0, 0.0))
+    fn shape_material_point_setup() -> (Shape, Material, Point) {
+        (
+            TestShape::shape(),
+            Material::default(),
+            Point::new(0.0, 0.0, 0.0),
+        )
     }
 
     #[test]
@@ -59,8 +64,8 @@ mod test {
         let eyev = Vector::new(0.0, 0.0, -1.0);
         let normalv = Vector::new(0.0, 0.0, -1.0);
         let light = PointLight::new(Point::new(0.0, 0.0, -10.0), color::WHITE);
-        let (m, position) = material_and_point_setup();
-        let result = light.lighting(&m, &position, &eyev, &normalv, false);
+        let (s, m, position) = shape_material_point_setup();
+        let result = light.lighting(&s, &m, &position, &eyev, &normalv, false);
         assert_eq!(result, Color::new(1.9, 1.9, 1.9));
     }
 
@@ -73,8 +78,8 @@ mod test {
         );
         let normalv = Vector::new(0.0, 0.0, -1.0);
         let light = PointLight::new(Point::new(0.0, 0.0, -10.0), color::WHITE);
-        let (m, position) = material_and_point_setup();
-        let result = light.lighting(&m, &position, &eyev, &normalv, false);
+        let (s, m, position) = shape_material_point_setup();
+        let result = light.lighting(&s, &m, &position, &eyev, &normalv, false);
         assert_eq!(result, Color::new(1.0, 1.0, 1.0));
     }
 
@@ -83,8 +88,8 @@ mod test {
         let eyev = Vector::new(0.0, 0.0, -1.0);
         let normalv = Vector::new(0.0, 0.0, -1.0);
         let light = PointLight::new(Point::new(0.0, 10.0, -10.0), color::WHITE);
-        let (m, position) = material_and_point_setup();
-        let result = light.lighting(&m, &position, &eyev, &normalv, false);
+        let (s, m, position) = shape_material_point_setup();
+        let result = light.lighting(&s, &m, &position, &eyev, &normalv, false);
         assert_eq!(result, Color::new(0.7364, 0.7364, 0.7364));
     }
 
@@ -97,8 +102,8 @@ mod test {
         );
         let normalv = Vector::new(0.0, 0.0, -1.0);
         let light = PointLight::new(Point::new(0.0, 10.0, -10.0), color::WHITE);
-        let (m, position) = material_and_point_setup();
-        let result = light.lighting(&m, &position, &eyev, &normalv, false);
+        let (s, m, position) = shape_material_point_setup();
+        let result = light.lighting(&s, &m, &position, &eyev, &normalv, false);
         assert_eq!(result, Color::new(1.6364, 1.6364, 1.6364));
     }
 
@@ -107,8 +112,8 @@ mod test {
         let eyev = Vector::new(0.0, 0.0, -1.0);
         let normalv = Vector::new(0.0, 0.0, -1.0);
         let light = PointLight::new(Point::new(0.0, 0.0, 10.0), color::WHITE);
-        let (m, position) = material_and_point_setup();
-        let result = light.lighting(&m, &position, &eyev, &normalv, false);
+        let (s, m, position) = shape_material_point_setup();
+        let result = light.lighting(&s, &m, &position, &eyev, &normalv, false);
         assert_eq!(result, Color::new(0.1, 0.1, 0.1));
     }
 
@@ -118,8 +123,8 @@ mod test {
         let normalv = Vector::new(0.0, 0.0, -1.0);
         let light = PointLight::new(Point::new(0.0, 0.0, -10.0), color::WHITE);
         let shadowed = true;
-        let (m, position) = material_and_point_setup();
-        let result = light.lighting(&m, &position, &eyev, &normalv, shadowed);
+        let (s, m, position) = shape_material_point_setup();
+        let result = light.lighting(&s, &m, &position, &eyev, &normalv, shadowed);
         assert_eq!(result, Color::new(0.1, 0.1, 0.1));
     }
 }

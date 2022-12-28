@@ -29,6 +29,7 @@ impl World {
     pub fn shade_hit(&self, comp: &ComputedIntersection) -> Option<Color> {
         let shadowed = self.is_shadowed(comp.over_point());
         Some(self.light_source?.lighting(
+            comp.object(),
             comp.object().material(),
             comp.point(),
             comp.eye_vector(),

@@ -1,4 +1,4 @@
-use crate::{color, phong::PhongReflecionModel, Color, Pattern, Point, PointLight, Vector};
+use crate::{color, phong::PhongReflecionModel, Color, Pattern, Point, PointLight, Shape, Vector};
 
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub struct Material {
@@ -70,6 +70,7 @@ impl Material {
 
     pub(crate) fn lighting(
         &self,
+        object: &Shape,
         light: &PointLight,
         position: &Point,
         eye_vector: &Vector,
@@ -77,7 +78,7 @@ impl Material {
         shadowed: bool,
     ) -> Color {
         if let Some(pattern) = self.pattern {
-            let color = pattern.color_at(position);
+            let color = pattern.color_at_object(object, position);
             return color;
         }
 
@@ -116,7 +117,7 @@ impl Material {
 
 #[cfg(test)]
 mod test {
-    use crate::patterns::stripe::StripedPattern;
+    use crate::{patterns::stripe::StripedPattern, shapes::dummy_shape::TestShape};
 
     use super::*;
 
@@ -137,7 +138,10 @@ mod test {
 
     #[test]
     fn lighting_with_pattern_applied() {
+        let s = TestShape::shape();
+
         let p = StripedPattern::pattern(color::WHITE, color::BLACK);
+
         let m = Material::default()
             .with_ambient(1.0)
             .with_diffuse(0.0)
@@ -147,8 +151,22 @@ mod test {
         let eyev = Vector::new(0.0, 0.0, -1.0);
         let normalv = Vector::new(0.0, 0.0, -1.0);
         let light = PointLight::new(Point::new(0.0, 0.0, -10.0), color::WHITE);
-        let c1 = m.lighting(&light, &Point::new(0.9, 0.0, 0.0), &eyev, &normalv, false);
-        let c2 = m.lighting(&light, &Point::new(1.1, 0.0, 0.0), &eyev, &normalv, false);
+        let c1 = m.lighting(
+            &s,
+            &light,
+            &Point::new(0.9, 0.0, 0.0),
+            &eyev,
+            &normalv,
+            false,
+        );
+        let c2 = m.lighting(
+            &s,
+            &light,
+            &Point::new(1.1, 0.0, 0.0),
+            &eyev,
+            &normalv,
+            false,
+        );
         assert_eq!(c1, color::WHITE);
         assert_eq!(c2, color::BLACK);
     }

@@ -1,4 +1,8 @@
-use crate::{util::equal, Color, Point};
+use crate::{
+    transform::{transformable, InversedTransform},
+    util::equal,
+    Color, Point, Shape, Transform, Transformable,
+};
 
 use super::pattern::{Pattern, PatternKind};
 
@@ -6,13 +10,17 @@ use super::pattern::{Pattern, PatternKind};
 pub struct StripedPattern {
     left_color: Color,
     right_color: Color,
+    inversed_transform: InversedTransform,
 }
+
+transformable!(StripedPattern);
 
 impl StripedPattern {
     pub(crate) fn new(left_color: Color, right_color: Color) -> StripedPattern {
         StripedPattern {
             left_color,
             right_color,
+            inversed_transform: Some(Transform::identity()),
         }
     }
 
@@ -29,11 +37,17 @@ impl StripedPattern {
             false => self.right_color,
         }
     }
+
+    pub fn stripe_at_object(&self, object: &Shape, world_point: &Point) -> Option<Color> {
+        let object_point = object.inversed_transform()? * *world_point;
+        let pattern_point = self.inversed_transform? * object_point;
+        Some(self.stripe_at(&pattern_point))
+    }
 }
 
 #[cfg(test)]
 mod test {
-    use crate::color;
+    use crate::{color, Sphere, Transformable};
 
     use super::*;
 
@@ -69,5 +83,31 @@ mod test {
         assert_eq!(pattern.stripe_at(&Point::new(-0.1, 0.0, 0.0)), color::BLACK);
         assert_eq!(pattern.stripe_at(&Point::new(-1.0, 0.0, 0.0)), color::BLACK);
         assert_eq!(pattern.stripe_at(&Point::new(-1.1, 0.0, 0.0)), color::WHITE);
+    }
+
+    #[test]
+    fn stripe_with_an_object_transformation() {
+        let s = Sphere::shape().with_transform(Transform::scaling(2.0, 2.0, 2.0));
+        let p = StripedPattern::new(color::WHITE, color::BLACK);
+        let c = p.stripe_at_object(&s, &Point::new(1.0, 0.0, 0.0));
+        assert_eq!(c, Some(color::WHITE));
+    }
+
+    #[test]
+    fn stripe_with_a_pattern_transformation() {
+        let s = Sphere::shape();
+        let p = StripedPattern::new(color::WHITE, color::BLACK)
+            .with_transform(Transform::scaling(2.0, 2.0, 2.0));
+        let c = p.stripe_at_object(&s, &Point::new(1.0, 0.0, 0.0));
+        assert_eq!(c, Some(color::WHITE));
+    }
+
+    #[test]
+    fn stripe_with_both_an_object_and_a_pattern_transformation() {
+        let s = Sphere::shape().with_transform(Transform::scaling(2.0, 2.0, 2.0));
+        let p = StripedPattern::new(color::WHITE, color::BLACK)
+            .with_transform(Transform::translation(0.5, 0.0, 0.0));
+        let c = p.stripe_at_object(&s, &Point::new(1.0, 0.0, 0.0));
+        assert_eq!(c, Some(color::WHITE));
     }
 }

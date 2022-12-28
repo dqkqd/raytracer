@@ -9,6 +9,8 @@ pub struct Material {
     model: PhongReflecionModel,
     pattern: Option<Pattern>,
     reflective: f64,
+    transparency: f64,
+    refractive_index: f64,
 }
 
 impl Default for Material {
@@ -18,6 +20,8 @@ impl Default for Material {
             model: PhongReflecionModel::default(),
             pattern: None,
             reflective: 0.0,
+            transparency: 0.0,
+            refractive_index: 1.0,
         }
     }
 }
@@ -87,6 +91,24 @@ impl Material {
         self
     }
 
+    pub fn transparency(&self) -> f64 {
+        self.transparency
+    }
+
+    pub fn with_transparency(mut self, transparency: f64) -> Material {
+        self.transparency = transparency;
+        self
+    }
+
+    pub fn refractive_index(&self) -> f64 {
+        self.refractive_index
+    }
+
+    pub fn with_refractive_index(mut self, refractive_index: f64) -> Material {
+        self.refractive_index = refractive_index;
+        self
+    }
+
     pub(crate) fn lighting(
         &self,
         object: &Shape,
@@ -149,6 +171,8 @@ mod test {
         assert_eq!(m.model, PhongReflecionModel::default());
         assert!(m.pattern.is_none());
         assert_float_eq!(m.reflective, 0.0);
+        assert_float_eq!(m.transparency, 0.0);
+        assert_float_eq!(m.refractive_index, 1.0);
     }
 
     #[test]

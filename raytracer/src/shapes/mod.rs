@@ -29,6 +29,8 @@ pub trait ShapeMaterial {
     fn with_specular(self, specular: f64) -> Self;
     fn with_shininess(self, shininess: f64) -> Self;
     fn with_reflective(self, reflective: f64) -> Self;
+    fn with_transparency(self, transparency: f64) -> Self;
+    fn with_refractive_index(self, refractive_index: f64) -> Self;
 
     fn with_pattern(self, pattern: Pattern) -> Self;
 }

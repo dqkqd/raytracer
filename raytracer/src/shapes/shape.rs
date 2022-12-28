@@ -89,6 +89,14 @@ impl ShapeMaterial for Shape {
     fn with_pattern(self, pattern: Pattern) -> Self {
         self.with_material(self.material.with_pattern(pattern))
     }
+
+    fn with_transparency(self, transparency: f64) -> Self {
+        self.with_material(self.material.with_transparency(transparency))
+    }
+
+    fn with_refractive_index(self, refractive_index: f64) -> Self {
+        self.with_material(self.material.with_refractive_index(refractive_index))
+    }
 }
 
 #[cfg(test)]
@@ -173,6 +181,20 @@ mod test {
         let reflective = 0.5;
         let s = TestShape::shape().with_reflective(reflective);
         assert_float_eq!(s.material.reflective(), reflective);
+    }
+
+    #[test]
+    fn shape_with_transparency() {
+        let transparency = 0.3;
+        let s = TestShape::shape().with_transparency(transparency);
+        assert_float_eq!(s.material.transparency(), transparency)
+    }
+
+    #[test]
+    fn shape_with_refractive_index() {
+        let refractive_index = 0.3;
+        let s = TestShape::shape().with_refractive_index(refractive_index);
+        assert_float_eq!(s.material.refractive_index(), refractive_index)
     }
 
     #[test]

@@ -3,17 +3,7 @@ use crate::{
     Color, Point, Shape, Transform, Transformable,
 };
 
-use super::{
-    dummy_pattern::TestPattern, gradient::GradientPattern, stripe::StripedPattern, PatternLocal,
-    PatternWorld,
-};
-
-#[derive(Debug, Clone, Copy, PartialEq)]
-pub enum PatternKind {
-    StripedPattern(StripedPattern),
-    TestPattern(TestPattern),
-    GradientPattern(GradientPattern),
-}
+use super::{PatternKind, PatternLocal, PatternWorld};
 
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub struct Pattern {
@@ -55,7 +45,7 @@ impl PatternWorld for Pattern {
 
 #[cfg(test)]
 mod test {
-    use crate::{Sphere, Transformable};
+    use crate::{patterns::dummy_pattern::TestPattern, Sphere, Transformable};
 
     use super::*;
 

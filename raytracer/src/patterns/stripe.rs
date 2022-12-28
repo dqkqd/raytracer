@@ -1,9 +1,6 @@
 use crate::{transform::InversedTransform, util::equal, Color, Point, Transform};
 
-use super::{
-    pattern::{Pattern, PatternKind},
-    PatternLocal,
-};
+use super::{pattern::Pattern, PatternKind, PatternLocal};
 
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub struct StripedPattern {

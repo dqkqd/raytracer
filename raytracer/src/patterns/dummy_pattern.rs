@@ -1,6 +1,6 @@
 use crate::{Color, Point};
 
-use super::pattern::{Pattern, PatternKind};
+use super::{pattern::Pattern, PatternKind};
 
 // TestPattern used only for testing
 #[derive(Debug, Clone, Copy, PartialEq)]

@@ -3,6 +3,7 @@ use crate::{shapes::ShapeWorld, Point, Ray, Shape, Vector};
 pub(crate) type IntersectionsFactor = Vec<f64>;
 
 const OFFSET_FACTOR: f64 = 1E-10;
+pub(crate) const DEFAULT_REFRACTIVE_INDEX: f64 = 1.0;
 
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub struct Intersection<'a> {
@@ -44,6 +45,8 @@ impl<'a> Intersection<'a> {
             normal_vector,
             reflect_vector,
             inside,
+            n1: None,
+            n2: None,
         })
     }
 }
@@ -57,6 +60,8 @@ pub struct ComputedIntersection<'a> {
     eye_vector: Vector,
     normal_vector: Vector,
     reflect_vector: Vector,
+    n1: Option<f64>,
+    n2: Option<f64>,
     inside: bool,
 }
 
@@ -83,6 +88,22 @@ impl<'a> ComputedIntersection<'a> {
 
     pub(crate) fn over_point(&self) -> &Point {
         &self.over_point
+    }
+
+    pub(crate) fn n1(&self) -> Option<f64> {
+        self.n1
+    }
+
+    pub(crate) fn set_n1(&mut self, n1: f64) {
+        self.n1 = Some(n1);
+    }
+
+    pub(crate) fn n2(&self) -> Option<f64> {
+        self.n2
+    }
+
+    pub(crate) fn set_n2(&mut self, n2: f64) {
+        self.n2 = Some(n2);
     }
 }
 #[cfg(test)]

@@ -24,6 +24,7 @@ impl World {
             .map(|object| object.intersect(ray))
             .reduce(|merged_intersections, intersections| merged_intersections.merge(intersections))
             .unwrap_or_default()
+            .update_refractive_index()
     }
 
     pub fn shade_hit(&self, comp: &ComputedIntersection, depth: usize) -> Color {

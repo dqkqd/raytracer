@@ -1,7 +1,7 @@
-use crate::{Ray, Shape};
+use crate::{shapes::ShapeMaterial, Ray, Shape};
 
 use super::{
-    intersection::{ComputedIntersection, Intersection},
+    intersection::{ComputedIntersection, Intersection, DEFAULT_REFRACTIVE_INDEX},
     IntersectionsFactor,
 };
 
@@ -69,16 +69,61 @@ impl<'a> Intersections<'a> {
         self.data = merged_data;
         self
     }
+
+    pub(crate) fn update_refractive_index(mut self) -> Self {
+        let mut container: Vec<&Shape> = Vec::with_capacity(self.count());
+        for comp in self.data.iter_mut() {
+            if container.is_empty() {
+                let exit_index = DEFAULT_REFRACTIVE_INDEX;
+                let enter_index = comp.object().material().refractive_index();
+                comp.set_n1(exit_index);
+                comp.set_n2(enter_index);
+                container.push(comp.object());
+            } else {
+                let presented = container.iter().position(|&object| object == comp.object());
+                if let Some(index) = presented {
+                    let exit_index = container.last().unwrap().material().refractive_index();
+                    container.remove(index);
+                    let enter_index = match container.last() {
+                        Some(&object) => object.material().refractive_index(),
+                        None => DEFAULT_REFRACTIVE_INDEX,
+                    };
+                    comp.set_n1(exit_index);
+                    comp.set_n2(enter_index);
+                } else {
+                    let exit_index = match container.last() {
+                        Some(&object) => object.material().refractive_index(),
+                        None => DEFAULT_REFRACTIVE_INDEX,
+                    };
+                    let enter_index = comp.object().material().refractive_index();
+                    comp.set_n1(exit_index);
+                    comp.set_n2(enter_index);
+                    container.push(comp.object());
+                }
+            }
+        }
+
+        self
+    }
 }
 
 #[cfg(test)]
 mod test {
-    use crate::{util::assert_float_eq, Point, Sphere, Vector};
+    use crate::{
+        shapes::ShapeMaterial, util::assert_float_eq, Point, Sphere, Transform, Transformable,
+        Vector, World,
+    };
 
     use super::*;
 
     fn ray() -> Ray {
         Ray::new(Point::new(0.0, 0.0, 0.0), Vector::new(0.0, 0.0, 1.0))
+    }
+
+    fn glassy_sphere() -> Shape {
+        Sphere::shape()
+            .with_transparency(1.0)
+            .with_refractive_index(1.5)
     }
 
     #[test]
@@ -136,5 +181,38 @@ mod test {
         let xs = i1.merge(i2).merge(i3).merge(i4.clone());
         let i = xs.hit();
         assert_eq!(i, i4.get(0));
+    }
+
+    #[test]
+    fn finding_n1_and_n2_at_various_intersections() {
+        let a = glassy_sphere()
+            .with_refractive_index(1.5)
+            .with_transform(Transform::scaling(2.0, 2.0, 2.0));
+        let b = glassy_sphere()
+            .with_refractive_index(2.0)
+            .with_transform(Transform::translation(0.0, 0.0, -0.25));
+        let c = glassy_sphere()
+            .with_refractive_index(2.5)
+            .with_transform(Transform::translation(0.0, 0.0, 0.25));
+
+        let r = Ray::new(Point::new(0.0, 0.0, -4.0), Vector::new(0.0, 0.0, 1.0));
+
+        let w = World::new(vec![], vec![a, b, c]);
+        let xs = w.intersect(&r);
+
+        let expected_n1_n2 = [
+            (1.0, 1.5),
+            (1.5, 2.0),
+            (2.0, 2.5),
+            (2.5, 2.5),
+            (2.5, 1.5),
+            (1.5, 1.0),
+        ];
+
+        for (index, i) in xs.data.iter().enumerate() {
+            let (n1, n2) = expected_n1_n2[index];
+            assert_float_eq!(n1, i.n1().unwrap());
+            assert_float_eq!(n2, i.n2().unwrap());
+        }
     }
 }

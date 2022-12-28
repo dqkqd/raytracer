@@ -5,6 +5,7 @@ use crate::{
     Canvas, Point, Ray, Transform, World,
 };
 
+#[derive(Debug, Clone, Copy, PartialEq)]
 pub struct Camera {
     hsize: usize,
     vsize: usize,

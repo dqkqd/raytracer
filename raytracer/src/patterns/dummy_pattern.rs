@@ -1,5 +1,6 @@
 use super::pattern::{Pattern, PatternKind};
 
+// TestPattern used only for testing
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub struct TestPattern {}
 

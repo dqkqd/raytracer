@@ -19,7 +19,7 @@ macro_rules! transformable {
                 self.inversed_transform = transform.inverse();
             }
 
-            fn with_transform(mut self, transform: Transform) -> Self {
+            fn with_transform(mut self, transform: $crate::Transform) -> Self {
                 self.set_transform(transform);
                 self
             }

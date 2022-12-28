@@ -76,6 +76,11 @@ impl Material {
         normal_vector: &Vector,
         shadowed: bool,
     ) -> Color {
+        if let Some(pattern) = self.pattern {
+            let color = pattern.color_at(position);
+            return color;
+        }
+
         let effective_color = self.color & light.intensity();
         let light_vector = (light.position() - *position).normalize();
         let ambient = effective_color * self.model.ambient();
@@ -128,5 +133,23 @@ mod test {
         let p = StripedPattern::pattern(color::WHITE, color::BLACK);
         let m = Material::default().with_pattern(p);
         assert_eq!(m.pattern, Some(p));
+    }
+
+    #[test]
+    fn lighting_with_pattern_applied() {
+        let p = StripedPattern::pattern(color::WHITE, color::BLACK);
+        let m = Material::default()
+            .with_ambient(1.0)
+            .with_diffuse(0.0)
+            .with_specular(0.0)
+            .with_pattern(p);
+
+        let eyev = Vector::new(0.0, 0.0, -1.0);
+        let normalv = Vector::new(0.0, 0.0, -1.0);
+        let light = PointLight::new(Point::new(0.0, 0.0, -10.0), color::WHITE);
+        let c1 = m.lighting(&light, &Point::new(0.9, 0.0, 0.0), &eyev, &normalv, false);
+        let c2 = m.lighting(&light, &Point::new(1.1, 0.0, 0.0), &eyev, &normalv, false);
+        assert_eq!(c1, color::WHITE);
+        assert_eq!(c2, color::BLACK);
     }
 }

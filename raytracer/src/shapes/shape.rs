@@ -40,6 +40,7 @@ impl ShapeLocal for Shape {
             ShapeKind::Sphere(s) => s.local_intersection(local_ray),
             ShapeKind::TestShape(s) => s.local_intersection(local_ray),
             ShapeKind::Plane(p) => p.local_intersection(local_ray),
+            ShapeKind::Cube(c) => c.local_intersection(local_ray),
         }
     }
 
@@ -48,6 +49,7 @@ impl ShapeLocal for Shape {
             ShapeKind::Sphere(s) => s.local_normal_at(object_point),
             ShapeKind::TestShape(s) => s.local_normal_at(object_point),
             ShapeKind::Plane(p) => p.local_normal_at(object_point),
+            ShapeKind::Cube(c) => c.local_normal_at(object_point),
         }
     }
 }

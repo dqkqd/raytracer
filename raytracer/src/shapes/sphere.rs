@@ -2,27 +2,27 @@ use crate::{util::solve_quadratic_equation, IntersectionsFactor, Point, Ray, Vec
 
 use super::{shape::Shape, ShapeKind, ShapeLocal};
 
+// Sphere always located at (0,0,0) with radius 1.0
 #[derive(Debug, Clone, Copy, PartialEq)]
-pub struct Sphere {
-    origin: Point,
-    radius: f64,
-}
+pub struct Sphere {}
 
 impl Sphere {
     pub fn shape() -> Shape {
-        let origin = Point::new(0.0, 0.0, 0.0);
-        let radius = 1.0;
-        Shape::new(ShapeKind::Sphere(Sphere { origin, radius }))
+        Shape::new(ShapeKind::Sphere(Sphere {}))
+    }
+
+    fn origin(&self) -> Point {
+        Point::default()
     }
 }
 
 impl ShapeLocal for Sphere {
     fn local_normal_at(&self, point: &Point) -> Vector {
-        (*point - self.origin).normalize()
+        (*point - self.origin()).normalize()
     }
 
     fn local_intersection(&self, local_ray: &Ray) -> IntersectionsFactor {
-        let sphere_to_ray = local_ray.origin() - self.origin;
+        let sphere_to_ray = local_ray.origin() - self.origin();
         let a = local_ray.direction().dot(&local_ray.direction());
         let b = 2.0 * local_ray.direction().dot(&sphere_to_ray);
         let c = sphere_to_ray.dot(&sphere_to_ray) - 1.0;

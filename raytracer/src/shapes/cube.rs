@@ -2,6 +2,7 @@ use crate::{intersect::IntersectionsFactor, util::check_axis, Point, Vector};
 
 use super::{shape::Shape, ShapeKind, ShapeLocal};
 
+// Cube always located at (0,0,0) and extended from -1 to 1.
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub struct Cube {}
 

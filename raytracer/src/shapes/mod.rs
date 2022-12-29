@@ -1,11 +1,4 @@
-use crate::{
-    transform::Transformable, Color, Intersections, IntersectionsFactor, Material, Pattern, Point,
-    Ray, Vector,
-};
-
-use self::{cube::Cube, dummy_shape::Dummy, plane::Plane, sphere::Sphere};
-
-pub(super) mod dummy_shape;
+pub(super) mod dummy;
 
 pub(crate) mod shape;
 
@@ -14,6 +7,13 @@ pub mod sphere;
 pub mod plane;
 
 pub mod cube;
+
+use crate::{
+    transform::Transformable, Color, Intersections, IntersectionsFactor, Material, Pattern, Point,
+    Ray, Vector,
+};
+
+use self::{cube::Cube, dummy::Dummy, plane::Plane, sphere::Sphere};
 
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub enum ShapeKind {

@@ -4,8 +4,7 @@ use crate::{
 };
 
 use super::{
-    dummy_shape::Dummy, plane::Plane, sphere::Sphere, ShapeKind, ShapeLocal, ShapeMaterial,
-    ShapeWorld,
+    dummy::Dummy, plane::Plane, sphere::Sphere, ShapeKind, ShapeLocal, ShapeMaterial, ShapeWorld,
 };
 
 #[derive(Debug, Clone, Copy, PartialEq)]

@@ -3,7 +3,10 @@ use crate::{
     Color, Point, Shape, Transform, Transformable,
 };
 
-use super::{PatternKind, PatternLocal, PatternWorld};
+use super::{
+    dummy::DummyPattern, CheckerPattern, GradientPattern, PatternKind, PatternLocal, PatternWorld,
+    RingPattern, StripedPattern,
+};
 
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub struct Pattern {
@@ -19,6 +22,38 @@ impl Pattern {
             pattern,
             inversed_transform: Some(Transform::identity()),
         }
+    }
+
+    pub fn stripe(left_color: Color, right_color: Color) -> Pattern {
+        Pattern::new(PatternKind::StripedPattern(StripedPattern::new(
+            left_color,
+            right_color,
+        )))
+    }
+
+    pub fn ring(left_color: Color, right_color: Color) -> Pattern {
+        Pattern::new(PatternKind::RingPattern(RingPattern::new(
+            left_color,
+            right_color,
+        )))
+    }
+
+    pub fn gradient(left_color: Color, right_color: Color) -> Pattern {
+        Pattern::new(PatternKind::GradientPattern(GradientPattern::new(
+            left_color,
+            right_color,
+        )))
+    }
+
+    pub fn checker(left_color: Color, right_color: Color) -> Pattern {
+        Pattern::new(PatternKind::CheckerPattern(CheckerPattern::new(
+            left_color,
+            right_color,
+        )))
+    }
+
+    pub fn dummy() -> Pattern {
+        Pattern::new(PatternKind::TestPattern(DummyPattern::default()))
     }
 }
 
@@ -47,27 +82,27 @@ impl PatternWorld for Pattern {
 
 #[cfg(test)]
 mod test {
-    use crate::{patterns::dummy_pattern::TestPattern, Transformable};
+    use crate::Transformable;
 
     use super::*;
 
     #[test]
     fn default_pattern_transformation() {
-        let p = TestPattern::pattern();
+        let p = Pattern::dummy();
         assert_eq!(p.inversed_transform, Some(Transform::identity()))
     }
 
     #[test]
     fn assigning_transformtion() {
         let m = Transform::scaling(1.0, 2.0, 3.0);
-        let p = TestPattern::pattern().with_transform(m);
+        let p = Pattern::dummy().with_transform(m);
         assert_eq!(p.inversed_transform, m.inverse());
     }
 
     #[test]
     fn pattern_with_an_object_transformation() {
         let s = Shape::sphere().with_transform(Transform::scaling(2.0, 2.0, 2.0));
-        let p = TestPattern::pattern();
+        let p = Pattern::dummy();
         let c = p.pattern_at_shape(&s, &Point::new(2.0, 3.0, 4.0));
         assert_eq!(c, Color::new(1.0, 1.5, 2.0));
     }
@@ -75,7 +110,7 @@ mod test {
     #[test]
     fn pattern_with_a_pattern_transformation() {
         let s = Shape::sphere();
-        let p = TestPattern::pattern().with_transform(Transform::scaling(2.0, 2.0, 2.0));
+        let p = Pattern::dummy().with_transform(Transform::scaling(2.0, 2.0, 2.0));
         let c = p.pattern_at_shape(&s, &Point::new(2.0, 3.0, 4.0));
         assert_eq!(c, Color::new(1.0, 1.5, 2.0));
     }
@@ -83,7 +118,7 @@ mod test {
     #[test]
     fn stripe_with_both_an_object_and_a_pattern_transformation() {
         let s = Shape::sphere().with_transform(Transform::scaling(2.0, 2.0, 2.0));
-        let p = TestPattern::pattern().with_transform(Transform::translation(0.5, 1.0, 1.5));
+        let p = Pattern::dummy().with_transform(Transform::translation(0.5, 1.0, 1.5));
         let c = p.pattern_at_shape(&s, &Point::new(2.5, 3.0, 3.5));
         assert_eq!(c, Color::new(0.75, 0.5, 0.25));
     }

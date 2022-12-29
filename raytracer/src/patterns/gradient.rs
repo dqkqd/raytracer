@@ -1,6 +1,6 @@
 use crate::{transform::InversedTransform, Color, Point, Transform};
 
-use super::{pattern::Pattern, PatternKind, PatternLocal};
+use super::PatternLocal;
 
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub struct GradientPattern {
@@ -16,13 +16,6 @@ impl GradientPattern {
             right_color,
             inversed_transform: Some(Transform::identity()),
         }
-    }
-
-    pub fn pattern(left_color: Color, right_color: Color) -> Pattern {
-        Pattern::new(PatternKind::GradientPattern(GradientPattern::new(
-            left_color,
-            right_color,
-        )))
     }
 }
 

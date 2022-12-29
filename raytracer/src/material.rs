@@ -158,9 +158,7 @@ impl Material {
 
 #[cfg(test)]
 mod test {
-    use crate::{
-        patterns::stripe::StripedPattern, util::assert_float_eq,
-    };
+    use crate::util::assert_float_eq;
 
     use super::*;
 
@@ -177,7 +175,7 @@ mod test {
 
     #[test]
     fn assigning_pattern() {
-        let p = StripedPattern::pattern(color::WHITE, color::BLACK);
+        let p = Pattern::stripe(color::WHITE, color::BLACK);
         let m = Material::default().with_pattern(p);
         assert_eq!(m.pattern, Some(p));
     }
@@ -186,7 +184,7 @@ mod test {
     fn lighting_with_pattern_applied() {
         let s = Shape::dummy();
 
-        let p = StripedPattern::pattern(color::WHITE, color::BLACK);
+        let p = Pattern::stripe(color::WHITE, color::BLACK);
 
         let m = Material::default()
             .with_ambient(1.0)

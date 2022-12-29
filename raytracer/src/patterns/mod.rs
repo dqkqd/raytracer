@@ -1,13 +1,13 @@
 use crate::{Color, Point, Shape};
 
 use self::{
-    checker::CheckerPattern, dummy_pattern::TestPattern, gradient::GradientPattern,
-    ring::RingPattern, stripe::StripedPattern,
+    checker::CheckerPattern, dummy::DummyPattern, gradient::GradientPattern, ring::RingPattern,
+    stripe::StripedPattern,
 };
 
 pub mod pattern;
 
-pub mod dummy_pattern;
+pub mod dummy;
 
 pub mod stripe;
 
@@ -20,7 +20,7 @@ pub mod checker;
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub enum PatternKind {
     StripedPattern(StripedPattern),
-    TestPattern(TestPattern),
+    TestPattern(DummyPattern),
     GradientPattern(GradientPattern),
     RingPattern(RingPattern),
     CheckerPattern(CheckerPattern),

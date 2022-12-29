@@ -1,6 +1,6 @@
 use raytracer::{
-    color, shapes::ShapeMaterial, Camera, CheckerPattern, Color, Point, PointLight, Shape,
-    Transform, Transformable, Vector, World,
+    color, shapes::ShapeMaterial, Camera, Color, Pattern, Point, PointLight, Shape, Transform,
+    Transformable, Vector, World,
 };
 
 const IMAGE_PPM: &str = "test.ppm";
@@ -11,7 +11,7 @@ fn main() {
         .with_ambient(0.8)
         .with_diffuse(0.2)
         .with_specular(0.0)
-        .with_pattern(CheckerPattern::pattern(
+        .with_pattern(Pattern::checker(
             Color::new(0.15, 0.15, 0.15),
             Color::new(0.85, 0.85, 0.85),
         ))

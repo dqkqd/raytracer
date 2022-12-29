@@ -1,6 +1,6 @@
 use crate::{transform::InversedTransform, util::equal, Color, Point, Transform};
 
-use super::{pattern::Pattern, PatternKind, PatternLocal};
+use super::PatternLocal;
 
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub struct RingPattern {
@@ -16,13 +16,6 @@ impl RingPattern {
             right_color,
             inversed_transform: Some(Transform::identity()),
         }
-    }
-
-    pub fn pattern(left_color: Color, right_color: Color) -> Pattern {
-        Pattern::new(PatternKind::RingPattern(RingPattern::new(
-            left_color,
-            right_color,
-        )))
     }
 }
 

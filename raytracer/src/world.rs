@@ -119,8 +119,9 @@ impl World {
 mod test {
 
     use crate::{
-        color, intersect::intersection::Intersection, patterns::dummy_pattern::TestPattern,
-        shapes::ShapeMaterial, transform::Transformable, util::assert_float_eq, Camera, Material, Transform, Vector,
+        color, intersect::intersection::Intersection, shapes::ShapeMaterial,
+        transform::Transformable, util::assert_float_eq, Camera, Material, Pattern, Transform,
+        Vector,
     };
 
     use super::*;
@@ -416,7 +417,7 @@ mod test {
         let mut w = default_world();
         w.objects[0] = w.objects[0]
             .with_ambient(1.0)
-            .with_pattern(TestPattern::pattern());
+            .with_pattern(Pattern::dummy());
         w.objects[1] = w.objects[1]
             .with_transparency(1.0)
             .with_refractive_index(1.5);

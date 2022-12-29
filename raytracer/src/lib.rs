@@ -43,6 +43,4 @@ pub use camera::Camera;
 
 pub mod patterns;
 pub use patterns::pattern::Pattern;
-pub use patterns::{
-    checker::CheckerPattern, gradient::GradientPattern, ring::RingPattern, stripe::StripedPattern,
-};
+pub use patterns::{checker::CheckerPattern, gradient::GradientPattern, ring::RingPattern};

@@ -1,6 +1,6 @@
 use raytracer::{
-    color, shapes::ShapeMaterial, Camera, CheckerPattern, Color, GradientPattern, Point,
-    PointLight, RingPattern, Shape, StripedPattern, Transform, Transformable, Vector, World,
+    color, shapes::ShapeMaterial, Camera, Color, Pattern, Point, PointLight, Shape, Transform,
+    Transformable, Vector, World,
 };
 
 const IMAGE_PPM: &str = "test.ppm";
@@ -11,7 +11,7 @@ fn main() {
         .with_color(Color::new(1.0, 0.9, 0.9))
         .with_specular(0.0)
         .with_pattern(
-            CheckerPattern::pattern(color::WHITE, color::BLACK)
+            Pattern::checker(color::WHITE, color::BLACK)
                 .with_transform(Transform::scaling(0.4, 0.4, 0.4)),
         );
 
@@ -21,7 +21,7 @@ fn main() {
         .with_specular(0.3)
         .with_transform(Transform::translation(-0.5, 1.0, 0.5))
         .with_pattern(
-            StripedPattern::pattern(Color::from("#ff0000"), color::WHITE).with_transform(
+            Pattern::stripe(Color::from("#ff0000"), color::WHITE).with_transform(
                 Transform::rotation_z(std::f64::consts::FRAC_PI_2).scale(0.3, 0.3, 0.3),
             ),
         );
@@ -32,7 +32,7 @@ fn main() {
         .with_specular(0.3)
         .with_transform(Transform::scaling(0.5, 0.5, 0.5).translate(1.5, 0.5, -0.5))
         .with_pattern(
-            RingPattern::pattern(Color::from("#ff0000"), Color::from("#0000ff"))
+            Pattern::ring(Color::from("#ff0000"), Color::from("#0000ff"))
                 .with_transform(Transform::scaling(0.05, 1.0, 1.0).rotate_y(1.6)),
         );
 
@@ -42,7 +42,7 @@ fn main() {
         .with_specular(0.3)
         .with_transform(Transform::scaling(0.33, 0.33, 0.33).translate(-1.5, 0.33, -0.75))
         .with_pattern(
-            GradientPattern::pattern(color::BLACK, Color::from("#00ffff"))
+            Pattern::gradient(color::BLACK, Color::from("#00ffff"))
                 .with_transform(Transform::rotation_y(std::f64::consts::FRAC_PI_2 * 0.8)),
         );
 

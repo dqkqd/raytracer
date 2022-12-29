@@ -122,7 +122,7 @@ impl ShapeMaterial for Shape {
 
 #[cfg(test)]
 mod test {
-    use crate::{patterns::dummy_pattern::TestPattern, util::assert_float_eq, Transformable};
+    use crate::{util::assert_float_eq, Transformable};
 
     use super::*;
 
@@ -217,7 +217,7 @@ mod test {
 
     #[test]
     fn shape_with_default_pattern() {
-        let p = TestPattern::pattern();
+        let p = Pattern::dummy();
         let s = Shape::dummy().with_pattern(p);
         assert_eq!(s.material.pattern(), Some(&p));
     }

@@ -4,17 +4,11 @@ use crate::{
     Point, Vector,
 };
 
-use super::{shape::Shape, ShapeKind, ShapeLocal};
+use super::ShapeLocal;
 
 // Cube always located at (0,0,0) and extended from -1 to 1.
-#[derive(Debug, Clone, Copy, PartialEq)]
+#[derive(Debug, Clone, Copy, PartialEq, Default)]
 pub struct Cube {}
-
-impl Cube {
-    pub fn shape() -> Shape {
-        Shape::new(ShapeKind::Cube(Cube {}))
-    }
-}
 
 impl ShapeLocal for Cube {
     fn local_normal_at(&self, _: &Point) -> Vector {
@@ -42,13 +36,13 @@ impl ShapeLocal for Cube {
 #[cfg(test)]
 mod test {
 
-    use crate::{util::assert_float_eq, Ray};
+    use crate::{util::assert_float_eq, Ray, Shape};
 
     use super::*;
 
     #[test]
     fn ray_intersect_a_cube() {
-        let c = Cube::shape();
+        let c = Shape::cube();
         let test_intersect = |origin: Point, direction: Vector, t1, t2| {
             let r = Ray::new(origin, direction);
             let xs = c.local_intersection(&r);
@@ -103,7 +97,7 @@ mod test {
 
     #[test]
     fn ray_misses_cube() {
-        let c = Cube::shape();
+        let c = Shape::cube();
         let test_intersect = |origin: Point, direction: Vector| {
             let r = Ray::new(origin, direction);
             let xs = c.local_intersection(&r);

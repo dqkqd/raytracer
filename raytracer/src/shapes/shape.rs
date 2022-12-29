@@ -4,7 +4,8 @@ use crate::{
 };
 
 use super::{
-    dummy::Dummy, plane::Plane, sphere::Sphere, ShapeKind, ShapeLocal, ShapeMaterial, ShapeWorld,
+    cube::Cube, dummy::Dummy, plane::Plane, sphere::Sphere, ShapeKind, ShapeLocal, ShapeMaterial,
+    ShapeWorld,
 };
 
 #[derive(Debug, Clone, Copy, PartialEq)]
@@ -31,6 +32,10 @@ impl Shape {
 
     pub fn plane() -> Shape {
         Shape::new(ShapeKind::Plane(Plane::default()))
+    }
+
+    pub fn cube() -> Shape {
+        Shape::new(ShapeKind::Cube(Cube::default()))
     }
 
     pub fn dummy() -> Shape {

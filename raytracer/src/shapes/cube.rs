@@ -11,8 +11,15 @@ use super::ShapeLocal;
 pub(crate) struct Cube {}
 
 impl ShapeLocal for Cube {
-    fn local_normal_at(&self, _: &Point) -> Vector {
-        Vector::new(0.0, 1.0, 0.0)
+    fn local_normal_at(&self, point: &Point) -> Vector {
+        let maxc = point.x().abs().max(point.y().abs()).max(point.z().abs());
+        if equal(maxc, point.x().abs()) {
+            Vector::new(point.x(), 0.0, 0.0)
+        } else if equal(maxc, point.y().abs()) {
+            Vector::new(0.0, point.y(), 0.0)
+        } else {
+            Vector::new(0.0, 0.0, point.z())
+        }
     }
 
     fn local_intersection(&self, local_ray: &crate::Ray) -> IntersectionsFactor {
@@ -119,5 +126,23 @@ mod test {
         test_intersect(Point::new(2.0, 0.0, 2.0), Vector::new(0.0, 0.0, -1.0));
         test_intersect(Point::new(0.0, 2.0, 2.0), Vector::new(0.0, -1.0, 0.0));
         test_intersect(Point::new(2.0, 2.0, 0.0), Vector::new(-1.0, 0.0, 0.0));
+    }
+
+    #[test]
+    fn normal_on_surface_of_cube() {
+        let c = Shape::cube();
+        let test_normal = |point: Point, expected_normal: Vector| {
+            let normal = c.local_normal_at(&point);
+            assert_eq!(normal, expected_normal);
+        };
+
+        test_normal(Point::new(1.0, 0.5, -0.8), Vector::new(1.0, 0.0, 0.0));
+        test_normal(Point::new(-1.0, -0.2, 0.9), Vector::new(-1.0, 0.0, 0.0));
+        test_normal(Point::new(-0.4, 1.0, -0.1), Vector::new(0.0, 1.0, 0.0));
+        test_normal(Point::new(0.3, -1.0, -0.7), Vector::new(0.0, -1.0, 0.0));
+        test_normal(Point::new(-0.6, 0.3, 1.0), Vector::new(0.0, 0.0, 1.0));
+        test_normal(Point::new(0.4, 0.4, -1.0), Vector::new(0.0, 0.0, -1.0));
+        test_normal(Point::new(1.0, 1.0, 1.0), Vector::new(1.0, 0.0, 0.0));
+        test_normal(Point::new(-1.0, -1.0, -1.0), Vector::new(-1.0, 0.0, 0.0));
     }
 }

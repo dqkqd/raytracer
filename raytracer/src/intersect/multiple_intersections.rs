@@ -80,7 +80,9 @@ impl<'a> Intersections<'a> {
                 comp.set_n2(enter_index);
                 container.push(comp.object());
             } else {
-                let presented = container.iter().position(|&object| object == comp.object());
+                let presented = container
+                    .iter()
+                    .position(|&object| std::ptr::eq(object, comp.object()));
                 if let Some(index) = presented {
                     let exit_index = container.last().unwrap().material().refractive_index();
                     container.remove(index);

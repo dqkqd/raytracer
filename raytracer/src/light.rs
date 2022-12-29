@@ -38,13 +38,13 @@ impl PointLight {
 #[cfg(test)]
 mod test {
 
-    use crate::{color, shapes::dummy_shape::TestShape};
+    use crate::{color};
 
     use super::*;
 
     fn shape_material_point_setup() -> (Shape, Material, Point) {
         (
-            TestShape::shape(),
+            Shape::dummy(),
             Material::default(),
             Point::new(0.0, 0.0, 0.0),
         )

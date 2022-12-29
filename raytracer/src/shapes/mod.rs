@@ -3,7 +3,7 @@ use crate::{
     Ray, Vector,
 };
 
-use self::{cube::Cube, dummy_shape::TestShape, plane::Plane, sphere::Sphere};
+use self::{cube::Cube, dummy_shape::Dummy, plane::Plane, sphere::Sphere};
 
 pub(super) mod dummy_shape;
 
@@ -20,7 +20,7 @@ pub enum ShapeKind {
     Sphere(Sphere),
     Plane(Plane),
     Cube(Cube),
-    TestShape(TestShape),
+    Dummy(Dummy),
 }
 pub trait ShapeMaterial {
     fn material(&self) -> &Material;

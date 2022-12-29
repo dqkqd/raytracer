@@ -159,7 +159,7 @@ impl Material {
 #[cfg(test)]
 mod test {
     use crate::{
-        patterns::stripe::StripedPattern, shapes::dummy_shape::TestShape, util::assert_float_eq,
+        patterns::stripe::StripedPattern, util::assert_float_eq,
     };
 
     use super::*;
@@ -184,7 +184,7 @@ mod test {
 
     #[test]
     fn lighting_with_pattern_applied() {
-        let s = TestShape::shape();
+        let s = Shape::dummy();
 
         let p = StripedPattern::pattern(color::WHITE, color::BLACK);
 

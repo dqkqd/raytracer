@@ -2,7 +2,7 @@ use std::ops::{Add, Sub};
 
 use crate::{util::equal, vector::Vector, Transform};
 
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone, Copy, Default)]
 pub struct Point {
     x: f64,
     y: f64,
@@ -13,6 +13,7 @@ impl Point {
     pub fn new(x: f64, y: f64, z: f64) -> Point {
         Point { x, y, z }
     }
+
     pub fn x(&self) -> f64 {
         self.x
     }

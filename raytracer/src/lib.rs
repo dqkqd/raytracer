@@ -22,9 +22,7 @@ pub(crate) mod ray;
 pub use ray::Ray;
 
 pub mod shapes;
-pub use shapes::plane::Plane;
 pub use shapes::shape::Shape;
-pub use shapes::sphere::Sphere;
 
 pub(crate) mod intersect;
 pub(crate) use intersect::{Intersections, IntersectionsFactor};

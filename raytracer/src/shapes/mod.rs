@@ -16,7 +16,7 @@ use crate::{
 use self::{cube::Cube, dummy::Dummy, plane::Plane, sphere::Sphere};
 
 #[derive(Debug, Clone, Copy, PartialEq)]
-pub enum ShapeKind {
+pub(crate) enum ShapeKind {
     Sphere(Sphere),
     Plane(Plane),
     Cube(Cube),

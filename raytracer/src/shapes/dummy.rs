@@ -4,7 +4,7 @@ use super::ShapeLocal;
 
 // use for test shape's behavior
 #[derive(Debug, Clone, Copy, PartialEq, Default)]
-pub struct Dummy {}
+pub(crate) struct Dummy {}
 
 impl ShapeLocal for Dummy {
     fn local_normal_at(&self, point: &Point) -> Vector {

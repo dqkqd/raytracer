@@ -8,7 +8,7 @@ use super::ShapeLocal;
 
 // Cube always located at (0,0,0) and extended from -1 to 1.
 #[derive(Debug, Clone, Copy, PartialEq, Default)]
-pub struct Cube {}
+pub(crate) struct Cube {}
 
 impl ShapeLocal for Cube {
     fn local_normal_at(&self, _: &Point) -> Vector {

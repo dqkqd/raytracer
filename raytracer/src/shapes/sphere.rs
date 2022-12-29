@@ -4,7 +4,7 @@ use super::ShapeLocal;
 
 // Sphere always located at (0,0,0) with radius 1.0
 #[derive(Debug, Clone, Copy, PartialEq, Default)]
-pub struct Sphere {}
+pub(crate) struct Sphere {}
 
 impl Sphere {
     fn origin(&self) -> Point {

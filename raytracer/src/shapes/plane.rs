@@ -3,7 +3,7 @@ use crate::{intersect::IntersectionsFactor, util::solve_linear_equation, Point, 
 use super::ShapeLocal;
 
 #[derive(Debug, Clone, Copy, PartialEq, Default)]
-pub struct Plane {}
+pub(crate) struct Plane {}
 
 impl ShapeLocal for Plane {
     fn local_normal_at(&self, _: &Point) -> Vector {

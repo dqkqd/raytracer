@@ -18,7 +18,7 @@ pub struct Shape {
 transformable!(Shape);
 
 impl Shape {
-    pub fn new(shape: ShapeKind) -> Shape {
+    fn new(shape: ShapeKind) -> Shape {
         Shape {
             shape,
             inversed_transform: Some(Transform::identity()),

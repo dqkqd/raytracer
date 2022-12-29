@@ -18,12 +18,12 @@ pub mod ring;
 pub mod checker;
 
 #[derive(Debug, Clone, Copy, PartialEq)]
-pub enum PatternKind {
-    StripedPattern(StripedPattern),
-    TestPattern(DummyPattern),
-    GradientPattern(GradientPattern),
-    RingPattern(RingPattern),
-    CheckerPattern(CheckerPattern),
+pub(crate) enum PatternKind {
+    Stripe(StripedPattern),
+    Dummy(DummyPattern),
+    Gradient(GradientPattern),
+    Ring(RingPattern),
+    Checker(CheckerPattern),
 }
 
 pub trait PatternLocal {

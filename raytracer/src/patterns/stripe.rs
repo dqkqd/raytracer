@@ -3,14 +3,14 @@ use crate::{transform::InversedTransform, util::equal, Color, Point, Transform};
 use super::PatternLocal;
 
 #[derive(Debug, Clone, Copy, PartialEq)]
-pub struct StripedPattern {
+pub(crate) struct StripedPattern {
     left_color: Color,
     right_color: Color,
     inversed_transform: InversedTransform,
 }
 
 impl StripedPattern {
-    pub(crate) fn new(left_color: Color, right_color: Color) -> StripedPattern {
+    pub fn new(left_color: Color, right_color: Color) -> StripedPattern {
         StripedPattern {
             left_color,
             right_color,

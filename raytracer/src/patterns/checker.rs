@@ -3,14 +3,14 @@ use crate::{transform::InversedTransform, util::equal, Color, Point, Transform};
 use super::PatternLocal;
 
 #[derive(Debug, Clone, Copy, PartialEq)]
-pub struct CheckerPattern {
+pub(crate) struct CheckerPattern {
     left_color: Color,
     right_color: Color,
     inversed_transform: InversedTransform,
 }
 
 impl CheckerPattern {
-    pub(crate) fn new(left_color: Color, right_color: Color) -> CheckerPattern {
+    pub fn new(left_color: Color, right_color: Color) -> CheckerPattern {
         CheckerPattern {
             left_color,
             right_color,

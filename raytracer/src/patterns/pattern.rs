@@ -17,7 +17,7 @@ pub struct Pattern {
 transformable!(Pattern);
 
 impl Pattern {
-    pub fn new(pattern: PatternKind) -> Pattern {
+    fn new(pattern: PatternKind) -> Pattern {
         Pattern {
             pattern,
             inversed_transform: Some(Transform::identity()),
@@ -25,46 +25,43 @@ impl Pattern {
     }
 
     pub fn stripe(left_color: Color, right_color: Color) -> Pattern {
-        Pattern::new(PatternKind::StripedPattern(StripedPattern::new(
+        Pattern::new(PatternKind::Stripe(StripedPattern::new(
             left_color,
             right_color,
         )))
     }
 
     pub fn ring(left_color: Color, right_color: Color) -> Pattern {
-        Pattern::new(PatternKind::RingPattern(RingPattern::new(
-            left_color,
-            right_color,
-        )))
+        Pattern::new(PatternKind::Ring(RingPattern::new(left_color, right_color)))
     }
 
     pub fn gradient(left_color: Color, right_color: Color) -> Pattern {
-        Pattern::new(PatternKind::GradientPattern(GradientPattern::new(
+        Pattern::new(PatternKind::Gradient(GradientPattern::new(
             left_color,
             right_color,
         )))
     }
 
     pub fn checker(left_color: Color, right_color: Color) -> Pattern {
-        Pattern::new(PatternKind::CheckerPattern(CheckerPattern::new(
+        Pattern::new(PatternKind::Checker(CheckerPattern::new(
             left_color,
             right_color,
         )))
     }
 
     pub fn dummy() -> Pattern {
-        Pattern::new(PatternKind::TestPattern(DummyPattern::default()))
+        Pattern::new(PatternKind::Dummy(DummyPattern::default()))
     }
 }
 
 impl PatternLocal for Pattern {
     fn pattern_at(&self, point: &Point) -> Color {
         match self.pattern {
-            PatternKind::StripedPattern(p) => p.pattern_at(point),
-            PatternKind::TestPattern(p) => p.pattern_at(point),
-            PatternKind::GradientPattern(p) => p.pattern_at(point),
-            PatternKind::RingPattern(p) => p.pattern_at(point),
-            PatternKind::CheckerPattern(p) => p.pattern_at(point),
+            PatternKind::Stripe(p) => p.pattern_at(point),
+            PatternKind::Dummy(p) => p.pattern_at(point),
+            PatternKind::Gradient(p) => p.pattern_at(point),
+            PatternKind::Ring(p) => p.pattern_at(point),
+            PatternKind::Checker(p) => p.pattern_at(point),
         }
     }
 }

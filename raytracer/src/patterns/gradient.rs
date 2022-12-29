@@ -3,7 +3,7 @@ use crate::{transform::InversedTransform, Color, Point, Transform};
 use super::PatternLocal;
 
 #[derive(Debug, Clone, Copy, PartialEq)]
-pub struct GradientPattern {
+pub(crate) struct GradientPattern {
     left_color: Color,
     right_color: Color,
     inversed_transform: InversedTransform,

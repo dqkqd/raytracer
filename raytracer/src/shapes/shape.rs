@@ -3,7 +3,7 @@ use crate::{
     Color, Intersections, IntersectionsFactor, Material, Pattern, Point, Ray, Transform, Vector,
 };
 
-use super::{ShapeKind, ShapeLocal, ShapeMaterial, ShapeWorld};
+use super::{sphere::Sphere, ShapeKind, ShapeLocal, ShapeMaterial, ShapeWorld};
 
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub struct Shape {
@@ -21,6 +21,10 @@ impl Shape {
             inversed_transform: Some(Transform::identity()),
             material: Material::default(),
         }
+    }
+
+    pub fn sphere() -> Shape {
+        Shape::new(ShapeKind::Sphere(Sphere::default()))
     }
 }
 
@@ -105,7 +109,7 @@ impl ShapeMaterial for Shape {
 mod test {
     use crate::{
         patterns::dummy_pattern::TestPattern, shapes::dummy_shape::TestShape,
-        util::assert_float_eq, Sphere, Transformable,
+        util::assert_float_eq, Transformable,
     };
 
     use super::*;
@@ -226,7 +230,7 @@ mod test {
     #[test]
     fn intersecting_a_translated_shape_with_a_ray() {
         let r = Ray::new(Point::new(0.0, 0.0, -5.0), Vector::new(0.0, 0.0, 1.0));
-        let s = Sphere::shape().with_transform(Transform::translation(5.0, 0.0, 0.0));
+        let s = Shape::sphere().with_transform(Transform::translation(5.0, 0.0, 0.0));
         let local_ray = s.transform_ray(&r).unwrap();
         assert_eq!(local_ray.origin(), Point::new(-5.0, 0.0, -5.0));
         assert_eq!(local_ray.direction(), Vector::new(0.0, 0.0, 1.0));

@@ -1,5 +1,5 @@
 use raytracer::{
-    color, shapes::ShapeMaterial, Camera, Color, Plane, Point, PointLight, Sphere, Transform,
+    color, shapes::ShapeMaterial, Camera, Color, Plane, Point, PointLight, Shape, Transform,
     Transformable, Vector, World,
 };
 
@@ -11,19 +11,19 @@ fn main() {
         .with_color(Color::new(1.0, 0.9, 0.9))
         .with_specular(0.0);
 
-    let middle = Sphere::shape()
+    let middle = Shape::sphere()
         .with_color(Color::new(0.1, 1.0, 0.5))
         .with_diffuse(0.7)
         .with_specular(0.3)
         .with_transform(Transform::translation(-0.5, 1.0, 0.5));
 
-    let right = Sphere::shape()
+    let right = Shape::sphere()
         .with_color(Color::new(0.5, 1.0, 0.1))
         .with_diffuse(0.7)
         .with_specular(0.3)
         .with_transform(Transform::scaling(0.5, 0.5, 0.5).translate(1.5, 0.5, -0.5));
 
-    let left = Sphere::shape()
+    let left = Shape::sphere()
         .with_color(Color::new(1.0, 0.8, 0.1))
         .with_diffuse(0.7)
         .with_specular(0.3)

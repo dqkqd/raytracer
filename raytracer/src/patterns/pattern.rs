@@ -47,7 +47,7 @@ impl PatternWorld for Pattern {
 
 #[cfg(test)]
 mod test {
-    use crate::{patterns::dummy_pattern::TestPattern, Sphere, Transformable};
+    use crate::{patterns::dummy_pattern::TestPattern, Transformable};
 
     use super::*;
 
@@ -66,7 +66,7 @@ mod test {
 
     #[test]
     fn pattern_with_an_object_transformation() {
-        let s = Sphere::shape().with_transform(Transform::scaling(2.0, 2.0, 2.0));
+        let s = Shape::sphere().with_transform(Transform::scaling(2.0, 2.0, 2.0));
         let p = TestPattern::pattern();
         let c = p.pattern_at_shape(&s, &Point::new(2.0, 3.0, 4.0));
         assert_eq!(c, Color::new(1.0, 1.5, 2.0));
@@ -74,7 +74,7 @@ mod test {
 
     #[test]
     fn pattern_with_a_pattern_transformation() {
-        let s = Sphere::shape();
+        let s = Shape::sphere();
         let p = TestPattern::pattern().with_transform(Transform::scaling(2.0, 2.0, 2.0));
         let c = p.pattern_at_shape(&s, &Point::new(2.0, 3.0, 4.0));
         assert_eq!(c, Color::new(1.0, 1.5, 2.0));
@@ -82,7 +82,7 @@ mod test {
 
     #[test]
     fn stripe_with_both_an_object_and_a_pattern_transformation() {
-        let s = Sphere::shape().with_transform(Transform::scaling(2.0, 2.0, 2.0));
+        let s = Shape::sphere().with_transform(Transform::scaling(2.0, 2.0, 2.0));
         let p = TestPattern::pattern().with_transform(Transform::translation(0.5, 1.0, 1.5));
         let c = p.pattern_at_shape(&s, &Point::new(2.5, 3.0, 3.5));
         assert_eq!(c, Color::new(0.75, 0.5, 0.25));

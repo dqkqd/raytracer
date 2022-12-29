@@ -121,20 +121,20 @@ mod test {
     use crate::{
         color, intersect::intersection::Intersection, patterns::dummy_pattern::TestPattern,
         shapes::ShapeMaterial, transform::Transformable, util::assert_float_eq, Camera, Material,
-        Plane, Sphere, Transform, Vector,
+        Plane, Transform, Vector,
     };
 
     use super::*;
 
     fn default_world() -> World {
         let point_light = PointLight::new(Point::new(-10.0, 10.0, -10.0), color::WHITE);
-        let s1 = Sphere::shape().with_material(
+        let s1 = Shape::sphere().with_material(
             Material::default()
                 .with_color(Color::new(0.8, 1.0, 0.6))
                 .with_diffuse(0.7)
                 .with_specular(0.2),
         );
-        let s2 = Sphere::shape().with_transform(Transform::scaling(0.5, 0.5, 0.5));
+        let s2 = Shape::sphere().with_transform(Transform::scaling(0.5, 0.5, 0.5));
 
         World::new(vec![point_light], vec![s1, s2])
     }
@@ -254,8 +254,8 @@ mod test {
     #[test]
     fn shade_hit_with_intersection_in_shadow() {
         let light_source = PointLight::new(Point::new(0.0, 0.0, -10.0), color::WHITE);
-        let s1 = Sphere::shape();
-        let s2 = Sphere::shape().with_transform(Transform::translation(0.0, 0.0, 10.0));
+        let s1 = Shape::sphere();
+        let s2 = Shape::sphere().with_transform(Transform::translation(0.0, 0.0, 10.0));
         let w = World::new(vec![light_source], vec![s1, s2]);
         let r = Ray::new(Point::new(0.0, 0.0, 5.0), Vector::new(0.0, 0.0, 1.0));
         let comp = Intersection::new(4.0, &s2)
@@ -435,7 +435,7 @@ mod test {
             .with_transparency(0.5)
             .with_refractive_index(1.5)
             .with_transform(Transform::translation(0.0, -1.0, 0.0));
-        let ball = Sphere::shape()
+        let ball = Shape::sphere()
             .with_color(Color::new(1.0, 0.0, 0.0))
             .with_ambient(0.5)
             .with_transform(Transform::translation(0.0, -3.5, -0.5));
@@ -464,7 +464,7 @@ mod test {
             .with_transparency(0.5)
             .with_refractive_index(1.5)
             .with_transform(Transform::translation(0.0, -1.0, 0.0));
-        let ball = Sphere::shape()
+        let ball = Shape::sphere()
             .with_color(Color::new(1.0, 0.0, 0.0))
             .with_ambient(0.5)
             .with_transform(Transform::translation(0.0, -3.5, -0.5));

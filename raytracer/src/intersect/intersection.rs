@@ -141,11 +141,11 @@ impl<'a> ComputedIntersection<'a> {
 #[cfg(test)]
 mod test {
     use super::*;
-    use crate::{util::assert_float_eq, Plane, Sphere, Transform, Transformable};
+    use crate::{util::assert_float_eq, Plane, Transform, Transformable};
 
     #[test]
     fn intersection_encapsulates_t_and_object() {
-        let s = Sphere::shape();
+        let s = Shape::sphere();
         let i = Intersection::new(3.5, &s);
         assert_float_eq!(i.t, 3.5);
         assert_eq!(i.object, &s);
@@ -154,7 +154,7 @@ mod test {
     #[test]
     fn precomputing_state_of_intersection() {
         let r = Ray::new(Point::new(0.0, 0.0, -5.0), Vector::new(0.0, 0.0, 1.0));
-        let s = Sphere::shape();
+        let s = Shape::sphere();
         let i = Intersection::new(4.0, &s);
         let comp = i.prepare_computations(&r).unwrap();
         assert_float_eq!(comp.t, i.t);
@@ -167,7 +167,7 @@ mod test {
     #[test]
     fn hit_when_intersection_occurs_on_the_outside() {
         let r = Ray::new(Point::new(0.0, 0.0, -5.0), Vector::new(0.0, 0.0, 1.0));
-        let s = Sphere::shape();
+        let s = Shape::sphere();
         let comp = Intersection::new(4.0, &s).prepare_computations(&r).unwrap();
         assert!(!comp.inside);
     }
@@ -175,7 +175,7 @@ mod test {
     #[test]
     fn hit_when_intersection_occurs_on_the_inside() {
         let r = Ray::new(Point::new(0.0, 0.0, 0.0), Vector::new(0.0, 0.0, 1.0));
-        let s = Sphere::shape();
+        let s = Shape::sphere();
         let comp = Intersection::new(1.0, &s).prepare_computations(&r).unwrap();
         assert_eq!(comp.point, Point::new(0.0, 0.0, 1.0));
         assert_eq!(comp.eye_vector, Vector::new(0.0, 0.0, -1.0));
@@ -186,7 +186,7 @@ mod test {
     #[test]
     fn hit_should_offset_point() {
         let r = Ray::new(Point::new(0.0, 0.0, -5.0), Vector::new(0.0, 0.0, 1.0));
-        let s = Sphere::shape().with_transform(Transform::translation(0.0, 0.0, 1.0));
+        let s = Shape::sphere().with_transform(Transform::translation(0.0, 0.0, 1.0));
         let comp = Intersection::new(5.0, &s).prepare_computations(&r).unwrap();
         assert!(comp.over_point.z() < -OFFSET_FACTOR / 2.0);
         assert!(comp.point.z() > comp.over_point.z());
@@ -195,7 +195,7 @@ mod test {
     #[test]
     fn under_point_is_offset_below_surface() {
         let r = Ray::new(Point::new(0.0, 0.0, -5.0), Vector::new(0.0, 0.0, 1.0));
-        let s = Sphere::shape().with_transform(Transform::translation(0.0, 0.0, 1.0));
+        let s = Shape::sphere().with_transform(Transform::translation(0.0, 0.0, 1.0));
         let comp = Intersection::new(5.0, &s).prepare_computations(&r).unwrap();
         assert!(comp.under_point.z() > OFFSET_FACTOR / 2.0);
         assert!(comp.point.z() < comp.under_point.z());

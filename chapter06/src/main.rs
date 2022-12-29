@@ -1,7 +1,7 @@
 use raytracer::{
     color,
     shapes::{ShapeMaterial, ShapeWorld},
-    Canvas, Color, Point, PointLight, Ray, Sphere,
+    Canvas, Color, Point, PointLight, Ray, Shape,
 };
 
 const IMAGE_PPM: &str = "test.ppm";
@@ -20,7 +20,7 @@ fn main() {
     let mut canvas = Canvas::new(canvas_pixels, canvas_pixels);
 
     let shape_color = Color::new(1.0, 0.2, 1.0);
-    let shape = Sphere::shape().with_color(shape_color);
+    let shape = Shape::sphere().with_color(shape_color);
     assert_eq!(shape_color, shape.material().color());
 
     let light = PointLight::new(Point::new(-10.0, 10.0, -10.0), color::WHITE);

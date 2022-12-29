@@ -1,4 +1,4 @@
-use raytracer::{shapes::ShapeWorld, Canvas, Color, Point, Ray, Sphere};
+use raytracer::{shapes::ShapeWorld, Canvas, Color, Point, Ray, Shape};
 
 const IMAGE_PPM: &str = "test.ppm";
 const IMAGE_PNG: &str = "test.png";
@@ -15,7 +15,7 @@ fn main() {
 
     let mut canvas = Canvas::new(canvas_pixels, canvas_pixels);
     let color = Color::from("#ff0000");
-    let shape = Sphere::shape();
+    let shape = Shape::sphere();
     for y in 0..canvas_pixels - 1 {
         let world_y = half - pixel_size * y as f64;
         for x in 0..canvas_pixels - 1 {

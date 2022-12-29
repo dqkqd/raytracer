@@ -1,5 +1,5 @@
 use raytracer::{
-    color, shapes::ShapeMaterial, Camera, CheckerPattern, Color, Plane, Point, PointLight, Sphere,
+    color, shapes::ShapeMaterial, Camera, CheckerPattern, Color, Plane, Point, PointLight, Shape,
     Transform, Transformable, Vector, World,
 };
 
@@ -19,7 +19,7 @@ fn main() {
             Transform::rotation_x(std::f64::consts::FRAC_PI_2).translate(0.0, 0.0, 10.0),
         );
 
-    let glass_ball = Sphere::shape()
+    let glass_ball = Shape::sphere()
         .with_ambient(0.0)
         .with_diffuse(0.0)
         .with_specular(0.9)
@@ -29,7 +29,7 @@ fn main() {
         .with_refractive_index(1.5)
         .with_color(color::WHITE);
 
-    let center = Sphere::shape()
+    let center = Shape::sphere()
         .with_ambient(0.0)
         .with_diffuse(0.0)
         .with_specular(0.9)

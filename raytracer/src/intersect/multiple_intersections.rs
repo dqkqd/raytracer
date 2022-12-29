@@ -112,8 +112,8 @@ impl<'a> Intersections<'a> {
 #[cfg(test)]
 mod test {
     use crate::{
-        shapes::ShapeMaterial, util::assert_float_eq, Point, Sphere, Transform, Transformable,
-        Vector, World,
+        shapes::ShapeMaterial, util::assert_float_eq, Point, Transform, Transformable, Vector,
+        World,
     };
 
     use super::*;
@@ -123,14 +123,14 @@ mod test {
     }
 
     fn glassy_sphere() -> Shape {
-        Sphere::shape()
+        Shape::sphere()
             .with_transparency(1.0)
             .with_refractive_index(1.5)
     }
 
     #[test]
     fn aggregating_intersections() {
-        let s = Sphere::shape();
+        let s = Shape::sphere();
         let r = ray();
         let i1 = Intersections::new(vec![1.0], &s, &r);
         let i2 = Intersections::new(vec![2.0], &s, &r);
@@ -142,7 +142,7 @@ mod test {
 
     #[test]
     fn hit_when_all_intersections_have_positive_t() {
-        let s = Sphere::shape();
+        let s = Shape::sphere();
         let r = ray();
         let i1 = Intersections::new(vec![1.0], &s, &r);
         let i2 = Intersections::new(vec![2.0], &s, &r);
@@ -153,7 +153,7 @@ mod test {
 
     #[test]
     fn hit_when_some_intersections_have_negative_t() {
-        let s = Sphere::shape();
+        let s = Shape::sphere();
         let r = ray();
         let i1 = Intersections::new(vec![-1.0], &s, &r);
         let i2 = Intersections::new(vec![2.0], &s, &r);
@@ -164,7 +164,7 @@ mod test {
 
     #[test]
     fn hit_when_all_intersections_have_negative_t() {
-        let s = Sphere::shape();
+        let s = Shape::sphere();
         let r = ray();
         let i1 = Intersections::new(vec![-1.0], &s, &r);
         let i2 = Intersections::new(vec![-2.0], &s, &r);
@@ -174,7 +174,7 @@ mod test {
 
     #[test]
     fn hit_is_lowest_nonnegative_intersection() {
-        let s = Sphere::shape();
+        let s = Shape::sphere();
         let r = ray();
         let i1 = Intersections::new(vec![5.0], &s, &r);
         let i2 = Intersections::new(vec![7.0], &s, &r);

@@ -1,6 +1,6 @@
 use raytracer::{
     color, shapes::ShapeMaterial, Camera, CheckerPattern, Color, GradientPattern, Plane, Point,
-    PointLight, RingPattern, Sphere, StripedPattern, Transform, Transformable, Vector, World,
+    PointLight, RingPattern, Shape, StripedPattern, Transform, Transformable, Vector, World,
 };
 
 const IMAGE_PPM: &str = "test.ppm";
@@ -15,7 +15,7 @@ fn main() {
                 .with_transform(Transform::scaling(0.4, 0.4, 0.4)),
         );
 
-    let middle = Sphere::shape()
+    let middle = Shape::sphere()
         .with_color(Color::new(0.1, 1.0, 0.5))
         .with_diffuse(0.7)
         .with_specular(0.3)
@@ -26,7 +26,7 @@ fn main() {
             ),
         );
 
-    let right = Sphere::shape()
+    let right = Shape::sphere()
         .with_color(Color::new(0.5, 1.0, 0.1))
         .with_diffuse(0.7)
         .with_specular(0.3)
@@ -36,7 +36,7 @@ fn main() {
                 .with_transform(Transform::scaling(0.05, 1.0, 1.0).rotate_y(1.6)),
         );
 
-    let left = Sphere::shape()
+    let left = Shape::sphere()
         .with_color(Color::new(1.0, 0.8, 0.1))
         .with_diffuse(0.7)
         .with_specular(0.3)

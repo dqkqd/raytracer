@@ -3,7 +3,7 @@ use crate::{
     Color, Intersections, IntersectionsFactor, Material, Pattern, Point, Ray, Transform, Vector,
 };
 
-use super::{sphere::Sphere, ShapeKind, ShapeLocal, ShapeMaterial, ShapeWorld};
+use super::{plane::Plane, sphere::Sphere, ShapeKind, ShapeLocal, ShapeMaterial, ShapeWorld};
 
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub struct Shape {
@@ -25,6 +25,10 @@ impl Shape {
 
     pub fn sphere() -> Shape {
         Shape::new(ShapeKind::Sphere(Sphere::default()))
+    }
+
+    pub fn plane() -> Shape {
+        Shape::new(ShapeKind::Plane(Plane::default()))
     }
 }
 

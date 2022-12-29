@@ -1,5 +1,5 @@
 use raytracer::{
-    color, shapes::ShapeMaterial, Camera, CheckerPattern, Color, Plane, Point, PointLight, Shape,
+    color, shapes::ShapeMaterial, Camera, CheckerPattern, Color, Point, PointLight, Shape,
     Transform, Transformable, Vector, World,
 };
 
@@ -7,7 +7,7 @@ const IMAGE_PPM: &str = "test.ppm";
 const IMAGE_PNG: &str = "test.png";
 
 fn main() {
-    let wall = Plane::shape()
+    let wall = Shape::plane()
         .with_ambient(0.8)
         .with_diffuse(0.2)
         .with_specular(0.0)

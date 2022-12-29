@@ -1,5 +1,5 @@
 use raytracer::{
-    color, shapes::ShapeMaterial, Camera, Color, Plane, Point, PointLight, Shape, Transform,
+    color, shapes::ShapeMaterial, Camera, Color, Point, PointLight, Shape, Transform,
     Transformable, Vector, World,
 };
 
@@ -7,7 +7,7 @@ const IMAGE_PPM: &str = "test.ppm";
 const IMAGE_PNG: &str = "test.png";
 
 fn main() {
-    let floor = Plane::shape()
+    let floor = Shape::plane()
         .with_color(Color::new(1.0, 0.9, 0.9))
         .with_specular(0.0);
 

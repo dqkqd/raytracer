@@ -141,7 +141,7 @@ impl<'a> ComputedIntersection<'a> {
 #[cfg(test)]
 mod test {
     use super::*;
-    use crate::{util::assert_float_eq, Plane, Transform, Transformable};
+    use crate::{util::assert_float_eq, Transform, Transformable};
 
     #[test]
     fn intersection_encapsulates_t_and_object() {
@@ -203,7 +203,7 @@ mod test {
 
     #[test]
     fn precomputing_reflection_vector() {
-        let shape = Plane::shape();
+        let shape = Shape::plane();
         let r = Ray::new(
             Point::new(0.0, 1.0, -1.0),
             Vector::new(

@@ -120,8 +120,7 @@ mod test {
 
     use crate::{
         color, intersect::intersection::Intersection, patterns::dummy_pattern::TestPattern,
-        shapes::ShapeMaterial, transform::Transformable, util::assert_float_eq, Camera, Material,
-        Plane, Transform, Vector,
+        shapes::ShapeMaterial, transform::Transformable, util::assert_float_eq, Camera, Material, Transform, Vector,
     };
 
     use super::*;
@@ -280,7 +279,7 @@ mod test {
     #[test]
     fn reflected_color_for_a_reflective_material() {
         let mut w = default_world();
-        let shape = Plane::shape()
+        let shape = Shape::plane()
             .with_reflective(0.5)
             .with_transform(Transform::translation(0.0, -1.0, 0.0));
         w.objects.push(shape);
@@ -304,7 +303,7 @@ mod test {
     #[test]
     fn shade_hit_with_reflective_material() {
         let mut w = default_world();
-        let shape = Plane::shape()
+        let shape = Shape::plane()
             .with_reflective(0.5)
             .with_transform(Transform::translation(0.0, -1.0, 0.0));
         w.objects.push(shape);
@@ -327,10 +326,10 @@ mod test {
 
     #[test]
     fn color_at_with_mutually_reflective_surfaces() {
-        let lower = Plane::shape()
+        let lower = Shape::plane()
             .with_reflective(1.0)
             .with_transform(Transform::translation(0.0, -1.0, 0.0));
-        let upper = Plane::shape()
+        let upper = Shape::plane()
             .with_reflective(1.0)
             .with_transform(Transform::translation(0.0, 1.0, 0.0));
         let w = World::new(
@@ -345,7 +344,7 @@ mod test {
     #[test]
     fn reflected_color_at_the_maximum_recursive_depth() {
         let mut w = default_world();
-        let shape = Plane::shape()
+        let shape = Shape::plane()
             .with_reflective(0.5)
             .with_transform(Transform::translation(0.0, -1.0, 0.0));
         w.objects.push(shape);
@@ -431,7 +430,7 @@ mod test {
     #[test]
     fn shade_hit_with_transparent_material() {
         let mut w = default_world();
-        let floor = Plane::shape()
+        let floor = Shape::plane()
             .with_transparency(0.5)
             .with_refractive_index(1.5)
             .with_transform(Transform::translation(0.0, -1.0, 0.0));
@@ -459,7 +458,7 @@ mod test {
     #[test]
     fn shade_hit_with_reflective_transparent_material() {
         let mut w = default_world();
-        let floor = Plane::shape()
+        let floor = Shape::plane()
             .with_reflective(0.5)
             .with_transparency(0.5)
             .with_refractive_index(1.5)

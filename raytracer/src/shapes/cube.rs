@@ -1,4 +1,8 @@
-use crate::{intersect::IntersectionsFactor, util::check_axis, Point, Vector};
+use crate::{
+    intersect::IntersectionsFactor,
+    util::{check_axis, equal},
+    Point, Vector,
+};
 
 use super::{shape::Shape, ShapeKind, ShapeLocal};
 
@@ -25,7 +29,13 @@ impl ShapeLocal for Cube {
         let tmin = xtmin.max(ytmin).max(ztmin);
         let tmax = xtmax.min(ytmax).min(ztmax);
 
-        vec![tmin, tmax]
+        if tmin > tmax {
+            vec![]
+        } else if equal(tmin, tmax) {
+            vec![tmin]
+        } else {
+            vec![tmin, tmax]
+        }
     }
 }
 
@@ -89,5 +99,31 @@ mod test {
             -1.0,
             1.0,
         );
+    }
+
+    #[test]
+    fn ray_misses_cube() {
+        let c = Cube::shape();
+        let test_intersect = |origin: Point, direction: Vector| {
+            let r = Ray::new(origin, direction);
+            let xs = c.local_intersection(&r);
+            assert_eq!(xs.len(), 0);
+        };
+
+        test_intersect(
+            Point::new(-2.0, 0.0, 0.0),
+            Vector::new(0.2673, 0.5345, 0.8018),
+        );
+        test_intersect(
+            Point::new(0.0, -2.0, 0.0),
+            Vector::new(0.8018, 0.2673, 0.5345),
+        );
+        test_intersect(
+            Point::new(0.0, 0.0, -2.0),
+            Vector::new(0.5345, 0.8018, 0.2673),
+        );
+        test_intersect(Point::new(2.0, 0.0, 2.0), Vector::new(0.0, 0.0, -1.0));
+        test_intersect(Point::new(0.0, 2.0, 2.0), Vector::new(0.0, -1.0, 0.0));
+        test_intersect(Point::new(2.0, 2.0, 0.0), Vector::new(-1.0, 0.0, 0.0));
     }
 }

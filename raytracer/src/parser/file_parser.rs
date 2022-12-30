@@ -12,11 +12,9 @@ fn get_value_inside_attributes(
 }
 
 fn substitute(value: &mut Value, attributes: &HashMap<String, DefineAttribute>) -> bool {
-    dbg!(&value);
     let mut success: bool = false;
     match value {
         Value::Mapping(m) => {
-            dbg!("mapping", &m);
             for (k, v) in m {
                 let key_string = k.as_str();
                 if key_string == Some("define") {
@@ -31,7 +29,6 @@ fn substitute(value: &mut Value, attributes: &HashMap<String, DefineAttribute>) 
             }
         }
         Value::Sequence(seq) => {
-            dbg!("haha", &seq);
             let mut values = Vec::new();
             for v in seq {
                 if let Some(value_inside) = get_value_inside_attributes(v, attributes) {
@@ -174,6 +171,20 @@ impl Parser {
             }
         }
     }
+
+    fn substitute_add_attributes(&mut self) {
+        for attribute in &mut self.add_attributes {
+            let mut value = attribute.value.clone();
+            substitute(&mut value, &self.define_attributes);
+            attribute.value = value;
+        }
+    }
+
+    pub(crate) fn prepare(&mut self) {
+        self.extend();
+        self.substitute_defined_attributes();
+        self.substitute_add_attributes();
+    }
 }
 
 #[cfg(test)]
@@ -255,7 +266,7 @@ value:
     }
 
     #[test]
-    fn substitute_attribute() -> Result<(), serde_yaml::Error> {
+    fn substitute_define_attribute() -> Result<(), serde_yaml::Error> {
         let yaml = "
 - define: standard-transform
   value:
@@ -280,5 +291,57 @@ value:
 - [ scale, 2, 2, 2]
         ";
         assert_value(&small_object.value, expected)
+    }
+
+    #[test]
+    fn substitute_add_attributes() -> Result<(), serde_yaml::Error> {
+        let yaml = "
+- define: white-material
+  value:
+    color: [ 1, 1, 1 ]
+    diffuse: 0.7
+    ambient: 0.1
+    specular: 0.0
+    reflective: 0.1
+- define: blue-material
+  extend: white-material
+  value:
+    color: [ 0.537, 0.831, 0.914 ]
+- define: standard-transform
+  value:
+  - [ translate, 1, -1, 1 ]
+  - [ scale, 0.5, 0.5, 0.5 ]
+- define: large-object
+  value:
+    - standard-transform
+    - [ scale, 3.5, 3.5, 3.5 ]
+- add: cube
+  material: blue-material
+  transform:
+    - large-object
+    - [ translate, 8.5, 1.5, -0.5 ]
+";
+
+        let mut parser = Parser::from_yaml(yaml).unwrap();
+        parser.extend();
+        parser.substitute_defined_attributes();
+        parser.substitute_add_attributes();
+
+        let cube = &parser.add_attributes[0];
+        let expected = "
+add: cube
+material: 
+  color: [ 0.537, 0.831, 0.914 ]
+  diffuse: 0.7
+  ambient: 0.1
+  specular: 0.0
+  reflective: 0.1
+transform:
+  - [ translate, 1, -1, 1 ]
+  - [ scale, 0.5, 0.5, 0.5 ]
+  - [ scale, 3.5, 3.5, 3.5 ]
+  - [ translate, 8.5, 1.5, -0.5 ]
+        ";
+        assert_value(&cube.value, expected)
     }
 }

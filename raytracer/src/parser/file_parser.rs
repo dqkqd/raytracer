@@ -2,6 +2,59 @@ use std::{collections::HashMap, hash::Hash};
 
 use serde_yaml::Value;
 
+fn get_value_inside_attributes(
+    value: &mut Value,
+    attributes: &HashMap<String, DefineAttribute>,
+) -> Option<Value> {
+    let s = value.as_str()?;
+    let value_inside = attributes.get(s)?.value()?;
+    Some(value_inside.clone())
+}
+
+fn substitute(value: &mut Value, attributes: &HashMap<String, DefineAttribute>) -> bool {
+    dbg!(&value);
+    let mut success: bool = false;
+    match value {
+        Value::Mapping(m) => {
+            dbg!("mapping", &m);
+            for (k, v) in m {
+                let key_string = k.as_str();
+                if key_string == Some("define") {
+                    continue;
+                }
+                if let Some(value_inside) = get_value_inside_attributes(v, attributes) {
+                    *v = value_inside;
+                    success = true;
+                } else {
+                    substitute(v, attributes);
+                }
+            }
+        }
+        Value::Sequence(seq) => {
+            dbg!("haha", &seq);
+            let mut values = Vec::new();
+            for v in seq {
+                if let Some(value_inside) = get_value_inside_attributes(v, attributes) {
+                    if let Some(arr) = value_inside.as_sequence() {
+                        for v in arr {
+                            values.push(v.clone());
+                        }
+                    } else {
+                        values.push(value_inside);
+                    }
+                    success = true;
+                } else {
+                    substitute(v, attributes);
+                    values.push(v.clone());
+                }
+            }
+            *value = Value::Sequence(values);
+        }
+        _ => (),
+    };
+    success
+}
+
 #[derive(Debug, Hash, Clone)]
 struct AddAttribute {
     value: Value,
@@ -21,6 +74,9 @@ struct DefineAttribute {
 impl DefineAttribute {
     fn new(value: Value) -> DefineAttribute {
         DefineAttribute { value }
+    }
+    fn value(&self) -> Option<&Value> {
+        self.value.as_mapping()?.get("value")
     }
     fn extensible(&self) -> bool {
         self.value
@@ -105,6 +161,19 @@ impl Parser {
             }
         });
     }
+
+    fn substitute_defined_attributes(&mut self) {
+        loop {
+            let copy_defined_attributes = self.define_attributes.clone();
+            let success = self
+                .define_attributes
+                .values_mut()
+                .any(|attr| substitute(&mut attr.value, &copy_defined_attributes));
+            if !success {
+                break;
+            }
+        }
+    }
 }
 
 #[cfg(test)]
@@ -183,5 +252,33 @@ value:
         for v in parser.define_attributes.values() {
             assert!(!v.extensible());
         }
+    }
+
+    #[test]
+    fn substitute_attribute() -> Result<(), serde_yaml::Error> {
+        let yaml = "
+- define: standard-transform
+  value:
+  - [ translate, 1, -1, 1]
+  - [ scale, 0.5, 0.5, 0.5]
+- define: small-object
+  value:
+  - standard-transform
+  - [ scale, 2, 2, 2]
+        ";
+
+        let mut parser = Parser::from_yaml(yaml).unwrap();
+        parser.extend();
+        parser.substitute_defined_attributes();
+
+        let small_object = parser.define_attributes.get("small-object").unwrap();
+        let expected = "
+define: small-object
+value:
+- [ translate, 1, -1, 1]
+- [ scale, 0.5, 0.5, 0.5]
+- [ scale, 2, 2, 2]
+        ";
+        assert_value(&small_object.value, expected)
     }
 }

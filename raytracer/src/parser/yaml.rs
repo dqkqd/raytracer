@@ -396,4 +396,23 @@ transform:
         let objects = from_str(yaml).unwrap();
         assert!(objects[0].as_camera().is_some());
     }
+
+    #[test]
+    fn parse_point_light_from_str() {
+        let yaml = "
+- add : camera
+  width: 10
+  height: 20
+  field-of-view: 1.25
+  from: [ 1, 2, 3 ]
+  to: [ 4, 5, 6 ]
+  up: [ 7, 8, 9 ]
+- add: light
+  at: [50, 100, -50]
+  intensity: [1, 2, 3]
+";
+        let objects = from_str(yaml).unwrap();
+        assert!(objects[0].as_camera().is_some());
+        assert!(objects[1].as_light().is_some());
+    }
 }

@@ -1,11 +1,12 @@
-use crate::{parser::yaml::AddAttribute, Camera};
+use crate::{parser::yaml::AddAttribute, Camera, PointLight};
 
-use super::camera::CameraParser;
+use super::{camera::CameraParser, light::LightParser};
 
 #[derive(Debug, Clone, Copy, PartialEq)]
 
 pub(crate) enum Object {
     Camera(Camera),
+    Light(PointLight),
 }
 
 impl Object {
@@ -14,12 +15,20 @@ impl Object {
         let attribute_type = attr.attribute_type();
         match attribute_type {
             "camera" => Some(Object::Camera(CameraParser::from_value(value)?)),
+            "light" => Some(Object::Light(LightParser::from_value(value)?)),
             _ => unimplemented!(),
         }
     }
     pub fn as_camera(&self) -> Option<&Camera> {
         match self {
             Object::Camera(camera) => Some(camera),
+            _ => None,
+        }
+    }
+
+    pub fn as_light(&self) -> Option<&PointLight> {
+        match self {
+            Object::Light(light) => Some(light),
             _ => None,
         }
     }

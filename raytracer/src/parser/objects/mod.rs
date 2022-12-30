@@ -7,3 +7,5 @@ pub(crate) mod light;
 pub(super) mod material;
 
 pub(crate) mod shape;
+
+pub(crate) mod transform;

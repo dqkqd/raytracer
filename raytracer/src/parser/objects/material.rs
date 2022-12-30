@@ -32,6 +32,29 @@ impl MaterialParser {
         let parser: MaterialParser = serde_yaml::from_value(value).ok()?;
         Some(parser.to_material())
     }
+
+    #[allow(clippy::too_many_arguments)]
+    pub fn new(
+        color: [f64; 3],
+        diffuse: f64,
+        ambient: f64,
+        specular: f64,
+        shininess: f64,
+        reflective: f64,
+        transparency: f64,
+        refractive_index: f64,
+    ) -> MaterialParser {
+        MaterialParser {
+            color,
+            diffuse,
+            ambient,
+            specular,
+            shininess,
+            reflective,
+            transparency,
+            refractive_index,
+        }
+    }
 }
 
 #[cfg(test)]

@@ -1,12 +1,14 @@
-use crate::{parser::yaml::AddAttribute, Camera, PointLight};
+use crate::{parser::yaml::AddAttribute, Camera, PointLight, Shape};
 
-use super::{camera::CameraParser, light::LightParser};
+use super::{camera::CameraParser, light::LightParser, shape::ShapeParser};
 
+#[allow(clippy::large_enum_variant)]
 #[derive(Debug, Clone, Copy, PartialEq)]
 
 pub(crate) enum Object {
     Camera(Camera),
     Light(PointLight),
+    Shape(Shape),
 }
 
 impl Object {
@@ -16,6 +18,10 @@ impl Object {
         match attribute_type {
             "camera" => Some(Object::Camera(CameraParser::from_value(value)?)),
             "light" => Some(Object::Light(LightParser::from_value(value)?)),
+            "sphere" | "plane" | "cube" => Some(Object::Shape(ShapeParser::from_value(
+                value,
+                attribute_type,
+            )?)),
             _ => unimplemented!(),
         }
     }
@@ -29,6 +35,13 @@ impl Object {
     pub fn as_light(&self) -> Option<&PointLight> {
         match self {
             Object::Light(light) => Some(light),
+            _ => None,
+        }
+    }
+
+    pub fn as_shape(&self) -> Option<&Shape> {
+        match self {
+            Object::Shape(shape) => Some(shape),
             _ => None,
         }
     }

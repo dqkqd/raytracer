@@ -30,12 +30,33 @@ impl Shape {
         Shape::new(ShapeKind::Sphere(Sphere::default()))
     }
 
+    pub(crate) fn as_sphere(&self) -> Option<&Sphere> {
+        match &self.shape {
+            ShapeKind::Sphere(sphere) => Some(sphere),
+            _ => None,
+        }
+    }
+
     pub fn plane() -> Shape {
         Shape::new(ShapeKind::Plane(Plane::default()))
     }
 
+    pub(crate) fn as_plane(&self) -> Option<&Plane> {
+        match &self.shape {
+            ShapeKind::Plane(plane) => Some(plane),
+            _ => None,
+        }
+    }
+
     pub fn cube() -> Shape {
         Shape::new(ShapeKind::Cube(Cube::default()))
+    }
+
+    pub(crate) fn as_cube(&self) -> Option<&Cube> {
+        match &self.shape {
+            ShapeKind::Cube(cube) => Some(cube),
+            _ => None,
+        }
     }
 
     pub fn dummy() -> Shape {

@@ -86,6 +86,7 @@ impl AddAttribute {
         self.value["add"].as_str().unwrap()
     }
     fn parse(&self) -> Option<Object> {
+        dbg!(&self);
         Object::from_attribute(self)
     }
 }
@@ -414,5 +415,26 @@ transform:
         let objects = from_str(yaml).unwrap();
         assert!(objects[0].as_camera().is_some());
         assert!(objects[1].as_light().is_some());
+    }
+
+    #[test]
+    fn parse_sphere_without_transform_full_material() {
+        let yaml = "
+- add: sphere
+  material:
+    color: [ 0.373, 0.404, 0.550 ]
+    diffuse: 0.2
+    ambient: 0.0
+    specular: 1.0
+    shininess: 200
+    reflective: 0.7
+    transparency: 0.7
+    refractive_index: 1.5
+        ";
+        let objects = from_str(yaml).unwrap();
+        let shape = objects[0].as_shape();
+        assert!(shape.is_some());
+        let sphere = shape.unwrap();
+        assert!(sphere.as_sphere().is_some());
     }
 }

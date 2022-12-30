@@ -1,4 +1,7 @@
-use std::{collections::HashMap, fs};
+use std::{
+    collections::{HashMap, HashSet},
+    fs,
+};
 
 use serde_yaml::Value;
 
@@ -15,6 +18,35 @@ pub(crate) fn from_str(yaml_str: &str) -> Option<Vec<Object>> {
 pub(crate) fn from_file(file_name: &str) -> Option<Vec<Object>> {
     let yaml_str = fs::read_to_string(file_name).ok()?;
     from_str(&yaml_str)
+}
+
+fn build_default_material_value() -> (Value, Value) {
+    let mut value = serde_yaml::Mapping::new();
+
+    let all_keys_float = [
+        ("diffuse", 0.9),
+        ("ambient", 0.1),
+        ("specular", 0.9),
+        ("shininess", 200.0),
+        ("reflective", 0.0),
+        ("transparency", 0.0),
+        ("refractive-index", 1.0),
+    ];
+
+    for (key, default_value) in all_keys_float {
+        let value_num = Value::Number(serde_yaml::Number::from(default_value));
+        let value_key = Value::String(key.to_string());
+        value.insert(value_key, value_num);
+    }
+
+    let c = Value::Number(serde_yaml::Number::from(1.0));
+    let value_color = Value::Sequence(vec![c.clone(), c.clone(), c]);
+    let value_key = Value::String("color".to_string());
+    value.insert(value_key, value_color);
+
+    let material_key = Value::String("material".to_string());
+    let material_value = Value::Mapping(value);
+    (material_key, material_value)
 }
 
 fn get_value_inside_attributes(
@@ -74,20 +106,68 @@ pub(crate) struct AddAttribute {
 
 impl AddAttribute {
     fn new(value: Value) -> AddAttribute {
-        AddAttribute { value }
+        let mut attr = AddAttribute { value };
+        attr.add_missing_material_attribute();
+        attr
     }
+
     pub fn value(&self) -> Option<Value> {
         let mut value = self.value.clone();
         let mapping = value.as_mapping_mut()?;
         mapping.remove("add");
         Some(Value::Mapping(mapping.clone()))
     }
+
     pub fn attribute_type(&self) -> &str {
         self.value["add"].as_str().unwrap()
     }
+
     fn parse(&self) -> Option<Object> {
-        dbg!(&self);
         Object::from_attribute(self)
+    }
+
+    fn is_shape(&self) -> bool {
+        matches!(self.attribute_type(), "sphere" | "plane" | "cube")
+    }
+
+    fn add_missing_material_attribute(&mut self) -> Option<()> {
+        if !self.is_shape() {
+            return Some(());
+        }
+
+        let get_material_keys = || -> Option<HashSet<String>> {
+            Some(
+                self.value
+                    .clone()
+                    .as_mapping()?
+                    .get("material")?
+                    .as_mapping()?
+                    .keys()
+                    .into_iter()
+                    .map(|k| k.as_str().unwrap().to_string())
+                    .collect(),
+            )
+        };
+
+        let keys = get_material_keys().unwrap_or_default();
+
+        // build default material
+        let (material_key, default_material) = build_default_material_value();
+
+        let mapping = self.value.as_mapping_mut()?;
+        if !mapping.contains_key("material") {
+            mapping.insert(material_key, default_material);
+        } else {
+            let value = mapping.get_mut("material")?.as_mapping_mut()?;
+            for (k, v) in default_material.as_mapping()? {
+                let key = k.as_str()?.to_string();
+                if !keys.contains(&key) {
+                    value.insert(k.clone(), v.clone());
+                }
+            }
+        }
+
+        Some(())
     }
 }
 
@@ -430,6 +510,32 @@ transform:
     reflective: 0.7
     transparency: 0.7
     refractive-index: 1.5
+        ";
+        let objects = from_str(yaml).unwrap();
+        let shape = objects[0].as_shape();
+        assert!(shape.is_some());
+        let sphere = shape.unwrap();
+        assert!(sphere.as_sphere().is_some());
+    }
+
+    #[test]
+    fn parse_sphere_without_transform_missing_material() {
+        let yaml = "
+- add: sphere
+  material:
+    diffuse: 0.2
+        ";
+        let objects = from_str(yaml).unwrap();
+        let shape = objects[0].as_shape();
+        assert!(shape.is_some());
+        let sphere = shape.unwrap();
+        assert!(sphere.as_sphere().is_some());
+    }
+
+    #[test]
+    fn parse_sphere_without_transform_and_material() {
+        let yaml = "
+- add: sphere
         ";
         let objects = from_str(yaml).unwrap();
         let shape = objects[0].as_shape();

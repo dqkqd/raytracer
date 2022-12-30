@@ -1,4 +1,4 @@
-use serde::{Deserialize, Serialize};
+use serde::Deserialize;
 use serde_yaml::Value;
 
 use crate::{Camera, Point, Transform, Transformable, Vector};
@@ -25,9 +25,9 @@ impl CameraParser {
         Camera::new(self.width, self.height, self.field_of_view).with_transform(view_transform)
     }
 
-    pub(crate) fn parser_value(value: Value) -> Result<Camera, serde_yaml::Error> {
-        let parser: CameraParser = serde_yaml::from_value(value)?;
-        Ok(parser.to_camera())
+    pub(crate) fn from_value(value: Value) -> Option<Camera> {
+        let parser: CameraParser = serde_yaml::from_value(value).ok()?;
+        Some(parser.to_camera())
     }
 }
 
@@ -70,7 +70,7 @@ mod test {
     }
 
     #[test]
-    fn parse_from_value() -> Result<(), serde_yaml::Error> {
+    fn parse_from_value() {
         let yaml = "
   width: 10
   height: 20
@@ -79,13 +79,12 @@ mod test {
   to: [ 4, 5, 6 ]
   up: [ 7, 8, 9 ]";
         let value: Value = serde_yaml::from_str(yaml).unwrap();
-        let camera = CameraParser::parser_value(value)?;
+        let camera = CameraParser::from_value(value).unwrap();
         assert_eq!(camera, default_camera());
-        Ok(())
     }
 
     #[test]
-    fn parse_from_str() -> Result<(), serde_yaml::Error> {
+    fn parse_from_str() {
         let yaml = "
 - add : camera
   width: 10
@@ -99,8 +98,7 @@ mod test {
         let add_attributes = parser.add_attributes();
         assert_eq!(add_attributes.len(), 1);
         assert_eq!(add_attributes[0].attribute_type(), "camera");
-        let camera = CameraParser::parser_value(add_attributes[0].value().unwrap())?;
+        let camera = CameraParser::from_value(add_attributes[0].value().unwrap()).unwrap();
         assert_eq!(camera, default_camera());
-        Ok(())
     }
 }

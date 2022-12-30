@@ -2,6 +2,8 @@ use std::collections::HashMap;
 
 use serde_yaml::Value;
 
+use super::objects::object::Object;
+
 fn get_value_inside_attributes(
     value: &mut Value,
     attributes: &HashMap<String, DefineAttribute>,
@@ -69,6 +71,9 @@ impl AddAttribute {
     }
     pub(crate) fn attribute_type(&self) -> &str {
         self.value["add"].as_str().unwrap()
+    }
+    fn parse(&self) -> Option<Object> {
+        Object::from_attribute(self)
     }
 }
 

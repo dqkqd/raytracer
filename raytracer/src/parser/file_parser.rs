@@ -31,6 +31,9 @@ impl DefineAttribute {
         self.value.as_mapping()?.get("extend")?.as_str()
     }
     fn extend(&mut self, other: &DefineAttribute) -> Option<()> {
+        if other.extensible() {
+            return None;
+        }
         let map = self.value.as_mapping_mut()?;
         map.remove("extend");
         let value = map.get_mut("value")?.as_mapping_mut()?;
@@ -73,6 +76,34 @@ impl Parser {
             add_attributes,
             define_attributes,
         })
+    }
+
+    fn extend(&mut self) {
+        let mut extensible_attributes = HashMap::new();
+        for (k, v) in self.define_attributes.iter() {
+            if v.extensible() {
+                extensible_attributes.insert(k.clone(), v.clone());
+            }
+        }
+        loop {
+            let extensible = extensible_attributes.iter().any(|(_, v)| v.extensible());
+            if !extensible {
+                break;
+            }
+            extensible_attributes
+                .values_mut()
+                .filter(|v| v.extensible())
+                .for_each(|v| {
+                    let extend = v.extend_value().unwrap();
+                    let other = self.define_attributes.get(extend).unwrap();
+                    v.extend(other);
+                })
+        }
+        self.define_attributes.iter_mut().for_each(|(k, v)| {
+            if let Some(extended_value) = extensible_attributes.get(k) {
+                *v = extended_value.clone();
+            }
+        });
     }
 }
 
@@ -136,5 +167,15 @@ mod test {
         assert_eq!(value["color"][0].as_f64(), Some(0.537));
         assert_eq!(value["color"][1].as_f64(), Some(0.831));
         assert_eq!(value["color"][2].as_f64(), Some(0.914));
+    }
+
+    #[test]
+    fn extend_all_defined_attribute() {
+        let yaml = default_yaml();
+        let mut parser = Parser::from_yaml(&yaml).unwrap();
+        parser.extend();
+        for v in parser.define_attributes.values() {
+            assert!(!v.extensible());
+        }
     }
 }

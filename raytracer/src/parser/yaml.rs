@@ -11,7 +11,10 @@ pub(crate) fn from_str(yaml_str: &str) -> Option<Vec<Object>> {
     Parser::from_yaml(yaml_str)?
         .add_attributes()
         .iter()
-        .map(|attr| attr.parse())
+        .map(|attr| {
+            dbg!(attr);
+            attr.parse()
+        })
         .collect::<Option<Vec<Object>>>()
 }
 
@@ -120,10 +123,7 @@ pub(crate) struct AddAttribute {
 
 impl AddAttribute {
     fn new(value: Value) -> AddAttribute {
-        let mut attr = AddAttribute { value };
-        attr.add_missing_material_attribute();
-        attr.add_missing_transform_attribute();
-        attr
+        AddAttribute { value }
     }
 
     pub fn value(&self) -> Option<Value> {
@@ -331,6 +331,10 @@ impl Parser {
         self.extend();
         self.substitute_defined_attributes();
         self.substitute_add_attributes();
+        for attr in self.add_attributes.iter_mut() {
+            attr.add_missing_material_attribute();
+            attr.add_missing_transform_attribute();
+        }
     }
 }
 
@@ -594,5 +598,11 @@ transform:
             .rotate_x(1.5)
             .inverse();
         assert_eq!(inversed, expected);
+    }
+
+    #[test]
+    fn parse_sample_yaml_without_panic() {
+        let yaml = default_yaml();
+        let _ = from_str(&yaml).unwrap();
     }
 }

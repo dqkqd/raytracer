@@ -27,7 +27,7 @@ impl Object {
 
 #[cfg(test)]
 mod test {
-    use crate::parser::yaml::Parser;
+    use crate::parser::yaml;
 
     use super::*;
 
@@ -42,9 +42,7 @@ mod test {
   to: [ 4, 5, 6 ]
   up: [ 7, 8, 9 ]
 ";
-        let parser = Parser::from_yaml(yaml).unwrap();
-        let attr = &parser.add_attributes()[0];
-        let object = Object::from_attribute(attr).unwrap();
-        assert!(object.as_camera().is_some());
+        let objects = yaml::from_str(yaml).unwrap();
+        assert!(objects[0].as_camera().is_some());
     }
 }

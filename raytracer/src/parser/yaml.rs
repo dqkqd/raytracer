@@ -1,8 +1,21 @@
-use std::collections::HashMap;
+use std::{collections::HashMap, fs};
 
 use serde_yaml::Value;
 
 use super::objects::object::Object;
+
+pub(crate) fn from_str(yaml_str: &str) -> Option<Vec<Object>> {
+    Parser::from_yaml(yaml_str)?
+        .add_attributes()
+        .iter()
+        .map(|attr| attr.parse())
+        .collect::<Option<Vec<Object>>>()
+}
+
+pub(crate) fn from_file(file_name: &str) -> Option<Vec<Object>> {
+    let yaml_str = fs::read_to_string(file_name).ok()?;
+    from_str(&yaml_str)
+}
 
 fn get_value_inside_attributes(
     value: &mut Value,

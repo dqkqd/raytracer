@@ -1,14 +1,17 @@
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 use serde_yaml::Value;
 
-use crate::{shapes::ShapeMaterial, Shape};
+use crate::{shapes::ShapeMaterial, Shape, Transformable};
 
-use super::material::MaterialParser;
+use super::{material::MaterialParser, transform::TransformParser};
 
-#[derive(Debug, Clone, Copy, PartialEq, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Deserialize)]
 pub(crate) struct ShapeParser {
     #[serde(rename(deserialize = "material"))]
     material_parser: MaterialParser,
+
+    #[serde(rename(deserialize = "transform"))]
+    transform_parser: Vec<TransformParser>,
 }
 
 impl ShapeParser {
@@ -20,7 +23,18 @@ impl ShapeParser {
             _ => unimplemented!(),
         };
         let material = self.material_parser.to_material();
-        shape.with_material(material)
+        let shape = shape.with_material(material);
+        let transform = self
+            .transform_parser
+            .iter()
+            .rev()
+            .map(|t| t.to_transform())
+            .reduce(|acc, t| acc * t);
+        if let Some(transform) = transform {
+            shape.with_transform(transform)
+        } else {
+            shape
+        }
     }
 
     pub fn from_value(value: Value, attribute_type: &str) -> Option<Shape> {
@@ -32,11 +46,11 @@ impl ShapeParser {
 #[cfg(test)]
 mod test {
 
-    use crate::{parser::yaml::Parser, Color, Material};
+    use crate::{parser::yaml::Parser, Color, Material, Transform};
 
     use super::*;
 
-    fn default_object_without_transform() -> (String, Shape) {
+    fn default_object() -> (String, Shape) {
         let material = Material::default()
             .with_color(Color::new(0.1, 0.2, 0.3))
             .with_diffuse(0.4)
@@ -48,20 +62,34 @@ mod test {
             .with_refractive_index(1.3);
         (
             "sphere".to_string(),
-            Shape::sphere().with_material(material),
+            Shape::sphere().with_material(material).with_transform(
+                Transform::translation(1.0, 2.0, 3.0)
+                    .rotate_x(-2.0)
+                    .scale(-2.0, -3.0, 5.0)
+                    .shear(1.0, 2.0, 3.0, 4.0, 5.0, 6.0),
+            ),
         )
     }
 
-    fn default_parser_without_transform() -> ShapeParser {
+    fn default_parser() -> ShapeParser {
         let material_parser =
             MaterialParser::new([0.1, 0.2, 0.3], 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.3);
-        ShapeParser { material_parser }
+        let transform_parser = vec![
+            TransformParser::TranslationScaling("translate".to_string(), 1.0, 2.0, 3.0),
+            TransformParser::Rotation("rotate-x".to_string(), -2.0),
+            TransformParser::TranslationScaling("scale".to_string(), -2.0, -3.0, 5.0),
+            TransformParser::Shearing("shear".to_string(), 1.0, 2.0, 3.0, 4.0, 5.0, 6.0),
+        ];
+        ShapeParser {
+            material_parser,
+            transform_parser,
+        }
     }
 
     #[test]
     fn parse_to_shape() {
-        let (shape_type, shape) = default_object_without_transform();
-        let parser = default_parser_without_transform();
+        let (shape_type, shape) = default_object();
+        let parser = default_parser();
         assert_eq!(parser.to_shape(&shape_type), shape);
     }
 
@@ -77,9 +105,14 @@ material:
   reflective: 0.8
   transparency: 0.9
   refractive-index: 1.3
+transform:
+  - ['translate', 1.0, 2.0, 3.0]
+  - ['rotate-x', -2.0]
+  - ['scale', -2.0, -3.0, 5.0]
+  - ['shear', 1.0, 2.0, 3.0, 4.0, 5.0, 6.0]
     ";
         let value: Value = serde_yaml::from_str(yaml).unwrap();
-        let (shape_type, default_shape) = default_object_without_transform();
+        let (shape_type, default_shape) = default_object();
         let shape = ShapeParser::from_value(value, &shape_type).unwrap();
         assert_eq!(shape, default_shape);
     }
@@ -97,10 +130,15 @@ material:
     reflective: 0.8
     transparency: 0.9
     refractive-index: 1.3
+  transform:
+  - ['translate', 1.0, 2.0, 3.0]
+  - ['rotate-x', -2.0]
+  - ['scale', -2.0, -3.0, 5.0]
+  - ['shear', 1.0, 2.0, 3.0, 4.0, 5.0, 6.0]
     ";
         let parser = Parser::from_yaml(yaml).unwrap();
         let add_attributes = parser.add_attributes();
-        let (shape_type, default_shape) = default_object_without_transform();
+        let (shape_type, default_shape) = default_object();
         assert_eq!(add_attributes.len(), 1);
         assert_eq!(add_attributes[0].attribute_type(), shape_type);
         let shape =

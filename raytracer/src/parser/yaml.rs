@@ -429,7 +429,7 @@ transform:
     shininess: 200
     reflective: 0.7
     transparency: 0.7
-    refractive_index: 1.5
+    refractive-index: 1.5
         ";
         let objects = from_str(yaml).unwrap();
         let shape = objects[0].as_shape();

@@ -12,6 +12,8 @@ pub(crate) struct MaterialParser {
     shininess: f64,
     reflective: f64,
     transparency: f64,
+
+    #[serde(rename(deserialize = "refractive-index"))]
     refractive_index: f64,
 }
 
@@ -104,7 +106,7 @@ specular: 0.6
 shininess: 0.7
 reflective: 0.8
 transparency: 0.9
-refractive_index: 1.3
+refractive-index: 1.3
 ";
         let value: Value = serde_yaml::from_str(yaml).unwrap();
         let material = MaterialParser::from_value(value).unwrap();

@@ -76,7 +76,7 @@ material:
   shininess: 0.7
   reflective: 0.8
   transparency: 0.9
-  refractive_index: 1.3
+  refractive-index: 1.3
     ";
         let value: Value = serde_yaml::from_str(yaml).unwrap();
         let (shape_type, default_shape) = default_object_without_transform();
@@ -96,7 +96,7 @@ material:
     shininess: 0.7
     reflective: 0.8
     transparency: 0.9
-    refractive_index: 1.3
+    refractive-index: 1.3
     ";
         let parser = Parser::from_yaml(yaml).unwrap();
         let add_attributes = parser.add_attributes();

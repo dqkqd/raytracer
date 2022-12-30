@@ -1,10 +1,16 @@
+use serde::{Deserialize, Serialize};
+use serde_yaml::Value;
+
 use crate::{Camera, Point, Transform, Transformable, Vector};
 
-#[derive(Debug, Clone, Copy, PartialEq)]
+#[derive(Debug, Clone, Copy, PartialEq, Deserialize)]
 pub(crate) struct CameraParser {
     width: usize,
     height: usize,
+
+    #[serde(rename(deserialize = "field-of-view"))]
     field_of_view: f64,
+
     from: [f64; 3],
     to: [f64; 3],
     up: [f64; 3],
@@ -17,6 +23,11 @@ impl CameraParser {
         let up = Vector::new(self.up[0], self.up[1], self.up[2]);
         let view_transform = Transform::view_transform(from, to, up);
         Camera::new(self.width, self.height, self.field_of_view).with_transform(view_transform)
+    }
+
+    pub(crate) fn parser_value(value: Value) -> Result<Camera, serde_yaml::Error> {
+        let parser: CameraParser = serde_yaml::from_value(value)?;
+        Ok(parser.to_camera())
     }
 }
 
@@ -54,5 +65,20 @@ mod test {
         let camera = default_camera();
         let parser = default_parser();
         assert_eq!(parser.to_camera(), camera);
+    }
+
+    #[test]
+    fn parse_from_value() -> Result<(), serde_yaml::Error> {
+        let yaml = "
+  width: 10
+  height: 20
+  field-of-view: 1.25
+  from: [ 1, 2, 3 ]
+  to: [ 4, 5, 6 ]
+  up: [ 7, 8, 9 ]";
+        let value: Value = serde_yaml::from_str(yaml).unwrap();
+        let camera = CameraParser::parser_value(value)?;
+        assert_eq!(camera, default_camera());
+        Ok(())
     }
 }

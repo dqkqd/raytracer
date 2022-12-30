@@ -116,6 +116,14 @@ mod test {
         include_str!("sample.yaml").to_string()
     }
 
+    fn assert_value(value: &Value, expected: &str) -> Result<(), serde_yaml::Error> {
+        let parsed_string = serde_yaml::to_string(value)?;
+        let value_from_expected: Value = serde_yaml::from_str(expected)?;
+        let parsed_expected_string = serde_yaml::to_string(&value_from_expected)?;
+        assert_eq!(parsed_string.trim(), parsed_expected_string.trim());
+        Ok(())
+    }
+
     #[test]
     fn parse_from_yaml() {
         let yaml = default_yaml();
@@ -141,7 +149,7 @@ mod test {
     }
 
     #[test]
-    fn extend_defined_attribute() {
+    fn extend_defined_attribute() -> Result<(), serde_yaml::Error> {
         let yaml = default_yaml();
         let mut parser = Parser::from_yaml(&yaml).unwrap();
 
@@ -155,18 +163,16 @@ mod test {
         blue_material.extend(&white_material);
 
         let blue_material = parser.define_attributes.get("blue-material").unwrap();
-        assert!(!blue_material.extensible());
-
-        let mapping = blue_material.value.as_mapping().unwrap();
-        let value = &mapping["value"];
-        assert_eq!(value.as_mapping().unwrap().len(), 5);
-        assert_eq!(value["diffuse"].as_f64(), Some(0.7));
-        assert_eq!(value["ambient"].as_f64(), Some(0.1));
-        assert_eq!(value["specular"].as_f64(), Some(0.0));
-        assert_eq!(value["reflective"].as_f64(), Some(0.1));
-        assert_eq!(value["color"][0].as_f64(), Some(0.537));
-        assert_eq!(value["color"][1].as_f64(), Some(0.831));
-        assert_eq!(value["color"][2].as_f64(), Some(0.914));
+        let expected = "
+define: blue-material
+value:
+  color: [0.537, 0.831, 0.914]
+  diffuse: 0.7
+  ambient: 0.1
+  specular: 0.0
+  reflective: 0.1
+";
+        assert_value(&blue_material.value, expected)
     }
 
     #[test]

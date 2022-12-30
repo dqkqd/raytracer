@@ -9,7 +9,7 @@ pub(crate) enum Object {
 }
 
 impl Object {
-    pub(crate) fn from_attribute(attr: &AddAttribute) -> Option<Object> {
+    pub fn from_attribute(attr: &AddAttribute) -> Option<Object> {
         let value = attr.value()?;
         let attribute_type = attr.attribute_type();
         match attribute_type {

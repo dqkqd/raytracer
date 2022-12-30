@@ -63,13 +63,13 @@ impl AddAttribute {
     fn new(value: Value) -> AddAttribute {
         AddAttribute { value }
     }
-    pub(crate) fn value(&self) -> Option<Value> {
+    pub fn value(&self) -> Option<Value> {
         let mut value = self.value.clone();
         let mapping = value.as_mapping_mut()?;
         mapping.remove("add");
         Some(Value::Mapping(mapping.clone()))
     }
-    pub(crate) fn attribute_type(&self) -> &str {
+    pub fn attribute_type(&self) -> &str {
         self.value["add"].as_str().unwrap()
     }
     fn parse(&self) -> Option<Object> {

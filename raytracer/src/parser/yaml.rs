@@ -337,6 +337,8 @@ impl Parser {
 #[cfg(test)]
 mod test {
 
+    use crate::{Transform, Transformable};
+
     use super::*;
 
     fn default_yaml() -> String {
@@ -571,5 +573,26 @@ transform:
         assert!(shape.is_some());
         let sphere = shape.unwrap();
         assert!(sphere.as_sphere().is_some());
+    }
+
+    #[test]
+    fn parse_sphere_with_transformation() {
+        let yaml = "
+- add: sphere
+  transform:
+  - ['translate', 1.0, 3.0, 2.0]
+  - ['scale', 4.0, 5.0, 6.0]
+  - ['rotate-x', 1.5]
+        ";
+        let objects = from_str(yaml).unwrap();
+        let shape = objects[0].as_shape();
+        assert!(shape.is_some());
+        let sphere = shape.unwrap();
+        let inversed = sphere.inversed_transform();
+        let expected = Transform::translation(1.0, 3.0, 2.0)
+            .scale(4.0, 5.0, 6.0)
+            .rotate_x(1.5)
+            .inverse();
+        assert_eq!(inversed, expected);
     }
 }

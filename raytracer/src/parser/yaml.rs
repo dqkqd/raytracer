@@ -53,13 +53,16 @@ fn substitute(value: &mut Value, attributes: &HashMap<String, DefineAttribute>) 
 }
 
 #[derive(Debug, Clone)]
-struct AddAttribute {
+pub(crate) struct AddAttribute {
     value: Value,
 }
 
 impl AddAttribute {
     fn new(value: Value) -> AddAttribute {
         AddAttribute { value }
+    }
+    pub(crate) fn value(&self) -> &Value {
+        &self.value
     }
 }
 
@@ -101,13 +104,19 @@ impl DefineAttribute {
 }
 
 #[derive(Debug, Default)]
-struct Parser {
+pub(crate) struct Parser {
     add_attributes: Vec<AddAttribute>,
     define_attributes: HashMap<String, DefineAttribute>,
 }
 
 impl Parser {
-    fn from_yaml(yaml: &str) -> Option<Parser> {
+    pub(crate) fn from_yaml(yaml: &str) -> Option<Parser> {
+        let mut parser = Parser::from_yaml_without_preprocessing(yaml)?;
+        parser.prepare();
+        Some(parser)
+    }
+
+    fn from_yaml_without_preprocessing(yaml: &str) -> Option<Parser> {
         let mut add_attributes = Vec::new();
         let mut define_attributes = HashMap::new();
         if let Ok(yaml_value) = serde_yaml::from_str(yaml) {
@@ -207,7 +216,7 @@ mod test {
     #[test]
     fn parse_from_yaml() {
         let yaml = default_yaml();
-        let parser = Parser::from_yaml(&yaml);
+        let parser = Parser::from_yaml_without_preprocessing(&yaml);
         assert!(parser.is_some());
         let parser = parser.unwrap();
         assert_eq!(parser.add_attributes.len(), 22);
@@ -217,7 +226,7 @@ mod test {
     #[test]
     fn an_attribute_is_extensible_if_it_has_extend_key() {
         let yaml = default_yaml();
-        let parser = Parser::from_yaml(&yaml).unwrap();
+        let parser = Parser::from_yaml_without_preprocessing(&yaml).unwrap();
 
         let value = parser.define_attributes.get("blue-material").unwrap();
         assert!(value.extensible());
@@ -231,7 +240,7 @@ mod test {
     #[test]
     fn extend_defined_attribute() -> Result<(), serde_yaml::Error> {
         let yaml = default_yaml();
-        let mut parser = Parser::from_yaml(&yaml).unwrap();
+        let mut parser = Parser::from_yaml_without_preprocessing(&yaml).unwrap();
 
         let white_material = parser
             .define_attributes
@@ -258,7 +267,7 @@ value:
     #[test]
     fn extend_all_defined_attribute() {
         let yaml = default_yaml();
-        let mut parser = Parser::from_yaml(&yaml).unwrap();
+        let mut parser = Parser::from_yaml_without_preprocessing(&yaml).unwrap();
         parser.extend();
         for v in parser.define_attributes.values() {
             assert!(!v.extensible());
@@ -278,7 +287,7 @@ value:
   - [ scale, 2, 2, 2]
         ";
 
-        let mut parser = Parser::from_yaml(yaml).unwrap();
+        let mut parser = Parser::from_yaml_without_preprocessing(yaml).unwrap();
         parser.extend();
         parser.substitute_defined_attributes();
 
@@ -322,7 +331,7 @@ value:
     - [ translate, 8.5, 1.5, -0.5 ]
 ";
 
-        let mut parser = Parser::from_yaml(yaml).unwrap();
+        let mut parser = Parser::from_yaml_without_preprocessing(yaml).unwrap();
         parser.extend();
         parser.substitute_defined_attributes();
         parser.substitute_add_attributes();

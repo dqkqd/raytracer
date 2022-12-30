@@ -34,6 +34,8 @@ impl CameraParser {
 #[cfg(test)]
 mod test {
 
+    use crate::parser::yaml::Parser;
+
     use super::*;
 
     fn default_camera() -> Camera {
@@ -78,6 +80,26 @@ mod test {
   up: [ 7, 8, 9 ]";
         let value: Value = serde_yaml::from_str(yaml).unwrap();
         let camera = CameraParser::parser_value(value)?;
+        assert_eq!(camera, default_camera());
+        Ok(())
+    }
+
+    #[test]
+    fn parse_from_str() -> Result<(), serde_yaml::Error> {
+        let yaml = "
+- add : camera
+  width: 10
+  height: 20
+  field-of-view: 1.25
+  from: [ 1, 2, 3 ]
+  to: [ 4, 5, 6 ]
+  up: [ 7, 8, 9 ]
+";
+        let parser = Parser::from_yaml(yaml).unwrap();
+        let add_attributes = parser.add_attributes();
+        assert_eq!(add_attributes.len(), 1);
+        assert_eq!(add_attributes[0].attribute_type(), "camera");
+        let camera = CameraParser::parser_value(add_attributes[0].value().unwrap())?;
         assert_eq!(camera, default_camera());
         Ok(())
     }

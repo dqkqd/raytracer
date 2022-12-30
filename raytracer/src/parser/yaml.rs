@@ -61,8 +61,14 @@ impl AddAttribute {
     fn new(value: Value) -> AddAttribute {
         AddAttribute { value }
     }
-    pub(crate) fn value(&self) -> &Value {
-        &self.value
+    pub(crate) fn value(&self) -> Option<Value> {
+        let mut value = self.value.clone();
+        let mapping = value.as_mapping_mut()?;
+        mapping.remove("add");
+        Some(Value::Mapping(mapping.clone()))
+    }
+    pub(crate) fn attribute_type(&self) -> &str {
+        self.value["add"].as_str().unwrap()
     }
 }
 
@@ -114,6 +120,10 @@ impl Parser {
         let mut parser = Parser::from_yaml_without_preprocessing(yaml)?;
         parser.prepare();
         Some(parser)
+    }
+
+    pub(crate) fn add_attributes(&self) -> &Vec<AddAttribute> {
+        &self.add_attributes
     }
 
     fn from_yaml_without_preprocessing(yaml: &str) -> Option<Parser> {

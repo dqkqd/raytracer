@@ -1,4 +1,4 @@
-use std::{collections::HashMap, hash::Hash};
+use std::collections::HashMap;
 
 use serde_yaml::Value;
 
@@ -52,7 +52,7 @@ fn substitute(value: &mut Value, attributes: &HashMap<String, DefineAttribute>) 
     success
 }
 
-#[derive(Debug, Hash, Clone)]
+#[derive(Debug, Clone)]
 struct AddAttribute {
     value: Value,
 }
@@ -63,7 +63,7 @@ impl AddAttribute {
     }
 }
 
-#[derive(Debug, Hash, Clone)]
+#[derive(Debug, Clone)]
 struct DefineAttribute {
     value: Value,
 }

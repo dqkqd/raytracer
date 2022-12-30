@@ -43,3 +43,5 @@ pub use camera::Camera;
 
 pub mod patterns;
 pub use patterns::pattern::Pattern;
+
+pub(crate) mod parser;

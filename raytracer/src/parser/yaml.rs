@@ -20,6 +20,20 @@ pub(crate) fn from_file(file_name: &str) -> Option<Vec<Object>> {
     from_str(&yaml_str)
 }
 
+fn build_default_transform_value() -> (Value, Value) {
+    let mut value = serde_yaml::Sequence::new();
+    let zero = Value::Number(serde_yaml::Number::from(0.0));
+    let identity = vec![
+        Value::String("translate".to_string()),
+        zero.clone(),
+        zero.clone(),
+        zero,
+    ];
+
+    let transform_key = Value::String("transform".to_string());
+    let transform_value = Value::Sequence(value);
+    (transform_key, transform_value)
+}
 fn build_default_material_value() -> (Value, Value) {
     let mut value = serde_yaml::Mapping::new();
 
@@ -108,6 +122,7 @@ impl AddAttribute {
     fn new(value: Value) -> AddAttribute {
         let mut attr = AddAttribute { value };
         attr.add_missing_material_attribute();
+        attr.add_missing_transform_attribute();
         attr
     }
 
@@ -128,6 +143,20 @@ impl AddAttribute {
 
     fn is_shape(&self) -> bool {
         matches!(self.attribute_type(), "sphere" | "plane" | "cube")
+    }
+
+    fn add_missing_transform_attribute(&mut self) -> Option<()> {
+        if !self.is_shape() {
+            return Some(());
+        }
+
+        let mapping = self.value.as_mapping_mut()?;
+        if !mapping.contains_key("transform") {
+            let (transform_key, transform_value) = build_default_transform_value();
+            mapping.insert(transform_key, transform_value);
+        }
+
+        Some(())
     }
 
     fn add_missing_material_attribute(&mut self) -> Option<()> {

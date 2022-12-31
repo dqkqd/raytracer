@@ -95,10 +95,10 @@ mod test {
     }
 
     #[test]
-    fn parse_to_point_light() {
-        let camera = default_material();
+    fn parse_to_material() {
+        let material = default_material();
         let parser = default_parser();
-        assert_eq!(parser.to_material(), camera);
+        assert_eq!(parser.to_material(), material);
     }
 
     #[test]

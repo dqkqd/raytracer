@@ -37,9 +37,9 @@ mod test {
 
     #[test]
     fn parse_to_point() {
-        let camera = default_point();
+        let point = default_point();
         let parser = default_parser();
-        assert_eq!(parser.to_point(), camera);
+        assert_eq!(parser.to_point(), point);
     }
 
     #[test]
@@ -48,7 +48,7 @@ mod test {
 [1.0, 2.0, 3.0]
 ";
         let value: Value = serde_yaml::from_str(yaml).unwrap();
-        let light = PointParser::from_value(value).unwrap();
-        assert_eq!(light, default_point());
+        let point = PointParser::from_value(value).unwrap();
+        assert_eq!(point, default_point());
     }
 }

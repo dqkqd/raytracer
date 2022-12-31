@@ -46,9 +46,9 @@ mod test {
 
     #[test]
     fn parse_to_point_light() {
-        let camera = default_point_light();
+        let light = default_point_light();
         let parser = default_parser();
-        assert_eq!(parser.to_light(), camera);
+        assert_eq!(parser.to_light(), light);
     }
 
     #[test]

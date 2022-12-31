@@ -37,9 +37,9 @@ mod test {
 
     #[test]
     fn parse_to_color() {
-        let camera = default_color();
+        let color = default_color();
         let parser = default_parser();
-        assert_eq!(parser.to_color(), camera);
+        assert_eq!(parser.to_color(), color);
     }
 
     #[test]
@@ -48,7 +48,7 @@ mod test {
 [0.1, 0.2, 0.3]
 ";
         let value: Value = serde_yaml::from_str(yaml).unwrap();
-        let light = ColorParser::from_value(value).unwrap();
-        assert_eq!(light, default_color());
+        let color = ColorParser::from_value(value).unwrap();
+        assert_eq!(color, default_color());
     }
 }

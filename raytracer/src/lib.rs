@@ -45,3 +45,4 @@ pub mod patterns;
 pub use patterns::pattern::Pattern;
 
 pub(crate) mod parser;
+pub use parser::render::render;

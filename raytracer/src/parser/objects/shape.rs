@@ -12,9 +12,7 @@ use super::{material::MaterialParser, transform::TransformParser};
 pub(crate) struct ShapeParser {
     #[serde(rename(deserialize = "material"))]
     material_parser: MaterialParser,
-
-    #[serde(rename(deserialize = "transform"))]
-    transform_parser: Vec<TransformParser>,
+    transform: TransformParser,
 }
 
 impl ShapeParser {
@@ -27,17 +25,8 @@ impl ShapeParser {
         };
         let material = self.material_parser.to_material();
         let shape = shape.with_material(material);
-        let transform = self
-            .transform_parser
-            .iter()
-            .rev()
-            .map(|t| t.to_transform())
-            .reduce(|acc, t| acc * t);
-        if let Some(transform) = transform {
-            shape.with_transform(transform)
-        } else {
-            shape
-        }
+        let transform = self.transform.to_transform();
+        shape.with_transform(transform)
     }
 
     pub fn from_value(value: Value, attribute_type: &str) -> Option<Shape> {
@@ -49,7 +38,12 @@ impl ShapeParser {
 #[cfg(test)]
 mod test {
 
-    use crate::{color::Color, material::Material, parser::yaml::Parser, transform::Transform};
+    use crate::{
+        color::Color,
+        material::Material,
+        parser::{objects::transform::SingleTransformParser, yaml::Parser},
+        transform::Transform,
+    };
 
     use super::*;
 
@@ -77,15 +71,15 @@ mod test {
     fn default_parser() -> ShapeParser {
         let material_parser =
             MaterialParser::new([0.1, 0.2, 0.3], 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.3);
-        let transform_parser = vec![
-            TransformParser::TranslationScaling("translate".to_string(), 1.0, 2.0, 3.0),
-            TransformParser::Rotation("rotate-x".to_string(), -2.0),
-            TransformParser::TranslationScaling("scale".to_string(), -2.0, -3.0, 5.0),
-            TransformParser::Shearing("shear".to_string(), 1.0, 2.0, 3.0, 4.0, 5.0, 6.0),
-        ];
+        let transform_parser = TransformParser::new(vec![
+            SingleTransformParser::TranslationScaling("translate".to_string(), 1.0, 2.0, 3.0),
+            SingleTransformParser::Rotation("rotate-x".to_string(), -2.0),
+            SingleTransformParser::TranslationScaling("scale".to_string(), -2.0, -3.0, 5.0),
+            SingleTransformParser::Shearing("shear".to_string(), 1.0, 2.0, 3.0, 4.0, 5.0, 6.0),
+        ]);
         ShapeParser {
             material_parser,
-            transform_parser,
+            transform: transform_parser,
         }
     }
 

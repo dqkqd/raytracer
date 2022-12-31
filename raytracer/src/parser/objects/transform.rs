@@ -5,32 +5,56 @@ use crate::transform::Transform;
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(untagged)]
-pub(crate) enum TransformParser {
+pub(crate) enum SingleTransformParser {
     Rotation(String, f64),
     TranslationScaling(String, f64, f64, f64),
     Shearing(String, f64, f64, f64, f64, f64, f64),
 }
 
 #[allow(dead_code)]
-impl TransformParser {
+impl SingleTransformParser {
     pub fn to_transform(&self) -> Transform {
         match self {
-            TransformParser::Rotation(s, a) => match s.as_str() {
+            SingleTransformParser::Rotation(s, a) => match s.as_str() {
                 "rotate-x" => Transform::rotation_x(*a),
                 "rotate-y" => Transform::rotation_y(*a),
                 "rotate-z" => Transform::rotation_z(*a),
                 _ => unimplemented!(),
             },
-            TransformParser::TranslationScaling(s, x, y, z) => match s.as_str() {
+            SingleTransformParser::TranslationScaling(s, x, y, z) => match s.as_str() {
                 "translate" => Transform::translation(*x, *y, *z),
                 "scale" => Transform::scaling(*x, *y, *z),
                 _ => unimplemented!(),
             },
-            TransformParser::Shearing(s, xy, xz, yx, yz, zx, zy) => match s.as_str() {
+            SingleTransformParser::Shearing(s, xy, xz, yx, yz, zx, zy) => match s.as_str() {
                 "shear" => Transform::shearing(*xy, *xz, *yx, *yz, *zx, *zy),
                 _ => unimplemented!(),
             },
         }
+    }
+
+    pub fn from_value(value: Value) -> Option<Transform> {
+        let parser: SingleTransformParser = serde_yaml::from_value(value).ok()?;
+        Some(parser.to_transform())
+    }
+}
+
+#[derive(Debug, Clone, PartialEq, Deserialize)]
+pub(crate) struct TransformParser(Vec<SingleTransformParser>);
+
+#[allow(dead_code)]
+impl TransformParser {
+    pub fn new(transform_list: Vec<SingleTransformParser>) -> Self {
+        Self(transform_list)
+    }
+
+    pub fn to_transform(&self) -> Transform {
+        self.0
+            .iter()
+            .rev()
+            .map(|t| t.to_transform())
+            .reduce(|acc, t| acc * t)
+            .unwrap_or_else(Transform::identity)
     }
 
     pub fn from_value(value: Value) -> Option<Transform> {
@@ -47,7 +71,7 @@ mod test {
     #[test]
     fn parse_to_rotate() {
         let transform = Transform::rotation_y(1.5);
-        let parser = TransformParser::Rotation("rotate-y".to_string(), 1.5);
+        let parser = SingleTransformParser::Rotation("rotate-y".to_string(), 1.5);
         assert_eq!(parser.to_transform(), transform);
     }
 
@@ -56,14 +80,15 @@ mod test {
         let yaml = "[rotate-y, 1.5]";
         let transform = Transform::rotation_y(1.5);
         let value: Value = serde_yaml::from_str(yaml).unwrap();
-        let expected = TransformParser::from_value(value).unwrap();
+        let expected = SingleTransformParser::from_value(value).unwrap();
         assert_eq!(expected, transform);
     }
 
     #[test]
     fn parse_to_translate() {
         let transform = Transform::translation(1.5, 2.5, 3.5);
-        let parser = TransformParser::TranslationScaling("translate".to_string(), 1.5, 2.5, 3.5);
+        let parser =
+            SingleTransformParser::TranslationScaling("translate".to_string(), 1.5, 2.5, 3.5);
         assert_eq!(parser.to_transform(), transform);
     }
 
@@ -72,14 +97,14 @@ mod test {
         let yaml = "[translate, 1.5, 2.5, 3.5]";
         let transform = Transform::translation(1.5, 2.5, 3.5);
         let value: Value = serde_yaml::from_str(yaml).unwrap();
-        let expected = TransformParser::from_value(value).unwrap();
+        let expected = SingleTransformParser::from_value(value).unwrap();
         assert_eq!(expected, transform);
     }
 
     #[test]
     fn parse_to_scale() {
         let transform = Transform::scaling(1.5, 2.5, 3.5);
-        let parser = TransformParser::TranslationScaling("scale".to_string(), 1.5, 2.5, 3.5);
+        let parser = SingleTransformParser::TranslationScaling("scale".to_string(), 1.5, 2.5, 3.5);
         assert_eq!(parser.to_transform(), transform);
     }
 
@@ -88,14 +113,15 @@ mod test {
         let yaml = "[scale, 1.5, 2.5, 3.5]";
         let transform = Transform::scaling(1.5, 2.5, 3.5);
         let value: Value = serde_yaml::from_str(yaml).unwrap();
-        let expected = TransformParser::from_value(value).unwrap();
+        let expected = SingleTransformParser::from_value(value).unwrap();
         assert_eq!(expected, transform);
     }
 
     #[test]
     fn parse_to_shear() {
         let transform = Transform::shearing(1.5, 2.5, 3.5, 7.5, 6.4, -5.3);
-        let parser = TransformParser::Shearing("shear".to_string(), 1.5, 2.5, 3.5, 7.5, 6.4, -5.3);
+        let parser =
+            SingleTransformParser::Shearing("shear".to_string(), 1.5, 2.5, 3.5, 7.5, 6.4, -5.3);
         assert_eq!(parser.to_transform(), transform);
     }
 
@@ -104,7 +130,48 @@ mod test {
         let yaml = "[shear, 1.5, 2.5, 3.5, 7.5, 6.4, -5.3]";
         let transform = Transform::shearing(1.5, 2.5, 3.5, 7.5, 6.4, -5.3);
         let value: Value = serde_yaml::from_str(yaml).unwrap();
-        let expected = TransformParser::from_value(value).unwrap();
+        let expected = SingleTransformParser::from_value(value).unwrap();
         assert_eq!(expected, transform);
+    }
+
+    fn default_transform() -> Transform {
+        Transform::rotation_x(1.5)
+            .translate(1.0, 2.0, 3.0)
+            .scale(4.0, 5.0, 6.0)
+            .shear(7.0, 8.0, 9.0, 10.0, 11.0, 12.5)
+    }
+
+    fn default_parser() -> TransformParser {
+        TransformParser(vec![
+            SingleTransformParser::Rotation("rotate-x".to_string(), 1.5),
+            SingleTransformParser::TranslationScaling("translate".to_string(), 1.0, 2.0, 3.0),
+            SingleTransformParser::TranslationScaling("scale".to_string(), 4.0, 5.0, 6.0),
+            SingleTransformParser::Shearing("shear".to_string(), 7.0, 8.0, 9.0, 10.0, 11.0, 12.5),
+        ])
+    }
+
+    fn default_yaml() -> String {
+        String::from(
+            "
+- ['rotate-x', 1.5]
+- ['translate', 1, 2, 3]
+- ['scale', 4, 5, 6]
+- ['shear', 7, 8, 9, 10, 11, 12.5]
+",
+        )
+    }
+
+    #[test]
+    fn parser_to_combined_transform() {
+        let transform = default_transform();
+        let parser = default_parser();
+        assert_eq!(parser.to_transform(), transform);
+    }
+
+    #[test]
+    fn parse_combined_transform_from_value() {
+        let value: Value = serde_yaml::from_str(&default_yaml()).unwrap();
+        let transform = TransformParser::from_value(value).unwrap();
+        assert_eq!(transform, default_transform());
     }
 }

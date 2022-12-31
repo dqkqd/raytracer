@@ -39,7 +39,7 @@ impl SingleTransformParser {
     }
 }
 
-#[derive(Debug, Clone, PartialEq, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Deserialize, Default)]
 pub(crate) struct TransformParser(Vec<SingleTransformParser>);
 
 #[allow(dead_code)]

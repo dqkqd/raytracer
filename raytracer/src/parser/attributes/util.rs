@@ -2,13 +2,6 @@ use serde_yaml::Value;
 
 use crate::parser::yaml::DefineAttributes;
 
-pub(crate) fn default_transform() -> (Value, Value) {
-    let value = serde_yaml::Sequence::new();
-    let transform_key = Value::String("transform".to_string());
-    let transform_value = Value::Sequence(value);
-    (transform_key, transform_value)
-}
-
 fn get_value_inside_attributes(value: &mut Value, attributes: &DefineAttributes) -> Option<Value> {
     let s = value.as_str()?;
     let value_inside = attributes.get(s)?.value()?;

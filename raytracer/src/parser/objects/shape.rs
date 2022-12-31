@@ -12,6 +12,8 @@ use super::{material::MaterialParser, transform::TransformParser};
 pub(crate) struct ShapeParser {
     #[serde(rename(deserialize = "material"), default)]
     material_parser: MaterialParser,
+
+    #[serde(default)]
     transform: TransformParser,
 }
 

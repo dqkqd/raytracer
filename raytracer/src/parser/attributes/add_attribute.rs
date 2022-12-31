@@ -2,7 +2,7 @@ use serde_yaml::Value;
 
 use crate::parser::{objects::object::Object, yaml::DefineAttributes};
 
-use super::util::{default_transform, substitute};
+use super::util::substitute;
 
 #[derive(Debug, Clone)]
 pub(crate) struct AddAttribute {
@@ -33,20 +33,6 @@ impl AddAttribute {
 
     fn is_shape(&self) -> bool {
         matches!(self.attribute_type(), "sphere" | "plane" | "cube")
-    }
-
-    pub fn add_missing_transform_attribute(&mut self) -> Option<()> {
-        if !self.is_shape() {
-            return Some(());
-        }
-
-        let mapping = self.value.as_mapping_mut()?;
-        if !mapping.contains_key("transform") {
-            let (transform_key, transform_value) = default_transform();
-            mapping.insert(transform_key, transform_value);
-        }
-
-        Some(())
     }
 
     pub fn substitute(&mut self, attributes: &DefineAttributes) -> bool {

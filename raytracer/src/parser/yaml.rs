@@ -114,9 +114,6 @@ impl Parser {
         self.extend();
         self.substitute_defined_attributes();
         self.substitute_add_attributes();
-        for attr in self.add_attributes.iter_mut() {
-            attr.add_missing_transform_attribute();
-        }
     }
 }
 

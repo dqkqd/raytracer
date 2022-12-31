@@ -3,10 +3,10 @@ use serde_yaml::Value;
 
 use crate::{
     camera::Camera,
-    point::Point,
     transform::{Transform, Transformable},
-    vector::Vector,
 };
+
+use super::{point::PointParser, vector::VectorParser};
 
 #[derive(Debug, Clone, Copy, PartialEq, Deserialize)]
 pub(crate) struct CameraParser {
@@ -16,16 +16,16 @@ pub(crate) struct CameraParser {
     #[serde(rename(deserialize = "field-of-view"))]
     field_of_view: f64,
 
-    from: [f64; 3],
-    to: [f64; 3],
-    up: [f64; 3],
+    from: PointParser,
+    to: PointParser,
+    up: VectorParser,
 }
 
 impl CameraParser {
     pub fn to_camera(self) -> Camera {
-        let from = Point::new(self.from[0], self.from[1], self.from[2]);
-        let to = Point::new(self.to[0], self.to[1], self.to[2]);
-        let up = Vector::new(self.up[0], self.up[1], self.up[2]);
+        let from = self.from.to_point();
+        let to = self.to.to_point();
+        let up = self.up.to_vector();
         let view_transform = Transform::view_transform(from, to, up);
         Camera::new(self.width, self.height, self.field_of_view).with_transform(view_transform)
     }
@@ -39,7 +39,7 @@ impl CameraParser {
 #[cfg(test)]
 mod test {
 
-    use crate::parser::yaml::Parser;
+    use crate::{parser::yaml::Parser, point::Point, vector::Vector};
 
     use super::*;
 
@@ -61,9 +61,9 @@ mod test {
             width: 10,
             height: 20,
             field_of_view: 1.25,
-            from: [1.0, 2.0, 3.0],
-            to: [4.0, 5.0, 6.0],
-            up: [7.0, 8.0, 9.0],
+            from: PointParser::new(1.0, 2.0, 3.0),
+            to: PointParser::new(4.0, 5.0, 6.0),
+            up: VectorParser::new(7.0, 8.0, 9.0),
         }
     }
 

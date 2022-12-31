@@ -1,11 +1,13 @@
 use serde::Deserialize;
 use serde_yaml::Value;
 
-use crate::{color::Color, material::Material};
+use crate::material::Material;
+
+use super::color::ColorParser;
 
 #[derive(Debug, Clone, Copy, PartialEq, Deserialize)]
 pub(crate) struct MaterialParser {
-    color: [f64; 3],
+    color: ColorParser,
     diffuse: f64,
     ambient: f64,
     specular: f64,
@@ -21,7 +23,7 @@ pub(crate) struct MaterialParser {
 impl MaterialParser {
     pub fn to_material(self) -> Material {
         Material::default()
-            .with_color(Color::new(self.color[0], self.color[1], self.color[2]))
+            .with_color(self.color.to_color())
             .with_diffuse(self.diffuse)
             .with_ambient(self.ambient)
             .with_specular(self.specular)
@@ -48,7 +50,7 @@ impl MaterialParser {
         refractive_index: f64,
     ) -> MaterialParser {
         MaterialParser {
-            color,
+            color: ColorParser::new(color[0], color[1], color[2]),
             diffuse,
             ambient,
             specular,
@@ -62,6 +64,8 @@ impl MaterialParser {
 
 #[cfg(test)]
 mod test {
+
+    use crate::color::Color;
 
     use super::*;
 
@@ -79,7 +83,7 @@ mod test {
 
     fn default_parser() -> MaterialParser {
         MaterialParser {
-            color: [0.1, 0.2, 0.3],
+            color: ColorParser::new(0.1, 0.2, 0.3),
             diffuse: 0.4,
             ambient: 0.5,
             specular: 0.6,

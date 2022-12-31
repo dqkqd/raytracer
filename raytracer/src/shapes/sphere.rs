@@ -1,4 +1,7 @@
-use crate::{util::solve_quadratic_equation, IntersectionsFactor, Point, Ray, Vector};
+use crate::{
+    intersect::intersection::IntersectionsFactor, point::Point, ray::Ray,
+    util::solve_quadratic_equation, vector::Vector,
+};
 
 use super::ShapeLocal;
 
@@ -29,7 +32,7 @@ impl ShapeLocal for Sphere {
 #[cfg(test)]
 mod test {
 
-    use crate::{Shape, Vector};
+    use crate::shapes::shape::Shape;
 
     use super::*;
 

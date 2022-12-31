@@ -1,7 +1,7 @@
-use crate::{Color, Material, Point, Shape, Vector};
+use crate::{color::Color, material::Material, point::Point, shapes::shape::Shape, vector::Vector};
 
 #[derive(Debug, Clone, Copy, PartialEq)]
-pub struct PointLight {
+pub(crate) struct PointLight {
     position: Point,
     intensity: Color,
 }
@@ -38,7 +38,7 @@ impl PointLight {
 #[cfg(test)]
 mod test {
 
-    use crate::{color};
+    use crate::color;
 
     use super::*;
 

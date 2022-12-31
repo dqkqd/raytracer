@@ -1,9 +1,9 @@
 use std::ops::{Add, Sub};
 
-use crate::{util::equal, vector::Vector, Transform};
+use crate::{transform::Transform, util::equal, vector::Vector};
 
 #[derive(Debug, Clone, Copy, Default)]
-pub struct Point {
+pub(crate) struct Point {
     x: f64,
     y: f64,
     z: f64,

@@ -2,15 +2,21 @@ pub(super) mod dummy;
 
 pub(crate) mod shape;
 
-pub mod sphere;
+pub(crate) mod sphere;
 
-pub mod plane;
+pub(crate) mod plane;
 
-pub mod cube;
+pub(crate) mod cube;
 
 use crate::{
-    transform::Transformable, Color, Intersections, IntersectionsFactor, Material, Pattern, Point,
-    Ray, Vector,
+    color::Color,
+    intersect::{intersection::IntersectionsFactor, multiple_intersections::Intersections},
+    material::Material,
+    patterns::pattern::Pattern,
+    point::Point,
+    ray::Ray,
+    transform::Transformable,
+    vector::Vector,
 };
 
 use self::{cube::Cube, dummy::Dummy, plane::Plane, sphere::Sphere};
@@ -22,7 +28,7 @@ pub(crate) enum ShapeKind {
     Cube(Cube),
     Dummy(Dummy),
 }
-pub trait ShapeMaterial {
+pub(crate) trait ShapeMaterial {
     fn material(&self) -> &Material;
     fn with_material(self, material: Material) -> Self;
 
@@ -38,12 +44,12 @@ pub trait ShapeMaterial {
     fn with_pattern(self, pattern: Pattern) -> Self;
 }
 
-pub trait ShapeLocal {
+pub(crate) trait ShapeLocal {
     fn local_normal_at(&self, local_point: &Point) -> Vector;
     fn local_intersection(&self, local_ray: &Ray) -> IntersectionsFactor;
 }
 
-pub trait ShapeWorld: Transformable + ShapeLocal {
+pub(crate) trait ShapeWorld: Transformable + ShapeLocal {
     fn transform_ray(&self, ray: &Ray) -> Option<Ray> {
         Some(ray.transform(self.inversed_transform()?))
     }

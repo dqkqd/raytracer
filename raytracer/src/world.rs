@@ -1,15 +1,18 @@
 use crate::{
-    intersect::intersection::ComputedIntersection,
-    shapes::{ShapeMaterial, ShapeWorld},
+    color::Color,
+    intersect::{intersection::ComputedIntersection, multiple_intersections::Intersections},
+    light::PointLight,
+    point::Point,
+    ray::Ray,
+    shapes::{shape::Shape, ShapeMaterial, ShapeWorld},
     util::equal,
-    Color, Intersections, Point, PointLight, Ray, Shape,
 };
 
 const REFLECTION_LIMIT: usize = 5;
 const REFRACTION_LIMIT: usize = 5;
 
 #[derive(Debug, Clone, PartialEq, Default)]
-pub struct World {
+pub(crate) struct World {
     lights: Vec<PointLight>,
     objects: Vec<Shape>,
 }
@@ -119,9 +122,14 @@ impl World {
 mod test {
 
     use crate::{
-        color, intersect::intersection::Intersection, shapes::ShapeMaterial,
-        transform::Transformable, util::assert_float_eq, Camera, Material, Pattern, Transform,
-        Vector,
+        camera::Camera,
+        color,
+        intersect::intersection::Intersection,
+        material::Material,
+        patterns::pattern::Pattern,
+        transform::{Transform, Transformable},
+        util::assert_float_eq,
+        vector::Vector,
     };
 
     use super::*;

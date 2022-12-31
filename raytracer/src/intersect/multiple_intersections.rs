@@ -1,12 +1,14 @@
-use crate::{shapes::ShapeMaterial, Ray, Shape};
+use crate::{
+    ray::Ray,
+    shapes::{shape::Shape, ShapeMaterial},
+};
 
-use super::{
-    intersection::{ComputedIntersection, Intersection, DEFAULT_REFRACTIVE_INDEX},
-    IntersectionsFactor,
+use super::intersection::{
+    ComputedIntersection, Intersection, IntersectionsFactor, DEFAULT_REFRACTIVE_INDEX,
 };
 
 #[derive(Debug, Clone, PartialEq, Default)]
-pub struct Intersections<'a> {
+pub(crate) struct Intersections<'a> {
     data: Vec<ComputedIntersection<'a>>,
 }
 
@@ -16,11 +18,7 @@ impl<'a> Intersections<'a> {
         self.data.len()
     }
 
-    pub(crate) fn new(
-        mut roots: IntersectionsFactor,
-        object: &'a Shape,
-        ray: &Ray,
-    ) -> Intersections<'a> {
+    pub fn new(mut roots: IntersectionsFactor, object: &'a Shape, ray: &Ray) -> Intersections<'a> {
         roots.sort_unstable_by(|a, b| a.partial_cmp(b).unwrap());
         let data = roots
             .iter()
@@ -29,11 +27,11 @@ impl<'a> Intersections<'a> {
         Intersections { data }
     }
 
-    pub(crate) fn get(&self, index: usize) -> Option<&ComputedIntersection> {
+    pub fn get(&self, index: usize) -> Option<&ComputedIntersection> {
         self.data.get(index)
     }
 
-    pub(crate) fn get_mut(&'a mut self, index: usize) -> Option<&mut ComputedIntersection> {
+    pub fn get_mut(&'a mut self, index: usize) -> Option<&mut ComputedIntersection> {
         self.data.get_mut(index)
     }
 
@@ -42,7 +40,7 @@ impl<'a> Intersections<'a> {
         self.get(non_negative_index)
     }
 
-    pub(crate) fn merge(mut self, mut other: Intersections<'a>) -> Intersections {
+    pub fn merge(mut self, mut other: Intersections<'a>) -> Intersections {
         // use merge like merge sort but push backward
         let mut merged_data = Vec::with_capacity(self.data.len() + other.data.len());
 
@@ -70,7 +68,7 @@ impl<'a> Intersections<'a> {
         self
     }
 
-    pub(crate) fn update_refractive_index(mut self) -> Self {
+    pub fn update_refractive_index(mut self) -> Self {
         let mut container: Vec<&Shape> = Vec::with_capacity(self.count());
         for comp in self.data.iter_mut() {
             if container.is_empty() {
@@ -111,9 +109,13 @@ impl<'a> Intersections<'a> {
 
 #[cfg(test)]
 mod test {
+
     use crate::{
-        shapes::ShapeMaterial, util::assert_float_eq, Point, Transform, Transformable, Vector,
-        World,
+        point::Point,
+        transform::{Transform, Transformable},
+        util::assert_float_eq,
+        vector::Vector,
+        world::World,
     };
 
     use super::*;

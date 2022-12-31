@@ -1,7 +1,7 @@
 use serde::Deserialize;
 use serde_yaml::Value;
 
-use crate::{Color, Material};
+use crate::{color::Color, material::Material};
 
 #[derive(Debug, Clone, Copy, PartialEq, Deserialize)]
 pub(crate) struct MaterialParser {

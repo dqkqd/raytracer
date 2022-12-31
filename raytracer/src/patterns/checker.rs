@@ -1,4 +1,9 @@
-use crate::{transform::InversedTransform, util::equal, Color, Point, Transform};
+use crate::{
+    color::Color,
+    point::Point,
+    transform::{InversedTransform, Transform},
+    util::equal,
+};
 
 use super::PatternLocal;
 
@@ -9,6 +14,7 @@ pub(crate) struct CheckerPattern {
     inversed_transform: InversedTransform,
 }
 
+#[allow(dead_code)]
 impl CheckerPattern {
     pub fn new(left_color: Color, right_color: Color) -> CheckerPattern {
         CheckerPattern {
@@ -33,6 +39,7 @@ impl PatternLocal for CheckerPattern {
 
 #[cfg(test)]
 mod test {
+
     use crate::color;
 
     use super::*;

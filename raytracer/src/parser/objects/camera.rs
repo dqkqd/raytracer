@@ -1,7 +1,12 @@
 use serde::Deserialize;
 use serde_yaml::Value;
 
-use crate::{Camera, Point, Transform, Transformable, Vector};
+use crate::{
+    camera::Camera,
+    point::Point,
+    transform::{Transform, Transformable},
+    vector::Vector,
+};
 
 #[derive(Debug, Clone, Copy, PartialEq, Deserialize)]
 pub(crate) struct CameraParser {

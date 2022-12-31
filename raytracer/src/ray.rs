@@ -1,7 +1,7 @@
-use crate::{Point, Transform, Vector};
+use crate::{point::Point, transform::Transform, vector::Vector};
 
 #[derive(Debug, Clone, Copy, PartialEq)]
-pub struct Ray {
+pub(crate) struct Ray {
     origin: Point,
     direction: Vector,
 }

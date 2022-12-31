@@ -1,4 +1,4 @@
-use crate::{Color, Point};
+use crate::{color::Color, point::Point};
 
 // TestPattern used only for testing
 #[derive(Debug, Clone, Copy, PartialEq, Default)]

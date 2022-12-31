@@ -1,4 +1,9 @@
-use crate::{shapes::ShapeWorld, Point, Ray, Shape, Vector};
+use crate::{
+    point::Point,
+    ray::Ray,
+    shapes::{shape::Shape, ShapeWorld},
+    vector::Vector,
+};
 
 pub(crate) type IntersectionsFactor = Vec<f64>;
 
@@ -6,17 +11,17 @@ const OFFSET_FACTOR: f64 = 1E-10;
 pub(crate) const DEFAULT_REFRACTIVE_INDEX: f64 = 1.0;
 
 #[derive(Debug, Clone, Copy, PartialEq)]
-pub struct Intersection<'a> {
+pub(crate) struct Intersection<'a> {
     object: &'a Shape,
     t: f64,
 }
 
 impl<'a> Intersection<'a> {
-    pub(crate) fn new(t: f64, object: &Shape) -> Intersection {
+    pub fn new(t: f64, object: &Shape) -> Intersection {
         Intersection { t, object }
     }
 
-    pub(crate) fn prepare_computations(self, ray: &Ray) -> Option<ComputedIntersection<'a>> {
+    pub fn prepare_computations(self, ray: &Ray) -> Option<ComputedIntersection<'a>> {
         let t = self.t;
         let object = self.object;
 
@@ -53,7 +58,7 @@ impl<'a> Intersection<'a> {
 }
 
 #[derive(Debug, Clone, Copy, PartialEq)]
-pub struct ComputedIntersection<'a> {
+pub(crate) struct ComputedIntersection<'a> {
     object: &'a Shape,
     t: f64,
     point: Point,
@@ -72,47 +77,47 @@ impl<'a> ComputedIntersection<'a> {
         self.t
     }
 
-    pub(crate) fn object(&self) -> &Shape {
+    pub fn object(&self) -> &Shape {
         self.object
     }
 
-    pub(crate) fn eye_vector(&self) -> &Vector {
+    pub fn eye_vector(&self) -> &Vector {
         &self.eye_vector
     }
 
-    pub(crate) fn normal_vector(&self) -> &Vector {
+    pub fn normal_vector(&self) -> &Vector {
         &self.normal_vector
     }
 
-    pub(crate) fn reflect_vector(&self) -> &Vector {
+    pub fn reflect_vector(&self) -> &Vector {
         &self.reflect_vector
     }
 
-    pub(crate) fn over_point(&self) -> &Point {
+    pub fn over_point(&self) -> &Point {
         &self.over_point
     }
 
-    pub(crate) fn under_point(&self) -> &Point {
+    pub fn under_point(&self) -> &Point {
         &self.under_point
     }
 
-    pub(crate) fn n1(&self) -> Option<f64> {
+    pub fn n1(&self) -> Option<f64> {
         self.n1
     }
 
-    pub(crate) fn set_n1(&mut self, n1: f64) {
+    pub fn set_n1(&mut self, n1: f64) {
         self.n1 = Some(n1);
     }
 
-    pub(crate) fn n2(&self) -> Option<f64> {
+    pub fn n2(&self) -> Option<f64> {
         self.n2
     }
 
-    pub(crate) fn set_n2(&mut self, n2: f64) {
+    pub fn set_n2(&mut self, n2: f64) {
         self.n2 = Some(n2);
     }
 
-    pub(crate) fn schlick(&self) -> f64 {
+    pub fn schlick(&self) -> f64 {
         let n1 = self
             .n1
             .expect("`schlick` should only be called after n1 calculated");
@@ -140,8 +145,12 @@ impl<'a> ComputedIntersection<'a> {
 
 #[cfg(test)]
 mod test {
+    use crate::{
+        transform::{Transform, Transformable},
+        util::assert_float_eq,
+    };
+
     use super::*;
-    use crate::{util::assert_float_eq, Transform, Transformable};
 
     #[test]
     fn intersection_encapsulates_t_and_object() {

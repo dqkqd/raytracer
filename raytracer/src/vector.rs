@@ -1,9 +1,9 @@
 use std::ops::{Add, Div, Mul, Neg, Sub};
 
-use crate::{util::equal, Transform};
+use crate::{transform::Transform, util::equal};
 
 #[derive(Debug, Clone, Copy)]
-pub struct Vector {
+pub(crate) struct Vector {
     x: f64,
     y: f64,
     z: f64,

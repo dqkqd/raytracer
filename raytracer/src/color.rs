@@ -5,13 +5,13 @@ use crate::util::equal;
 pub(super) const MAX_COLOR: u8 = 255;
 
 // some useful color
-pub const BLACK: Color = Color {
+pub(crate) const BLACK: Color = Color {
     r: 0.0,
     g: 0.0,
     b: 0.0,
 };
 
-pub const WHITE: Color = Color {
+pub(crate) const WHITE: Color = Color {
     r: 1.0,
     g: 1.0,
     b: 1.0,
@@ -19,12 +19,13 @@ pub const WHITE: Color = Color {
 
 // default color is BLACK
 #[derive(Debug, Clone, Copy, Default)]
-pub struct Color {
+pub(crate) struct Color {
     r: f64,
     g: f64,
     b: f64,
 }
 
+#[allow(dead_code)]
 impl Color {
     pub fn new(r: f64, g: f64, b: f64) -> Color {
         Color { r, g, b }
@@ -42,7 +43,7 @@ impl Color {
         self.b
     }
 
-    pub fn to_u8(&self) -> (u8, u8, u8) {
+    pub fn to_u8(self) -> (u8, u8, u8) {
         let convert = |p: f64| -> u8 {
             let p = p * MAX_COLOR as f64;
             let c = p.round() as i32;

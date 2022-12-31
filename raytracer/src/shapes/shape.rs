@@ -1,6 +1,12 @@
 use crate::{
-    transform::{transformable, InversedTransform},
-    Color, Intersections, IntersectionsFactor, Material, Pattern, Point, Ray, Transform, Vector,
+    color::Color,
+    intersect::{intersection::IntersectionsFactor, multiple_intersections::Intersections},
+    material::Material,
+    patterns::pattern::Pattern,
+    point::Point,
+    ray::Ray,
+    transform::{transformable, InversedTransform, Transform},
+    vector::Vector,
 };
 
 use super::{
@@ -9,7 +15,7 @@ use super::{
 };
 
 #[derive(Debug, Clone, Copy, PartialEq)]
-pub struct Shape {
+pub(crate) struct Shape {
     shape: ShapeKind,
     inversed_transform: InversedTransform,
     material: Material,
@@ -144,7 +150,8 @@ impl ShapeMaterial for Shape {
 
 #[cfg(test)]
 mod test {
-    use crate::{util::assert_float_eq, Transformable};
+
+    use crate::{transform::Transformable, util::assert_float_eq};
 
     use super::*;
 

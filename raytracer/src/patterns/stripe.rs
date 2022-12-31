@@ -1,4 +1,9 @@
-use crate::{transform::InversedTransform, util::equal, Color, Point, Transform};
+use crate::{
+    color::Color,
+    point::Point,
+    transform::{InversedTransform, Transform},
+    util::equal,
+};
 
 use super::PatternLocal;
 

@@ -1,6 +1,8 @@
 use crate::{
-    transform::{transformable, InversedTransform},
-    Color, Point, Shape, Transform, Transformable,
+    color::Color,
+    point::Point,
+    shapes::shape::Shape,
+    transform::{transformable, InversedTransform, Transform, Transformable},
 };
 
 use super::{
@@ -9,13 +11,14 @@ use super::{
 };
 
 #[derive(Debug, Clone, Copy, PartialEq)]
-pub struct Pattern {
+pub(crate) struct Pattern {
     pattern: PatternKind,
     inversed_transform: InversedTransform,
 }
 
 transformable!(Pattern);
 
+#[allow(dead_code)]
 impl Pattern {
     fn new(pattern: PatternKind) -> Pattern {
         Pattern {
@@ -79,7 +82,6 @@ impl PatternWorld for Pattern {
 
 #[cfg(test)]
 mod test {
-    use crate::Transformable;
 
     use super::*;
 

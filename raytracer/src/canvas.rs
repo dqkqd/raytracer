@@ -8,12 +8,13 @@ use crate::color::{self, Color, MAX_COLOR};
 
 const LINE_LENGTH: usize = 70;
 
-pub struct Canvas {
+pub(crate) struct Canvas {
     width: usize,
     height: usize,
     canvas: Vec<Vec<Color>>,
 }
 
+#[allow(dead_code)]
 impl Canvas {
     pub fn new(width: usize, height: usize) -> Canvas {
         let canvas = vec![vec![color::BLACK; width]; height];

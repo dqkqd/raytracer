@@ -333,7 +333,7 @@ impl Parser {
 #[cfg(test)]
 mod test {
 
-    use crate::{Transform, Transformable};
+    use crate::transform::{Transform, Transformable};
 
     use super::*;
 

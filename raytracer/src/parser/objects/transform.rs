@@ -1,7 +1,7 @@
 use serde::{Deserialize, Serialize};
 use serde_yaml::Value;
 
-use crate::Transform;
+use crate::transform::Transform;
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(untagged)]

@@ -1,12 +1,15 @@
 use rayon::prelude::{IndexedParallelIterator, IntoParallelRefMutIterator, ParallelIterator};
 
 use crate::{
-    transform::{transformable, InversedTransform},
-    Canvas, Point, Ray, Transform, World,
+    canvas::Canvas,
+    point::Point,
+    ray::Ray,
+    transform::{transformable, InversedTransform, Transform},
+    world::World,
 };
 
 #[derive(Debug, Clone, Copy, PartialEq)]
-pub struct Camera {
+pub(crate) struct Camera {
     hsize: usize,
     vsize: usize,
     field_of_view: f64,
@@ -41,7 +44,7 @@ impl Camera {
         }
     }
 
-    pub(crate) fn ray_for_pixel(&self, x: usize, y: usize) -> Option<Ray> {
+    pub fn ray_for_pixel(&self, x: usize, y: usize) -> Option<Ray> {
         let xoffset = (x as f64 + 0.5) * self.pixel_size;
         let yoffset = (y as f64 + 0.5) * self.pixel_size;
 
@@ -73,7 +76,8 @@ impl Camera {
 
 #[cfg(test)]
 mod test {
-    use crate::{transform::Transformable, util::assert_float_eq, Point, Vector};
+
+    use crate::{transform::Transformable, util::assert_float_eq, vector::Vector};
 
     use super::*;
 

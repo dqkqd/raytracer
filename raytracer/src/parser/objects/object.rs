@@ -1,4 +1,4 @@
-use crate::{parser::yaml::AddAttribute, Camera, PointLight, Shape};
+use crate::{camera::Camera, light::PointLight, parser::yaml::AddAttribute, shapes::shape::Shape};
 
 use super::{camera::CameraParser, light::LightParser, shape::ShapeParser};
 

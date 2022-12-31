@@ -1,7 +1,7 @@
 use serde::Deserialize;
 use serde_yaml::Value;
 
-use crate::{Color, Point, PointLight};
+use crate::{color::Color, light::PointLight, point::Point};
 
 #[derive(Debug, Clone, Copy, PartialEq, Deserialize)]
 pub(crate) struct LightParser {

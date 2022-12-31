@@ -2,7 +2,7 @@ use std::path::PathBuf;
 
 use tempfile::NamedTempFile;
 
-use crate::World;
+use crate::world::World;
 
 use super::{objects::object::Object, yaml};
 

@@ -1,7 +1,10 @@
 use serde::Deserialize;
 use serde_yaml::Value;
 
-use crate::{shapes::ShapeMaterial, Shape, Transformable};
+use crate::{
+    shapes::{shape::Shape, ShapeMaterial},
+    transform::Transformable,
+};
 
 use super::{material::MaterialParser, transform::TransformParser};
 
@@ -46,7 +49,7 @@ impl ShapeParser {
 #[cfg(test)]
 mod test {
 
-    use crate::{parser::yaml::Parser, Color, Material, Transform};
+    use crate::{color::Color, material::Material, parser::yaml::Parser, transform::Transform};
 
     use super::*;
 

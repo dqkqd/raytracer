@@ -1,9 +1,7 @@
 use std::ops::Mul;
 
-use crate::{matrix::Matrix4, Point, Ray, Vector};
-
 pub(crate) type InversedTransform = Option<Transform>;
-pub trait Transformable {
+pub(crate) trait Transformable {
     fn inversed_transform(&self) -> InversedTransform;
     fn set_transform(&mut self, transform: Transform);
     fn with_transform(self, transform: Transform) -> Self;
@@ -12,14 +10,14 @@ pub trait Transformable {
 macro_rules! transformable {
     ($struct_name:ident) => {
         impl $crate::transform::Transformable for $struct_name {
-            fn inversed_transform(&self) -> $crate::InversedTransform {
+            fn inversed_transform(&self) -> $crate::transform::InversedTransform {
                 self.inversed_transform
             }
-            fn set_transform(&mut self, transform: $crate::Transform) {
+            fn set_transform(&mut self, transform: $crate::transform::Transform) {
                 self.inversed_transform = transform.inverse();
             }
 
-            fn with_transform(mut self, transform: $crate::Transform) -> Self {
+            fn with_transform(mut self, transform: $crate::transform::Transform) -> Self {
                 self.set_transform(transform);
                 self
             }
@@ -29,8 +27,10 @@ macro_rules! transformable {
 
 pub(crate) use transformable;
 
+use crate::{matrix::Matrix4, point::Point, ray::Ray, vector::Vector};
+
 #[derive(Debug, Clone, Copy, PartialEq)]
-pub struct Transform {
+pub(crate) struct Transform {
     matrix: Matrix4,
 }
 
@@ -180,6 +180,7 @@ impl Mul for Transform {
 }
 
 // fluent api
+#[allow(dead_code)]
 impl Transform {
     pub fn translate(self, x: f64, y: f64, z: f64) -> Transform {
         Transform::translation(x, y, z) * self

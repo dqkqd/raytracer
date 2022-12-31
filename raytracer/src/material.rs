@@ -1,10 +1,15 @@
 use crate::{
-    color, patterns::PatternWorld, phong::PhongReflecionModel, Color, Pattern, Point, PointLight,
-    Shape, Vector,
+    color::{self, Color},
+    light::PointLight,
+    patterns::{pattern::Pattern, PatternWorld},
+    phong::PhongReflecionModel,
+    point::Point,
+    shapes::shape::Shape,
+    vector::Vector,
 };
 
 #[derive(Debug, Clone, Copy, PartialEq)]
-pub struct Material {
+pub(crate) struct Material {
     color: Color,
     model: PhongReflecionModel,
     pattern: Option<Pattern>,
@@ -37,7 +42,7 @@ impl Material {
         self
     }
 
-    pub(crate) fn pattern(&self) -> Option<&Pattern> {
+    pub fn pattern(&self) -> Option<&Pattern> {
         self.pattern.as_ref()
     }
 
@@ -109,7 +114,7 @@ impl Material {
         self
     }
 
-    pub(crate) fn lighting(
+    pub fn lighting(
         &self,
         object: &Shape,
         light: &PointLight,

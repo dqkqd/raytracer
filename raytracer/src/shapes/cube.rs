@@ -1,7 +1,8 @@
 use crate::{
-    intersect::IntersectionsFactor,
+    intersect::intersection::IntersectionsFactor,
+    point::Point,
     util::{check_axis, equal},
-    Point, Vector,
+    vector::Vector,
 };
 
 use super::ShapeLocal;
@@ -22,7 +23,7 @@ impl ShapeLocal for Cube {
         }
     }
 
-    fn local_intersection(&self, local_ray: &crate::Ray) -> IntersectionsFactor {
+    fn local_intersection(&self, local_ray: &crate::ray::Ray) -> IntersectionsFactor {
         let (xtmin, xtmax) = check_axis(local_ray.origin().x(), local_ray.direction().x());
         let (ytmin, ytmax) = check_axis(local_ray.origin().y(), local_ray.direction().y());
         let (ztmin, ztmax) = check_axis(local_ray.origin().z(), local_ray.direction().z());
@@ -43,7 +44,7 @@ impl ShapeLocal for Cube {
 #[cfg(test)]
 mod test {
 
-    use crate::{util::assert_float_eq, Ray, Shape};
+    use crate::{ray::Ray, shapes::shape::Shape, util::assert_float_eq};
 
     use super::*;
 

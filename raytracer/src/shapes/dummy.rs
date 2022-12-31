@@ -1,4 +1,4 @@
-use crate::{intersect::IntersectionsFactor, Point, Ray, Vector};
+use crate::{intersect::intersection::IntersectionsFactor, point::Point, ray::Ray, vector::Vector};
 
 use super::ShapeLocal;
 

@@ -1,4 +1,8 @@
-use crate::{transform::InversedTransform, Color, Point, Transform};
+use crate::{
+    color::Color,
+    point::Point,
+    transform::{InversedTransform, Transform},
+};
 
 use super::PatternLocal;
 
@@ -9,6 +13,7 @@ pub(crate) struct GradientPattern {
     inversed_transform: InversedTransform,
 }
 
+#[allow(dead_code)]
 impl GradientPattern {
     pub(crate) fn new(left_color: Color, right_color: Color) -> GradientPattern {
         GradientPattern {

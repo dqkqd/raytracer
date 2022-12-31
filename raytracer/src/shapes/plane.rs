@@ -1,4 +1,7 @@
-use crate::{intersect::IntersectionsFactor, util::solve_linear_equation, Point, Vector};
+use crate::{
+    intersect::intersection::IntersectionsFactor, point::Point, util::solve_linear_equation,
+    vector::Vector,
+};
 
 use super::ShapeLocal;
 
@@ -9,7 +12,7 @@ impl ShapeLocal for Plane {
     fn local_normal_at(&self, _: &Point) -> Vector {
         Vector::new(0.0, 1.0, 0.0)
     }
-    fn local_intersection(&self, local_ray: &crate::Ray) -> IntersectionsFactor {
+    fn local_intersection(&self, local_ray: &crate::ray::Ray) -> IntersectionsFactor {
         let a = local_ray.direction().y();
         let b = local_ray.origin().y();
         solve_linear_equation(a, b)
@@ -18,7 +21,8 @@ impl ShapeLocal for Plane {
 
 #[cfg(test)]
 mod test {
-    use crate::{Ray, Shape};
+
+    use crate::{ray::Ray, shapes::shape::Shape};
 
     use super::*;
 

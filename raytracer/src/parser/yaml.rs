@@ -1,14 +1,8 @@
-use std::{
-    collections::{HashMap, HashSet},
-    fs,
-};
+use std::{collections::HashMap, fs};
 
 use serde_yaml::Value;
 
-use super::{
-    objects::object::Object,
-    util::{default_material, default_transform},
-};
+use super::{attributes::add_attribute::AddAttribute, objects::object::Object};
 
 pub(crate) fn from_str(yaml_str: &str) -> Option<Vec<Object>> {
     Parser::from_yaml(yaml_str)?
@@ -71,87 +65,6 @@ fn substitute(value: &mut Value, attributes: &HashMap<String, DefineAttribute>) 
         _ => (),
     };
     success
-}
-
-#[derive(Debug, Clone)]
-pub(crate) struct AddAttribute {
-    value: Value,
-}
-
-impl AddAttribute {
-    fn new(value: Value) -> AddAttribute {
-        AddAttribute { value }
-    }
-
-    pub fn value(&self) -> Value {
-        self.value.clone()
-    }
-
-    pub fn attribute_type(&self) -> &str {
-        self.value["add"].as_str().unwrap()
-    }
-
-    fn parse(&self) -> Option<Object> {
-        Object::from_attribute(self)
-    }
-
-    fn is_shape(&self) -> bool {
-        matches!(self.attribute_type(), "sphere" | "plane" | "cube")
-    }
-
-    fn add_missing_transform_attribute(&mut self) -> Option<()> {
-        if !self.is_shape() {
-            return Some(());
-        }
-
-        let mapping = self.value.as_mapping_mut()?;
-        if !mapping.contains_key("transform") {
-            let (transform_key, transform_value) = default_transform();
-            mapping.insert(transform_key, transform_value);
-        }
-
-        Some(())
-    }
-
-    fn add_missing_material_attribute(&mut self) -> Option<()> {
-        if !self.is_shape() {
-            return Some(());
-        }
-
-        let get_material_keys = || -> Option<HashSet<String>> {
-            Some(
-                self.value
-                    .clone()
-                    .as_mapping()?
-                    .get("material")?
-                    .as_mapping()?
-                    .keys()
-                    .into_iter()
-                    .map(|k| k.as_str().unwrap().to_string())
-                    .collect(),
-            )
-        };
-
-        let keys = get_material_keys().unwrap_or_default();
-
-        // build default material
-        let (material_key, default_material) = default_material();
-
-        let mapping = self.value.as_mapping_mut()?;
-        if !mapping.contains_key("material") {
-            mapping.insert(material_key, default_material);
-        } else {
-            let value = mapping.get_mut("material")?.as_mapping_mut()?;
-            for (k, v) in default_material.as_mapping()? {
-                let key = k.as_str()?.to_string();
-                if !keys.contains(&key) {
-                    value.insert(k.clone(), v.clone());
-                }
-            }
-        }
-
-        Some(())
-    }
 }
 
 #[derive(Debug, Clone)]
@@ -275,9 +188,9 @@ impl Parser {
 
     fn substitute_add_attributes(&mut self) {
         for attribute in &mut self.add_attributes {
-            let mut value = attribute.value.clone();
+            let mut value = attribute.value();
             substitute(&mut value, &self.define_attributes);
-            attribute.value = value;
+            attribute.set_value(value);
         }
     }
 
@@ -449,7 +362,7 @@ transform:
   - [ scale, 3.5, 3.5, 3.5 ]
   - [ translate, 8.5, 1.5, -0.5 ]
         ";
-        assert_value(&cube.value, expected)
+        assert_value(&cube.value(), expected)
     }
 
     #[test]

@@ -121,7 +121,9 @@ impl Parser {
 mod test {
 
     use crate::{
+        color::Color,
         material::Material,
+        patterns::pattern::Pattern,
         transform::{Transform, Transformable},
     };
 
@@ -393,5 +395,36 @@ transform:
     fn parse_sample_yaml_without_panic() {
         let yaml = default_yaml();
         let _ = from_str(&yaml).unwrap();
+    }
+
+    #[test]
+    fn parse_sphere_with_pattern() {
+        let yaml = "
+- add: sphere
+  material:
+    pattern:
+      type: stripes
+      colors:
+        - [0.1, 0.2, 0.3]
+        - [0.4, 0.5, 0.6]
+      transform:
+        - [translate, 1, 2, 3]
+        - [scale, 0.4, 0.5, 0.6]
+        - [rotate-z, 0.5]";
+        let objects = from_str(yaml).unwrap();
+        let shape = objects[0].as_shape();
+        assert!(shape.is_some());
+        let sphere = shape.unwrap();
+        let material = sphere.material();
+
+        let pattern = Pattern::stripe(Color::new(0.1, 0.2, 0.3), Color::new(0.4, 0.5, 0.6))
+            .with_transform(
+                Transform::translation(1.0, 2.0, 3.0)
+                    .scale(0.4, 0.5, 0.6)
+                    .rotate_z(0.5),
+            );
+        let expected = Material::default().with_pattern(pattern);
+
+        assert_eq!(material, &expected);
     }
 }

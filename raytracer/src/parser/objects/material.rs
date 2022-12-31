@@ -3,7 +3,12 @@ use serde_yaml::Value;
 
 use crate::material::Material;
 
-use super::color::ColorParser;
+use super::{color::ColorParser, pattern::PatternParser};
+
+fn default_color() -> ColorParser {
+    let color = Material::default().color();
+    ColorParser::new(color.r(), color.g(), color.b())
+}
 
 fn default_diffuse() -> f64 {
     Material::default().diffuse()
@@ -33,9 +38,9 @@ fn default_refractive_index() -> f64 {
     Material::default().refractive_index()
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Deserialize)]
 pub(crate) struct MaterialParser {
-    #[serde(default)]
+    #[serde(default = "default_color")]
     color: ColorParser,
 
     #[serde(default = "default_diffuse")]
@@ -61,6 +66,9 @@ pub(crate) struct MaterialParser {
         default = "default_refractive_index"
     )]
     refractive_index: f64,
+
+    #[serde(default)]
+    pattern: Option<PatternParser>,
 }
 
 impl Default for MaterialParser {
@@ -77,14 +85,15 @@ impl Default for MaterialParser {
             reflective: material.reflective(),
             transparency: material.transparency(),
             refractive_index: material.refractive_index(),
+            pattern: None,
         }
     }
 }
 
 #[allow(dead_code)]
 impl MaterialParser {
-    pub fn to_material(self) -> Material {
-        Material::default()
+    pub fn to_material(&self) -> Material {
+        let material = Material::default()
             .with_color(self.color.to_color())
             .with_diffuse(self.diffuse)
             .with_ambient(self.ambient)
@@ -92,7 +101,11 @@ impl MaterialParser {
             .with_shininess(self.shininess)
             .with_reflective(self.reflective)
             .with_transparency(self.transparency)
-            .with_refractive_index(self.refractive_index)
+            .with_refractive_index(self.refractive_index);
+        match &self.pattern {
+            Some(p) => material.with_pattern(p.to_pattern()),
+            _ => material,
+        }
     }
 
     pub fn from_value(value: Value) -> Option<Material> {
@@ -120,6 +133,7 @@ impl MaterialParser {
             reflective,
             transparency,
             refractive_index,
+            pattern: None,
         }
     }
 }
@@ -127,7 +141,11 @@ impl MaterialParser {
 #[cfg(test)]
 mod test {
 
-    use crate::color::Color;
+    use crate::{
+        color::Color,
+        patterns::pattern::Pattern,
+        transform::{Transform, Transformable},
+    };
 
     use super::*;
 
@@ -153,6 +171,7 @@ mod test {
             reflective: 0.8,
             transparency: 0.9,
             refractive_index: 1.3,
+            pattern: None,
         }
     }
 
@@ -178,5 +197,38 @@ refractive-index: 1.3
         let value: Value = serde_yaml::from_str(yaml).unwrap();
         let material = MaterialParser::from_value(value).unwrap();
         assert_eq!(material, default_material());
+    }
+
+    #[test]
+    fn parse_from_value_with_pattern() {
+        let yaml = "
+color: [0.1, 0.2, 0.3]
+refractive-index: 1.3
+pattern:
+  type: stripes
+  colors:
+    - [0.1, 0.2, 0.3]
+    - [0.4, 0.5, 0.6]
+  transform:
+    - [translate, 1, 2, 3]
+    - [scale, 0.4, 0.5, 0.6]
+    - [rotate-z, 0.5]
+";
+
+        let value: Value = serde_yaml::from_str(yaml).unwrap();
+        let material = MaterialParser::from_value(value);
+
+        let pattern = Pattern::stripe(Color::new(0.1, 0.2, 0.3), Color::new(0.4, 0.5, 0.6))
+            .with_transform(
+                Transform::translation(1.0, 2.0, 3.0)
+                    .scale(0.4, 0.5, 0.6)
+                    .rotate_z(0.5),
+            );
+        let expected = Material::default()
+            .with_color(Color::new(0.1, 0.2, 0.3))
+            .with_refractive_index(1.3)
+            .with_pattern(pattern);
+
+        assert_eq!(material, Some(expected));
     }
 }

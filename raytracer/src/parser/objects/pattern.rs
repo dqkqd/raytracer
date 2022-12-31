@@ -12,6 +12,7 @@ pub(crate) struct PatternParser {
 
     colors: Vec<ColorParser>,
 
+    #[serde(default)]
     transform: TransformParser,
 }
 
@@ -97,5 +98,20 @@ transform:
         let value: Value = serde_yaml::from_str(&default_yaml()).unwrap();
         let pattern = PatternParser::from_value(value).unwrap();
         assert_eq!(pattern, default_pattern());
+    }
+
+    #[test]
+    fn parse_without_transform() {
+        let yaml = "
+type: stripes
+colors:
+- [0.1, 0.2, 0.3]
+- [0.4, 0.5, 0.6]
+";
+        let value: Value = serde_yaml::from_str(yaml).unwrap();
+        let pattern = PatternParser::from_value(value).unwrap();
+        let inversed = pattern.inversed_transform();
+        let expected = Some(Transform::identity());
+        assert_eq!(inversed, expected);
     }
 }

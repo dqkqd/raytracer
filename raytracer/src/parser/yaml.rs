@@ -83,11 +83,8 @@ impl AddAttribute {
         AddAttribute { value }
     }
 
-    pub fn value(&self) -> Option<Value> {
-        let mut value = self.value.clone();
-        let mapping = value.as_mapping_mut()?;
-        mapping.remove("add");
-        Some(Value::Mapping(mapping.clone()))
+    pub fn value(&self) -> Value {
+        self.value.clone()
     }
 
     pub fn attribute_type(&self) -> &str {

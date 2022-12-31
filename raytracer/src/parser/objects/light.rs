@@ -72,7 +72,7 @@ intensity: [0.4, 0.5, 0.6]
         let add_attributes = parser.add_attributes();
         assert_eq!(add_attributes.len(), 1);
         assert_eq!(add_attributes[0].attribute_type(), "light");
-        let light = LightParser::from_value(add_attributes[0].value().unwrap()).unwrap();
+        let light = LightParser::from_value(add_attributes[0].value()).unwrap();
         assert_eq!(light, default_point_light());
     }
 }

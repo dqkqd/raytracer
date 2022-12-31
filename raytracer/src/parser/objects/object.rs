@@ -13,7 +13,7 @@ pub(crate) enum Object {
 #[allow(dead_code)]
 impl Object {
     pub fn from_attribute(attr: &AddAttribute) -> Option<Object> {
-        let value = attr.value()?;
+        let value = attr.value();
         let attribute_type = attr.attribute_type();
         match attribute_type {
             "camera" => Some(Object::Camera(CameraParser::from_value(value)?)),

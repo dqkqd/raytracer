@@ -103,7 +103,7 @@ mod test {
         let add_attributes = parser.add_attributes();
         assert_eq!(add_attributes.len(), 1);
         assert_eq!(add_attributes[0].attribute_type(), "camera");
-        let camera = CameraParser::from_value(add_attributes[0].value().unwrap()).unwrap();
+        let camera = CameraParser::from_value(add_attributes[0].value()).unwrap();
         assert_eq!(camera, default_camera());
     }
 }

@@ -144,8 +144,7 @@ transform:
         let (shape_type, default_shape) = default_object();
         assert_eq!(add_attributes.len(), 1);
         assert_eq!(add_attributes[0].attribute_type(), shape_type);
-        let shape =
-            ShapeParser::from_value(add_attributes[0].value().unwrap(), &shape_type).unwrap();
+        let shape = ShapeParser::from_value(add_attributes[0].value(), &shape_type).unwrap();
         assert_eq!(shape, default_shape);
     }
 }

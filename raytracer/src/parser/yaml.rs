@@ -5,7 +5,10 @@ use std::{
 
 use serde_yaml::Value;
 
-use super::objects::object::Object;
+use super::{
+    objects::object::Object,
+    util::{default_material, default_transform},
+};
 
 pub(crate) fn from_str(yaml_str: &str) -> Option<Vec<Object>> {
     Parser::from_yaml(yaml_str)?
@@ -18,41 +21,6 @@ pub(crate) fn from_str(yaml_str: &str) -> Option<Vec<Object>> {
 pub(crate) fn from_file(file_name: &str) -> Option<Vec<Object>> {
     let yaml_str = fs::read_to_string(file_name).ok()?;
     from_str(&yaml_str)
-}
-
-fn build_default_transform_value() -> (Value, Value) {
-    let value = serde_yaml::Sequence::new();
-    let transform_key = Value::String("transform".to_string());
-    let transform_value = Value::Sequence(value);
-    (transform_key, transform_value)
-}
-fn build_default_material_value() -> (Value, Value) {
-    let mut value = serde_yaml::Mapping::new();
-
-    let all_keys_float = [
-        ("diffuse", 0.9),
-        ("ambient", 0.1),
-        ("specular", 0.9),
-        ("shininess", 200.0),
-        ("reflective", 0.0),
-        ("transparency", 0.0),
-        ("refractive-index", 1.0),
-    ];
-
-    for (key, default_value) in all_keys_float {
-        let value_num = Value::Number(serde_yaml::Number::from(default_value));
-        let value_key = Value::String(key.to_string());
-        value.insert(value_key, value_num);
-    }
-
-    let c = Value::Number(serde_yaml::Number::from(1.0));
-    let value_color = Value::Sequence(vec![c.clone(), c.clone(), c]);
-    let value_key = Value::String("color".to_string());
-    value.insert(value_key, value_color);
-
-    let material_key = Value::String("material".to_string());
-    let material_value = Value::Mapping(value);
-    (material_key, material_value)
 }
 
 fn get_value_inside_attributes(
@@ -141,7 +109,7 @@ impl AddAttribute {
 
         let mapping = self.value.as_mapping_mut()?;
         if !mapping.contains_key("transform") {
-            let (transform_key, transform_value) = build_default_transform_value();
+            let (transform_key, transform_value) = default_transform();
             mapping.insert(transform_key, transform_value);
         }
 
@@ -170,7 +138,7 @@ impl AddAttribute {
         let keys = get_material_keys().unwrap_or_default();
 
         // build default material
-        let (material_key, default_material) = build_default_material_value();
+        let (material_key, default_material) = default_material();
 
         let mapping = self.value.as_mapping_mut()?;
         if !mapping.contains_key("material") {

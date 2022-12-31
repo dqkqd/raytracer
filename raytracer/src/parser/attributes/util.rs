@@ -1,6 +1,6 @@
 use serde_yaml::Value;
 
-use super::yaml::DefineAttributes;
+use crate::parser::yaml::DefineAttributes;
 
 pub(crate) fn default_transform() -> (Value, Value) {
     let value = serde_yaml::Sequence::new();

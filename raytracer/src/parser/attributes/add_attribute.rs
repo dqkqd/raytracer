@@ -2,11 +2,9 @@ use std::collections::HashSet;
 
 use serde_yaml::Value;
 
-use crate::parser::{
-    objects::object::Object,
-    util::{default_material, default_transform, substitute},
-    yaml::DefineAttributes,
-};
+use crate::parser::{objects::object::Object, yaml::DefineAttributes};
+
+use super::util::{default_material, default_transform, substitute};
 
 #[derive(Debug, Clone)]
 pub(crate) struct AddAttribute {

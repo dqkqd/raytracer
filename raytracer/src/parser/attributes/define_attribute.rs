@@ -1,6 +1,8 @@
 use serde_yaml::Value;
 
-use crate::parser::{util::substitute, yaml::DefineAttributes};
+use crate::parser::yaml::DefineAttributes;
+
+use super::util::substitute;
 
 #[derive(Debug, Clone)]
 pub(crate) struct DefineAttribute {

@@ -1,7 +1,4 @@
-use crate::{
-    ray::Ray,
-    shapes::{shape::Shape, ShapeMaterial},
-};
+use crate::{ray::Ray, shapes::shape::Shape};
 
 use super::intersection::{
     ComputedIntersection, Intersection, IntersectionsFactor, DEFAULT_REFRACTIVE_INDEX,
@@ -112,6 +109,7 @@ mod test {
 
     use crate::{
         point::Point,
+        shapes::ShapeMaterial,
         transform::{Transform, Transformable},
         util::assert_float_eq,
         vector::Vector,

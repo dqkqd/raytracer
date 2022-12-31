@@ -4,7 +4,7 @@ use crate::{
     light::PointLight,
     point::Point,
     ray::Ray,
-    shapes::{shape::Shape, ShapeMaterial, ShapeWorld},
+    shapes::{shape::Shape, ShapeWorld},
     util::equal,
 };
 
@@ -127,6 +127,7 @@ mod test {
         intersect::intersection::Intersection,
         material::Material,
         patterns::pattern::Pattern,
+        shapes::ShapeMaterial,
         transform::{Transform, Transformable},
         util::assert_float_eq,
         vector::Vector,

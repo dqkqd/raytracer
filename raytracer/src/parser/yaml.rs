@@ -24,15 +24,7 @@ pub(crate) fn from_file(file_name: &str) -> Option<Vec<Object>> {
 }
 
 fn build_default_transform_value() -> (Value, Value) {
-    let mut value = serde_yaml::Sequence::new();
-    let zero = Value::Number(serde_yaml::Number::from(0.0));
-    let identity = vec![
-        Value::String("translate".to_string()),
-        zero.clone(),
-        zero.clone(),
-        zero,
-    ];
-
+    let value = serde_yaml::Sequence::new();
     let transform_key = Value::String("transform".to_string());
     let transform_value = Value::Sequence(value);
     (transform_key, transform_value)

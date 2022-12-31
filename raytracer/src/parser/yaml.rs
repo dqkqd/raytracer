@@ -11,10 +11,7 @@ pub(crate) fn from_str(yaml_str: &str) -> Option<Vec<Object>> {
     Parser::from_yaml(yaml_str)?
         .add_attributes()
         .iter()
-        .map(|attr| {
-            dbg!(attr);
-            attr.parse()
-        })
+        .map(|attr| attr.parse())
         .collect::<Option<Vec<Object>>>()
 }
 

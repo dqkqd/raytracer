@@ -10,8 +10,8 @@ use super::{material::MaterialParser, transform::TransformParser};
 
 #[derive(Debug, Clone, PartialEq, Deserialize)]
 pub(crate) struct ShapeParser {
-    #[serde(rename(deserialize = "material"), default)]
-    material_parser: MaterialParser,
+    #[serde(default)]
+    material: MaterialParser,
 
     #[serde(default)]
     transform: TransformParser,
@@ -25,7 +25,7 @@ impl ShapeParser {
             "cube" => Shape::cube(),
             _ => unimplemented!(),
         };
-        let material = self.material_parser.to_material();
+        let material = self.material.to_material();
         let shape = shape.with_material(material);
         let transform = self.transform.to_transform();
         shape.with_transform(transform)
@@ -80,7 +80,7 @@ mod test {
             SingleTransformParser::Shearing("shear".to_string(), 1.0, 2.0, 3.0, 4.0, 5.0, 6.0),
         ]);
         ShapeParser {
-            material_parser,
+            material: material_parser,
             transform: transform_parser,
         }
     }

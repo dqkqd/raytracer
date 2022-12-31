@@ -15,3 +15,5 @@ pub(crate) mod color;
 pub(crate) mod point;
 
 pub(crate) mod vector;
+
+pub(crate) mod pattern;

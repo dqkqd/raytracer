@@ -4,7 +4,8 @@ use serde_yaml::Value;
 
 use crate::parser::{
     objects::object::Object,
-    util::{default_material, default_transform},
+    util::{default_material, default_transform, substitute},
+    yaml::DefineAttributes,
 };
 
 #[derive(Debug, Clone)]
@@ -12,6 +13,7 @@ pub(crate) struct AddAttribute {
     value: Value,
 }
 
+#[allow(dead_code)]
 impl AddAttribute {
     pub fn new(value: Value) -> AddAttribute {
         AddAttribute { value }
@@ -89,5 +91,9 @@ impl AddAttribute {
         }
 
         Some(())
+    }
+
+    pub fn substitute(&mut self, attributes: &DefineAttributes) -> bool {
+        substitute(&mut self.value, attributes)
     }
 }

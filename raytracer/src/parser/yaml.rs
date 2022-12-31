@@ -2,7 +2,10 @@ use std::{collections::HashMap, fs};
 
 use serde_yaml::Value;
 
-use super::{attributes::add_attribute::AddAttribute, objects::object::Object};
+use super::{
+    attributes::{add_attribute::AddAttribute, define_attribute::DefineAttribute},
+    objects::object::Object,
+};
 
 pub(crate) fn from_str(yaml_str: &str) -> Option<Vec<Object>> {
     Parser::from_yaml(yaml_str)?
@@ -17,97 +20,12 @@ pub(crate) fn from_file(file_name: &str) -> Option<Vec<Object>> {
     from_str(&yaml_str)
 }
 
-fn get_value_inside_attributes(
-    value: &mut Value,
-    attributes: &HashMap<String, DefineAttribute>,
-) -> Option<Value> {
-    let s = value.as_str()?;
-    let value_inside = attributes.get(s)?.value()?;
-    Some(value_inside.clone())
-}
-
-fn substitute(value: &mut Value, attributes: &HashMap<String, DefineAttribute>) -> bool {
-    let mut success: bool = false;
-    match value {
-        Value::Mapping(m) => {
-            for (k, v) in m {
-                let key_string = k.as_str();
-                if key_string == Some("define") {
-                    continue;
-                }
-                if let Some(value_inside) = get_value_inside_attributes(v, attributes) {
-                    *v = value_inside;
-                    success = true;
-                } else {
-                    substitute(v, attributes);
-                }
-            }
-        }
-        Value::Sequence(seq) => {
-            let mut values = Vec::new();
-            for v in seq {
-                if let Some(value_inside) = get_value_inside_attributes(v, attributes) {
-                    if let Some(arr) = value_inside.as_sequence() {
-                        for v in arr {
-                            values.push(v.clone());
-                        }
-                    } else {
-                        values.push(value_inside);
-                    }
-                    success = true;
-                } else {
-                    substitute(v, attributes);
-                    values.push(v.clone());
-                }
-            }
-            *value = Value::Sequence(values);
-        }
-        _ => (),
-    };
-    success
-}
-
-#[derive(Debug, Clone)]
-struct DefineAttribute {
-    value: Value,
-}
-
-impl DefineAttribute {
-    fn new(value: Value) -> DefineAttribute {
-        DefineAttribute { value }
-    }
-    fn value(&self) -> Option<&Value> {
-        self.value.as_mapping()?.get("value")
-    }
-    fn extensible(&self) -> bool {
-        self.value
-            .as_mapping()
-            .map_or(false, |mapping| mapping.contains_key("extend"))
-    }
-    fn extend_value(&self) -> Option<&str> {
-        self.value.as_mapping()?.get("extend")?.as_str()
-    }
-    fn extend(&mut self, other: &DefineAttribute) -> Option<()> {
-        if other.extensible() {
-            return None;
-        }
-        let map = self.value.as_mapping_mut()?;
-        map.remove("extend");
-        let value = map.get_mut("value")?.as_mapping_mut()?;
-        let other_value = other.value.get("value")?.as_mapping()?;
-        for (k, v) in other_value.iter() {
-            if !value.contains_key(k) {
-                value.insert(k.clone(), v.clone());
-            }
-        }
-        Some(())
-    }
-}
+pub(crate) type DefineAttributes = HashMap<String, DefineAttribute>;
 
 #[derive(Debug, Default)]
 pub(crate) struct Parser {
     add_attributes: Vec<AddAttribute>,
-    define_attributes: HashMap<String, DefineAttribute>,
+    define_attributes: DefineAttributes,
 }
 
 impl Parser {
@@ -179,7 +97,7 @@ impl Parser {
             let success = self
                 .define_attributes
                 .values_mut()
-                .any(|attr| substitute(&mut attr.value, &copy_defined_attributes));
+                .any(|attr| attr.substitute(&copy_defined_attributes));
             if !success {
                 break;
             }
@@ -188,9 +106,7 @@ impl Parser {
 
     fn substitute_add_attributes(&mut self) {
         for attribute in &mut self.add_attributes {
-            let mut value = attribute.value();
-            substitute(&mut value, &self.define_attributes);
-            attribute.set_value(value);
+            attribute.substitute(&self.define_attributes);
         }
     }
 
@@ -272,7 +188,7 @@ value:
   specular: 0.0
   reflective: 0.1
 ";
-        assert_value(&blue_material.value, expected)
+        assert_value(blue_material.raw_value(), expected)
     }
 
     #[test]
@@ -310,7 +226,7 @@ value:
 - [ scale, 0.5, 0.5, 0.5]
 - [ scale, 2, 2, 2]
         ";
-        assert_value(&small_object.value, expected)
+        assert_value(small_object.raw_value(), expected)
     }
 
     #[test]

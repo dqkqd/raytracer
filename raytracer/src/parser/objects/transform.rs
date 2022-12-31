@@ -11,6 +11,7 @@ pub(crate) enum TransformParser {
     Shearing(String, f64, f64, f64, f64, f64, f64),
 }
 
+#[allow(dead_code)]
 impl TransformParser {
     pub fn to_transform(&self) -> Transform {
         match self {

@@ -17,6 +17,7 @@ pub struct Shape {
 
 transformable!(Shape);
 
+#[allow(dead_code)]
 impl Shape {
     fn new(shape: ShapeKind) -> Shape {
         Shape {

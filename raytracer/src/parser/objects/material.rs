@@ -17,6 +17,7 @@ pub(crate) struct MaterialParser {
     refractive_index: f64,
 }
 
+#[allow(dead_code)]
 impl MaterialParser {
     pub fn to_material(self) -> Material {
         Material::default()

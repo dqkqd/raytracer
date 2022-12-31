@@ -4,13 +4,13 @@ use super::{camera::CameraParser, light::LightParser, shape::ShapeParser};
 
 #[allow(clippy::large_enum_variant)]
 #[derive(Debug, Clone, Copy, PartialEq)]
-
 pub(crate) enum Object {
     Camera(Camera),
     Light(PointLight),
     Shape(Shape),
 }
 
+#[allow(dead_code)]
 impl Object {
     pub fn from_attribute(attr: &AddAttribute) -> Option<Object> {
         let value = attr.value()?;

@@ -1,4 +1,4 @@
-use serde::{Deserialize, Serialize};
+use serde::Deserialize;
 use serde_yaml::Value;
 
 use crate::{shapes::ShapeMaterial, Shape, Transformable};
@@ -15,7 +15,7 @@ pub(crate) struct ShapeParser {
 }
 
 impl ShapeParser {
-    pub fn to_shape(self, shape_type: &str) -> Shape {
+    pub fn to_shape(&self, shape_type: &str) -> Shape {
         let shape = match shape_type {
             "sphere" => Shape::sphere(),
             "plane" => Shape::plane(),

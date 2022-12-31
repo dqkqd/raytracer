@@ -33,6 +33,10 @@ impl Shape {
         }
     }
 
+    pub fn material(&self) -> &Material {
+        &self.material
+    }
+
     pub fn sphere() -> Shape {
         Shape::new(ShapeKind::Sphere(Sphere::default()))
     }

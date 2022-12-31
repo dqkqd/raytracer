@@ -115,7 +115,6 @@ impl Parser {
         self.substitute_defined_attributes();
         self.substitute_add_attributes();
         for attr in self.add_attributes.iter_mut() {
-            attr.add_missing_material_attribute();
             attr.add_missing_transform_attribute();
         }
     }
@@ -124,7 +123,10 @@ impl Parser {
 #[cfg(test)]
 mod test {
 
-    use crate::transform::{Transform, Transformable};
+    use crate::{
+        material::Material,
+        transform::{Transform, Transformable},
+    };
 
     use super::*;
 
@@ -360,6 +362,13 @@ transform:
         assert!(shape.is_some());
         let sphere = shape.unwrap();
         assert!(sphere.as_sphere().is_some());
+
+        let material = sphere.material();
+        assert_eq!(material, &Material::default());
+
+        let inversed = sphere.inversed_transform();
+        let expected = Transform::identity().inverse();
+        assert_eq!(inversed, expected)
     }
 
     #[test]

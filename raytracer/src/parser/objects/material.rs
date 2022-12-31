@@ -5,18 +5,80 @@ use crate::material::Material;
 
 use super::color::ColorParser;
 
+fn default_diffuse() -> f64 {
+    Material::default().diffuse()
+}
+
+fn default_ambient() -> f64 {
+    Material::default().ambient()
+}
+
+fn default_specular() -> f64 {
+    Material::default().specular()
+}
+
+fn default_shininess() -> f64 {
+    Material::default().shininess()
+}
+
+fn default_reflective() -> f64 {
+    Material::default().reflective()
+}
+
+fn default_transparency() -> f64 {
+    Material::default().transparency()
+}
+
+fn default_refractive_index() -> f64 {
+    Material::default().refractive_index()
+}
+
 #[derive(Debug, Clone, Copy, PartialEq, Deserialize)]
 pub(crate) struct MaterialParser {
+    #[serde(default)]
     color: ColorParser,
+
+    #[serde(default = "default_diffuse")]
     diffuse: f64,
+
+    #[serde(default = "default_ambient")]
     ambient: f64,
+
+    #[serde(default = "default_specular")]
     specular: f64,
+
+    #[serde(default = "default_shininess")]
     shininess: f64,
+
+    #[serde(default = "default_reflective")]
     reflective: f64,
+
+    #[serde(default = "default_transparency")]
     transparency: f64,
 
-    #[serde(rename(deserialize = "refractive-index"))]
+    #[serde(
+        rename(deserialize = "refractive-index"),
+        default = "default_refractive_index"
+    )]
     refractive_index: f64,
+}
+
+impl Default for MaterialParser {
+    fn default() -> Self {
+        let material = Material::default();
+        let material_color = material.color();
+        let color = ColorParser::new(material_color.r(), material_color.g(), material_color.b());
+        MaterialParser {
+            color,
+            diffuse: material.diffuse(),
+            ambient: material.ambient(),
+            specular: material.specular(),
+            shininess: material.shininess(),
+            reflective: material.reflective(),
+            transparency: material.transparency(),
+            refractive_index: material.refractive_index(),
+        }
+    }
 }
 
 #[allow(dead_code)]

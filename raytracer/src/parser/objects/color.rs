@@ -22,6 +22,13 @@ impl ColorParser {
     }
 }
 
+impl Default for ColorParser {
+    fn default() -> Self {
+        let color = Color::default();
+        Self(color.r(), color.g(), color.b())
+    }
+}
+
 #[cfg(test)]
 mod test {
 

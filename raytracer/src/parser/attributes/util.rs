@@ -1,49 +1,12 @@
 use serde_yaml::Value;
 
-use crate::{material::Material, parser::yaml::DefineAttributes};
+use crate::parser::yaml::DefineAttributes;
 
 pub(crate) fn default_transform() -> (Value, Value) {
     let value = serde_yaml::Sequence::new();
     let transform_key = Value::String("transform".to_string());
     let transform_value = Value::Sequence(value);
     (transform_key, transform_value)
-}
-
-pub(crate) fn default_material() -> (Value, Value) {
-    let mut value = serde_yaml::Mapping::new();
-
-    let material = Material::default();
-
-    let all_keys_float = [
-        ("diffuse", material.diffuse()),
-        ("ambient", material.ambient()),
-        ("specular", material.specular()),
-        ("shininess", material.shininess()),
-        ("reflective", material.reflective()),
-        ("transparency", material.transparency()),
-        ("refractive-index", material.refractive_index()),
-    ];
-
-    for (key, default_value) in all_keys_float {
-        let value_num = Value::Number(serde_yaml::Number::from(default_value));
-        let value_key = Value::String(key.to_string());
-        value.insert(value_key, value_num);
-    }
-
-    let color = material.color();
-    let c = vec![
-        Value::Number(serde_yaml::Number::from(color.r())),
-        Value::Number(serde_yaml::Number::from(color.g())),
-        Value::Number(serde_yaml::Number::from(color.b())),
-    ];
-
-    let value_color = Value::Sequence(c);
-    let value_key = Value::String("color".to_string());
-    value.insert(value_key, value_color);
-
-    let material_key = Value::String("material".to_string());
-    let material_value = Value::Mapping(value);
-    (material_key, material_value)
 }
 
 fn get_value_inside_attributes(value: &mut Value, attributes: &DefineAttributes) -> Option<Value> {

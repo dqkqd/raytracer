@@ -10,7 +10,7 @@ use super::{material::MaterialParser, transform::TransformParser};
 
 #[derive(Debug, Clone, PartialEq, Deserialize)]
 pub(crate) struct ShapeParser {
-    #[serde(rename(deserialize = "material"))]
+    #[serde(rename(deserialize = "material"), default)]
     material_parser: MaterialParser,
     transform: TransformParser,
 }

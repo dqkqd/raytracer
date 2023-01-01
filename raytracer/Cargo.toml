@@ -11,3 +11,4 @@ serde = {version = "1.0.152", features = ["derive"]}
 serde_yaml = "0.9.16"
 tempfile = "3.3"
 image = "0.24"
+clap = { version = "4.0.32", features = ["derive"] }

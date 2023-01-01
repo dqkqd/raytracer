@@ -27,7 +27,7 @@ impl AddAttribute {
         self.value["add"].as_str().unwrap()
     }
 
-    pub fn parse(&self) -> Option<Object> {
+    pub fn parse(&self) -> Result<Object, serde_yaml::Error> {
         Object::from_attribute(self)
     }
 

@@ -1,23 +1,22 @@
-use std::{collections::HashMap, fs};
-
 use serde_yaml::Value;
+use std::{collections::HashMap, error::Error, fs};
 
 use super::{
     attributes::{add_attribute::AddAttribute, define_attribute::DefineAttribute},
     objects::object::Object,
 };
 
-pub(crate) fn from_str(yaml_str: &str) -> Option<Vec<Object>> {
+pub(crate) fn from_str(yaml_str: &str) -> Result<Vec<Object>, serde_yaml::Error> {
     Parser::from_yaml(yaml_str)?
         .add_attributes()
         .iter()
         .map(|attr| attr.parse())
-        .collect::<Option<Vec<Object>>>()
+        .collect()
 }
 
-pub(crate) fn from_file(file_name: &std::path::PathBuf) -> Option<Vec<Object>> {
-    let yaml_str = fs::read_to_string(file_name).ok()?;
-    from_str(&yaml_str)
+pub(crate) fn from_file(file_name: &std::path::PathBuf) -> Result<Vec<Object>, Box<dyn Error>> {
+    let yaml_str = fs::read_to_string(file_name)?;
+    Ok(from_str(&yaml_str)?)
 }
 
 pub(crate) type DefineAttributes = HashMap<String, DefineAttribute>;
@@ -29,38 +28,52 @@ pub(crate) struct Parser {
 }
 
 impl Parser {
-    pub(crate) fn from_yaml(yaml: &str) -> Option<Parser> {
+    pub(crate) fn from_yaml(yaml: &str) -> Result<Parser, serde_yaml::Error> {
         let mut parser = Parser::from_yaml_without_preprocessing(yaml)?;
         parser.prepare();
-        Some(parser)
+        Ok(parser)
     }
 
     pub(crate) fn add_attributes(&self) -> &Vec<AddAttribute> {
         &self.add_attributes
     }
 
-    fn from_yaml_without_preprocessing(yaml: &str) -> Option<Parser> {
+    fn from_value(values: Value) -> Parser {
         let mut add_attributes = Vec::new();
         let mut define_attributes = HashMap::new();
-        if let Ok(yaml_value) = serde_yaml::from_str(yaml) {
-            let values: Value = yaml_value;
-            let seq = values.as_sequence()?;
 
-            for value in seq {
-                let mapping = value.as_mapping()?;
-                if mapping.contains_key("add") {
-                    add_attributes.push(AddAttribute::new(value.clone()));
-                } else if mapping.contains_key("define") {
-                    let define_id = mapping.get("define")?.as_str()?.to_string();
-                    define_attributes.insert(define_id, DefineAttribute::new(value.clone()));
-                }
+        let seq = values
+            .as_sequence()
+            .expect("yaml file must define an array of objects.");
+
+        for value in seq {
+            let mapping = value
+                .as_mapping()
+                .expect("Each object in yaml must be a mapping.");
+            if mapping.contains_key("add") {
+                add_attributes.push(AddAttribute::new(value.clone()));
+            } else if mapping.contains_key("define") {
+                let define_id = mapping["define"]
+                    .as_str()
+                    .expect(
+                        "object with `define : {define_id}` key must have `{define_id}` as string",
+                    )
+                    .to_string();
+                define_attributes.insert(define_id, DefineAttribute::new(value.clone()));
+            } else {
+                unreachable!("mapping does not contains `add` or `define` key");
             }
         }
 
-        Some(Parser {
+        Parser {
             add_attributes,
             define_attributes,
-        })
+        }
+    }
+
+    fn from_yaml_without_preprocessing(yaml: &str) -> Result<Parser, serde_yaml::Error> {
+        let values: Value = serde_yaml::from_str(yaml)?;
+        Ok(Parser::from_value(values))
     }
 
     fn extend(&mut self) {
@@ -142,13 +155,12 @@ mod test {
     }
 
     #[test]
-    fn parse_from_yaml() {
+    fn parse_from_yaml() -> Result<(), serde_yaml::Error> {
         let yaml = default_yaml();
-        let parser = Parser::from_yaml_without_preprocessing(&yaml);
-        assert!(parser.is_some());
-        let parser = parser.unwrap();
+        let parser = Parser::from_yaml_without_preprocessing(&yaml)?;
         assert_eq!(parser.add_attributes.len(), 22);
         assert_eq!(parser.define_attributes.len(), 8);
+        Ok(())
     }
 
     #[test]

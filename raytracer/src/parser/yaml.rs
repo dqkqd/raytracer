@@ -15,7 +15,7 @@ pub(crate) fn from_str(yaml_str: &str) -> Option<Vec<Object>> {
         .collect::<Option<Vec<Object>>>()
 }
 
-pub(crate) fn from_file(file_name: &str) -> Option<Vec<Object>> {
+pub(crate) fn from_file(file_name: &std::path::PathBuf) -> Option<Vec<Object>> {
     let yaml_str = fs::read_to_string(file_name).ok()?;
     from_str(&yaml_str)
 }

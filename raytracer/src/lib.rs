@@ -32,4 +32,4 @@ pub(crate) mod patterns;
 
 pub(crate) mod parser;
 
-pub use parser::render::render;
+pub use parser::render::render_image;

@@ -21,7 +21,7 @@ fn create_named_temporary_file() -> String {
         .expect("Error create temporary file")
 }
 
-pub fn render(yaml_file: &str, image_file: &str) {
+pub fn render_image(yaml_file: &std::path::PathBuf, image_file: &std::path::PathBuf) {
     let objects = yaml::from_file(yaml_file).expect("Error rendering yaml");
 
     let mut camera = None;

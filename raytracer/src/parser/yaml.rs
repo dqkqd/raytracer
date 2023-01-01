@@ -51,7 +51,11 @@ impl Parser {
                 .as_mapping()
                 .expect("Each object in yaml must be a mapping.");
             if mapping.contains_key("add") {
-                add_attributes.push(AddAttribute::new(value.clone()));
+                let attribute_type = mapping["add"]
+                    .as_str()
+                    .expect("object with `add: {add_attr}` key must have `{add_attr}` as string")
+                    .to_string();
+                add_attributes.push(AddAttribute::new(value.clone(), attribute_type));
             } else if mapping.contains_key("define") {
                 let define_id = mapping["define"]
                     .as_str()

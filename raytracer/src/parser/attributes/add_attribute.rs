@@ -7,12 +7,16 @@ use super::util::substitute;
 #[derive(Debug, Clone)]
 pub(crate) struct AddAttribute {
     value: Value,
+    attribute_type: String,
 }
 
 #[allow(dead_code)]
 impl AddAttribute {
-    pub fn new(value: Value) -> AddAttribute {
-        AddAttribute { value }
+    pub fn new(value: Value, attribute_type: String) -> AddAttribute {
+        AddAttribute {
+            value,
+            attribute_type,
+        }
     }
 
     pub fn value(&self) -> Value {
@@ -24,7 +28,7 @@ impl AddAttribute {
     }
 
     pub fn attribute_type(&self) -> &str {
-        self.value["add"].as_str().unwrap()
+        &self.attribute_type
     }
 
     pub fn parse(&self) -> Result<Object, serde_yaml::Error> {
@@ -32,7 +36,7 @@ impl AddAttribute {
     }
 
     fn is_shape(&self) -> bool {
-        matches!(self.attribute_type(), "sphere" | "plane" | "cube")
+        matches!(self.attribute_type.as_str(), "sphere" | "plane" | "cube")
     }
 
     pub fn substitute(&mut self, attributes: &DefineAttributes) -> bool {

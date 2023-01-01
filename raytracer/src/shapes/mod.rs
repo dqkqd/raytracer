@@ -8,6 +8,8 @@ pub(crate) mod plane;
 
 pub(crate) mod cube;
 
+pub(crate) mod cylinder;
+
 use crate::{
     color::Color,
     intersect::{intersection::IntersectionsFactor, multiple_intersections::Intersections},
@@ -19,7 +21,7 @@ use crate::{
     vector::Vector,
 };
 
-use self::{cube::Cube, dummy::Dummy, plane::Plane, sphere::Sphere};
+use self::{cube::Cube, cylinder::Cylinder, dummy::Dummy, plane::Plane, sphere::Sphere};
 
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub(crate) enum ShapeKind {
@@ -27,7 +29,9 @@ pub(crate) enum ShapeKind {
     Plane(Plane),
     Cube(Cube),
     Dummy(Dummy),
+    Cylinder(Cylinder),
 }
+
 pub(crate) trait ShapeMaterial {
     fn material(&self) -> &Material;
     fn with_material(self, material: Material) -> Self;

@@ -88,14 +88,12 @@ impl Parser {
             if !extensible {
                 break;
             }
-            extensible_attributes
-                .values_mut()
-                .filter(|v| v.extensible())
-                .for_each(|v| {
-                    let extend = v.extend_value().unwrap();
+            extensible_attributes.values_mut().for_each(|v| {
+                if let Some(extend) = v.extend_value() {
                     let other = self.define_attributes.get(extend).unwrap();
                     v.extend(other);
-                })
+                }
+            })
         }
         self.define_attributes.iter_mut().for_each(|(k, v)| {
             if let Some(extended_value) = extensible_attributes.get(k) {

@@ -2,7 +2,7 @@ use crate::{
     intersect::intersection::IntersectionsFactor,
     point::Point,
     ray::Ray,
-    util::{equal, solve_quadratic_equation, ESPILON, INFINITY},
+    util::{equal, solve_quadratic_equation, EPSILON, INFINITY},
     vector::Vector,
 };
 
@@ -73,9 +73,9 @@ impl ShapeLocal for Cylinder {
         let r = self.radius();
 
         let dist = x * x + z * z;
-        if dist <= r * r && y >= self.maximum - ESPILON {
+        if dist <= r * r && y >= self.maximum - EPSILON {
             Vector::new(0.0, 1.0, 0.0)
-        } else if dist <= r * r && y <= self.minimum + ESPILON {
+        } else if dist <= r * r && y <= self.minimum + EPSILON {
             Vector::new(0.0, -1.0, 0.0)
         } else {
             Vector::new(x, 0.0, z)

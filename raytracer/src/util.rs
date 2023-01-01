@@ -1,8 +1,8 @@
-pub(super) const ESPILON: f64 = 1E-5;
+pub(super) const EPSILON: f64 = 1E-5;
 pub(super) const INFINITY: f64 = 1E10;
 
 pub(super) fn equal(a: f64, b: f64) -> bool {
-    (a - b).abs() < ESPILON
+    (a - b).abs() < EPSILON
 }
 
 pub(crate) fn solve_quadratic_equation(a: f64, b: f64, c: f64) -> Vec<f64> {
@@ -35,7 +35,7 @@ pub(crate) fn check_axis(origin: f64, direction: f64) -> (f64, f64) {
     let tmin;
     let tmax;
 
-    if direction.abs() >= ESPILON {
+    if direction.abs() >= EPSILON {
         tmin = tmin_numerator / direction;
         tmax = tmax_numerator / direction;
     } else {

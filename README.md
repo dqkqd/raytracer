@@ -1,5 +1,5 @@
 This is my pet project while learning Rust.
-I implemented ray tracing following the awesome book [The Ray Tracer Challenge](http://raytracerchallenge.com/).
+I implemented ray tracing following this awesome book [The Ray Tracer Challenge](http://raytracerchallenge.com/).
 
 ### How to run
 ```

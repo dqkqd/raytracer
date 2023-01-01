@@ -16,7 +16,10 @@ impl<'a> Intersections<'a> {
     }
 
     pub fn new(mut roots: IntersectionsFactor, object: &'a Shape, ray: &Ray) -> Intersections<'a> {
-        roots.sort_unstable_by(|a, b| a.partial_cmp(b).unwrap());
+        roots.sort_unstable_by(|a, b| {
+            a.partial_cmp(b)
+                .unwrap_or_else(|| panic!("`{}` or `{}` will never be NaN", a, b))
+        });
         let data = roots
             .iter()
             .filter_map(|&t| Intersection::new(t, object).prepare_computations(ray))

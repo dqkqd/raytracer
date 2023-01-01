@@ -227,8 +227,8 @@ mod test {
         let c = Camera::new(11, 11, std::f64::consts::FRAC_PI_2).with_transform(view_transform);
         let image = c.render(&w);
         assert_eq!(
-            image.color(5, 5).unwrap(),
-            &Color::new(0.38066, 0.47583, 0.2855)
+            image.color(5, 5),
+            Some(&Color::new(0.38066, 0.47583, 0.2855))
         );
     }
 

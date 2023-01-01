@@ -260,25 +260,26 @@ mod test {
         let r = Ray::new(Point::new(0.0, 0.0, -5.0), Vector::new(0.0, 0.0, 1.0));
         let s = Shape::dummy().with_transform(Transform::scaling(2.0, 2.0, 2.0));
         let i = s.intersect(&r);
-        assert_eq!(i.get(0).unwrap().object(), &s);
+        let o = i.get(0).map(|v| v.object());
+        assert_eq!(o, Some(&s));
     }
 
     #[test]
     fn intersecting_a_scaled_shape_with_a_ray() {
         let r = Ray::new(Point::new(0.0, 0.0, -5.0), Vector::new(0.0, 0.0, 1.0));
         let s = Shape::dummy().with_transform(Transform::scaling(2.0, 2.0, 2.0));
-        let local_ray = s.transform_ray(&r).unwrap();
-        assert_eq!(local_ray.origin(), Point::new(0.0, 0.0, -2.5));
-        assert_eq!(local_ray.direction(), Vector::new(0.0, 0.0, 0.5));
+        let local_ray = s.transform_ray(&r);
+        let expected_ray = Ray::new(Point::new(0.0, 0.0, -2.5), Vector::new(0.0, 0.0, 0.5));
+        assert_eq!(local_ray, Some(expected_ray))
     }
 
     #[test]
     fn intersecting_a_translated_shape_with_a_ray() {
         let r = Ray::new(Point::new(0.0, 0.0, -5.0), Vector::new(0.0, 0.0, 1.0));
         let s = Shape::sphere().with_transform(Transform::translation(5.0, 0.0, 0.0));
-        let local_ray = s.transform_ray(&r).unwrap();
-        assert_eq!(local_ray.origin(), Point::new(-5.0, 0.0, -5.0));
-        assert_eq!(local_ray.direction(), Vector::new(0.0, 0.0, 1.0));
+        let local_ray = s.transform_ray(&r);
+        let expected_ray = Ray::new(Point::new(-5.0, 0.0, -5.0), Vector::new(0.0, 0.0, 1.0));
+        assert_eq!(local_ray, Some(expected_ray));
     }
 
     #[test]
@@ -291,12 +292,12 @@ mod test {
         ));
 
         assert_eq!(
-            n.unwrap(),
-            Vector::new(
+            n,
+            Some(Vector::new(
                 0.0,
                 std::f64::consts::FRAC_1_SQRT_2,
                 -std::f64::consts::FRAC_1_SQRT_2
-            )
+            ))
         );
     }
 
@@ -310,6 +311,6 @@ mod test {
             -std::f64::consts::FRAC_1_SQRT_2,
         ));
 
-        assert_eq!(n.unwrap(), Vector::new(0.0, 0.97014, -0.24254));
+        assert_eq!(n, Some(Vector::new(0.0, 0.97014, -0.24254)));
     }
 }

@@ -109,17 +109,20 @@ mod test {
     #[test]
     fn constructing_ray_through_center_of_canvas() {
         let c = Camera::new(201, 101, std::f64::consts::FRAC_PI_2);
-        let r = c.ray_for_pixel(100, 50).unwrap();
-        assert_eq!(r.origin(), Point::new(0.0, 0.0, 0.0));
-        assert_eq!(r.direction(), Vector::new(0.0, 0.0, -1.0));
+        let r = c.ray_for_pixel(100, 50);
+        let expected_ray = Ray::new(Point::new(0.0, 0.0, 0.0), Vector::new(0.0, 0.0, -1.0));
+        assert_eq!(r, Some(expected_ray));
     }
 
     #[test]
     fn constructing_ray_through_a_corner_of_the_canvas() {
         let c = Camera::new(201, 101, std::f64::consts::FRAC_PI_2);
-        let r = c.ray_for_pixel(0, 0).unwrap();
-        assert_eq!(r.origin(), Point::new(0.0, 0.0, 0.0));
-        assert_eq!(r.direction(), Vector::new(0.66519, 0.33259, -0.66851));
+        let r = c.ray_for_pixel(0, 0);
+        let expected_ray = Ray::new(
+            Point::new(0.0, 0.0, 0.0),
+            Vector::new(0.66519, 0.33259, -0.66851),
+        );
+        assert_eq!(r, Some(expected_ray));
     }
 
     #[test]
@@ -127,15 +130,17 @@ mod test {
         let c = Camera::new(201, 101, std::f64::consts::FRAC_PI_2).with_transform(
             Transform::translation(0.0, -2.0, 5.0).rotate_y(std::f64::consts::FRAC_PI_4),
         );
-        let r = c.ray_for_pixel(100, 50).unwrap();
-        assert_eq!(r.origin(), Point::new(0.0, 2.0, -5.0));
-        assert_eq!(
-            r.direction(),
+        let r = c.ray_for_pixel(100, 50);
+
+        let expected_ray = Ray::new(
+            Point::new(0.0, 2.0, -5.0),
             Vector::new(
                 std::f64::consts::FRAC_1_SQRT_2,
                 0.0,
-                -std::f64::consts::FRAC_1_SQRT_2
-            )
+                -std::f64::consts::FRAC_1_SQRT_2,
+            ),
         );
+
+        assert_eq!(r, Some(expected_ray));
     }
 }

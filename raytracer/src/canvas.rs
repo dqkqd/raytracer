@@ -107,7 +107,7 @@ mod test {
         assert_eq!(canvas.height(), height);
         for x in 0..10 {
             for y in 0..20 {
-                assert_eq!(canvas.color(x, y).unwrap(), &color::BLACK);
+                assert_eq!(canvas.color(x, y), Some(&color::BLACK));
             }
         }
     }
@@ -119,7 +119,7 @@ mod test {
         let mut canvas = Canvas::new(width, height);
         let red = Color::new(1.0, 0.0, 0.0);
         canvas.write_pixel(2, 3, &red);
-        assert_eq!(canvas.color(2, 3).unwrap(), &red);
+        assert_eq!(canvas.color(2, 3), Some(&red));
     }
 
     struct TestConfig {
@@ -218,8 +218,8 @@ mod test {
         canvas.write_ppm(filename)?;
 
         let contents = fs::read_to_string(filename)?;
-        let terminated_char = contents.chars().last().unwrap();
-        assert_eq!(terminated_char, '\n');
+        let terminated_char = contents.chars().last();
+        assert_eq!(terminated_char, Some('\n'));
         Ok(())
     }
 }

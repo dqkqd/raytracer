@@ -231,8 +231,8 @@ mod test {
         let transform = Transform::translation(5.0, -3.0, 2.0);
         let point = Point::new(-3.0, 4.0, 5.0);
         assert_eq!(
-            transform.inverse().unwrap() * point,
-            Point::new(-8.0, 7.0, 3.0)
+            transform.inverse().map(|t| t * point),
+            Some(Point::new(-8.0, 7.0, 3.0))
         );
     }
 
@@ -262,18 +262,18 @@ mod test {
         let transform = Transform::scaling(2.0, 3.0, 4.0);
         let vector = Vector::new(-4.0, 6.0, 8.0);
         assert_eq!(
-            transform.inverse().unwrap() * vector,
-            Vector::new(-2.0, 2.0, 2.0)
+            transform.inverse().map(|t| t * vector),
+            Some(Vector::new(-2.0, 2.0, 2.0))
         );
     }
 
     #[test]
     fn reflection_using_scaling() {
         let transform = Transform::scaling(-1.0, 1.0, 1.0);
-        let vector = Point::new(1.0, 2.0, 3.0);
+        let point = Point::new(1.0, 2.0, 3.0);
         assert_eq!(
-            transform.inverse().unwrap() * vector,
-            Point::new(-1.0, 2.0, 3.0)
+            transform.inverse().map(|t| t * point),
+            Some(Point::new(-1.0, 2.0, 3.0))
         );
     }
 

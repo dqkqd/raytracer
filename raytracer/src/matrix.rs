@@ -685,7 +685,7 @@ mod test {
             [7.0, 7.0, -6.0, -7.0],
             [1.0, -3.0, 7.0, 4.0],
         ]);
-        let inversed = matrix.inverse().unwrap();
+        let inversed = matrix.inverse();
 
         let expected = Matrix4::new([
             [0.21805, 0.45113, 0.24060, -0.04511],
@@ -694,6 +694,6 @@ mod test {
             [-0.52256, -0.81391, -0.30075, 0.30639],
         ]);
 
-        assert_eq!(inversed, expected);
+        assert_eq!(inversed, Some(expected));
     }
 }

@@ -2,7 +2,7 @@ use crate::{
     intersect::intersection::IntersectionsFactor,
     point::Point,
     ray::Ray,
-    util::{equal, solve_quadratic_equation, INFINITY},
+    util::{equal, solve_quadratic_equation, ESPILON, INFINITY},
     vector::Vector,
 };
 
@@ -69,7 +69,17 @@ impl Cylinder {
 
 impl ShapeLocal for Cylinder {
     fn local_normal_at(&self, point: &Point) -> Vector {
-        Vector::new(point.x(), 0.0, point.z())
+        let (x, y, z) = (point.x(), point.y(), point.z());
+        let r = self.radius();
+
+        let dist = x * x + z * z;
+        if dist <= r * r && y >= self.maximum - ESPILON {
+            Vector::new(0.0, 1.0, 0.0)
+        } else if dist <= r * r && y <= self.minimum + ESPILON {
+            Vector::new(0.0, -1.0, 0.0)
+        } else {
+            Vector::new(x, 0.0, z)
+        }
     }
 
     fn local_intersection(&self, local_ray: &Ray) -> IntersectionsFactor {
@@ -188,5 +198,23 @@ mod test {
         test_intersect(Point::new(0.0, 4.0, -2.0), Vector::new(0.0, -1.0, 1.0), 2);
         test_intersect(Point::new(0.0, 0.0, -2.0), Vector::new(0.0, 1.0, 2.0), 2);
         test_intersect(Point::new(0.0, -1.0, -2.0), Vector::new(0.0, 1.0, 1.0), 2);
+    }
+
+    #[test]
+    fn normal_vector_on_closed_cylinder_end_caps() {
+        let cyl = Cylinder::new(1.0, 2.0);
+        assert!(cyl.closed);
+
+        let test_local_normal = |p: Point, expected_normal: Vector| {
+            let n = cyl.local_normal_at(&p);
+            assert_eq!(n, expected_normal);
+        };
+
+        test_local_normal(Point::new(0.0, 1.0, 0.0), Vector::new(0.0, -1.0, 0.0));
+        test_local_normal(Point::new(0.5, 1.0, 0.0), Vector::new(0.0, -1.0, 0.0));
+        test_local_normal(Point::new(0.0, 1.0, 0.5), Vector::new(0.0, -1.0, 0.0));
+        test_local_normal(Point::new(0.0, 2.0, 0.0), Vector::new(0.0, 1.0, 0.0));
+        test_local_normal(Point::new(0.5, 2.0, 0.0), Vector::new(0.0, 1.0, 0.0));
+        test_local_normal(Point::new(0.0, 2.0, 0.5), Vector::new(0.0, 1.0, 0.0));
     }
 }

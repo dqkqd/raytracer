@@ -24,6 +24,8 @@ impl ObjectParser<Pattern> for PatternParser {
         let pattern = match self.pattern_type.as_str() {
             "stripes" => Pattern::stripe(left_color, right_color),
             "checkers" => Pattern::checker(left_color, right_color),
+            "gradients" => Pattern::gradient(left_color, right_color),
+            "rings" => Pattern::ring(left_color, right_color),
             _ => unimplemented!(),
         };
         let transform = self.transform.parse();

@@ -6,7 +6,7 @@ use crate::{
     transform::Transformable,
 };
 
-use super::{material::MaterialParser, transform::TransformParser};
+use super::{material::MaterialParser, transform::TransformParser, ObjectParser};
 
 #[derive(Debug, Clone, PartialEq, Deserialize)]
 pub(crate) struct ShapeParser {
@@ -18,22 +18,22 @@ pub(crate) struct ShapeParser {
 }
 
 impl ShapeParser {
-    pub fn to_shape(&self, shape_type: &str) -> Shape {
+    pub fn parse(&self, shape_type: &str) -> Shape {
         let shape = match shape_type {
             "sphere" => Shape::sphere(),
             "plane" => Shape::plane(),
             "cube" => Shape::cube(),
             _ => unimplemented!(),
         };
-        let material = self.material.to_material();
+        let material = self.material.parse();
         let shape = shape.with_material(material);
         let transform = self.transform.to_transform();
         shape.with_transform(transform)
     }
 
-    pub fn from_value(value: Value, attribute_type: &str) -> Option<Shape> {
-        let parser: ShapeParser = serde_yaml::from_value(value).ok()?;
-        Some(parser.to_shape(attribute_type))
+    pub fn from_value(value: Value, attribute_type: &str) -> Result<Shape, serde_yaml::Error> {
+        let parser: ShapeParser = serde_yaml::from_value(value)?;
+        Ok(parser.parse(attribute_type))
     }
 }
 
@@ -89,7 +89,7 @@ mod test {
     fn parse_to_shape() {
         let (shape_type, shape) = default_object();
         let parser = default_parser();
-        assert_eq!(parser.to_shape(&shape_type), shape);
+        assert_eq!(parser.parse(&shape_type), shape);
     }
 
     #[test]

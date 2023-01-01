@@ -1,9 +1,8 @@
 use serde::Deserialize;
-use serde_yaml::Value;
 
 use crate::{patterns::pattern::Pattern, transform::Transformable};
 
-use super::{color::ColorParser, transform::TransformParser};
+use super::{color::ColorParser, transform::TransformParser, ObjectParser};
 
 #[derive(Debug, Clone, PartialEq, Deserialize)]
 pub(crate) struct PatternParser {
@@ -17,11 +16,11 @@ pub(crate) struct PatternParser {
 }
 
 #[allow(dead_code)]
-impl PatternParser {
-    pub fn to_pattern(&self) -> Pattern {
+impl ObjectParser<Pattern> for PatternParser {
+    fn parse(&self) -> Pattern {
         assert_eq!(self.colors.len(), 2, "Only support pattern with 2 colors");
-        let left_color = self.colors[0].to_color();
-        let right_color = self.colors[1].to_color();
+        let left_color = self.colors[0].parse();
+        let right_color = self.colors[1].parse();
         let pattern = match self.pattern_type.as_str() {
             "stripes" => Pattern::stripe(left_color, right_color),
             "checkers" => Pattern::checker(left_color, right_color),
@@ -30,15 +29,12 @@ impl PatternParser {
         let transform = self.transform.to_transform();
         pattern.with_transform(transform)
     }
-
-    pub fn from_value(value: Value) -> Option<Pattern> {
-        let parser: PatternParser = serde_yaml::from_value(value).ok()?;
-        Some(parser.to_pattern())
-    }
 }
 
 #[cfg(test)]
 mod test {
+
+    use serde_yaml::Value;
 
     use crate::{
         color::Color, parser::objects::transform::SingleTransformParser, transform::Transform,
@@ -90,7 +86,7 @@ transform:
     fn parse_to_pattern() {
         let pattern = default_pattern();
         let parser = default_parser();
-        assert_eq!(parser.to_pattern(), pattern);
+        assert_eq!(parser.parse(), pattern);
     }
 
     #[test]

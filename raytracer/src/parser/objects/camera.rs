@@ -1,12 +1,11 @@
 use serde::Deserialize;
-use serde_yaml::Value;
 
 use crate::{
     camera::Camera,
     transform::{Transform, Transformable},
 };
 
-use super::{point::PointParser, vector::VectorParser};
+use super::{point::PointParser, vector::VectorParser, ObjectParser};
 
 #[derive(Debug, Clone, Copy, PartialEq, Deserialize)]
 pub(crate) struct CameraParser {
@@ -21,23 +20,20 @@ pub(crate) struct CameraParser {
     up: VectorParser,
 }
 
-impl CameraParser {
-    pub fn to_camera(self) -> Camera {
-        let from = self.from.to_point();
-        let to = self.to.to_point();
-        let up = self.up.to_vector();
+impl ObjectParser<Camera> for CameraParser {
+    fn parse(&self) -> Camera {
+        let from = self.from.parse();
+        let to = self.to.parse();
+        let up = self.up.parse();
         let view_transform = Transform::view_transform(from, to, up);
         Camera::new(self.width, self.height, self.field_of_view).with_transform(view_transform)
-    }
-
-    pub(crate) fn from_value(value: Value) -> Option<Camera> {
-        let parser: CameraParser = serde_yaml::from_value(value).ok()?;
-        Some(parser.to_camera())
     }
 }
 
 #[cfg(test)]
 mod test {
+
+    use serde_yaml::Value;
 
     use crate::{parser::yaml::Parser, point::Point, vector::Vector};
 
@@ -71,7 +67,7 @@ mod test {
     fn parse_to_camera() {
         let camera = default_camera();
         let parser = default_parser();
-        assert_eq!(parser.to_camera(), camera);
+        assert_eq!(parser.parse(), camera);
     }
 
     #[test]

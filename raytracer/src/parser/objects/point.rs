@@ -1,7 +1,8 @@
 use serde::Deserialize;
-use serde_yaml::Value;
 
 use crate::point::Point;
+
+use super::ObjectParser;
 
 #[derive(Debug, Clone, Copy, PartialEq, Deserialize)]
 pub(crate) struct PointParser(f64, f64, f64);
@@ -11,19 +12,18 @@ impl PointParser {
     pub fn new(x: f64, y: f64, z: f64) -> Self {
         Self(x, y, z)
     }
+}
 
-    pub fn to_point(self) -> Point {
+impl ObjectParser<Point> for PointParser {
+    fn parse(&self) -> Point {
         Point::new(self.0, self.1, self.2)
-    }
-
-    pub fn from_value(value: Value) -> Option<Point> {
-        let parser: PointParser = serde_yaml::from_value(value).ok()?;
-        Some(parser.to_point())
     }
 }
 
 #[cfg(test)]
 mod test {
+
+    use serde_yaml::Value;
 
     use super::*;
 
@@ -39,7 +39,7 @@ mod test {
     fn parse_to_point() {
         let point = default_point();
         let parser = default_parser();
-        assert_eq!(parser.to_point(), point);
+        assert_eq!(parser.parse(), point);
     }
 
     #[test]

@@ -1,7 +1,8 @@
 use serde::Deserialize;
-use serde_yaml::Value;
 
 use crate::color::Color;
+
+use super::ObjectParser;
 
 #[derive(Debug, Clone, Copy, PartialEq, Deserialize)]
 pub(crate) struct ColorParser(f64, f64, f64);
@@ -11,14 +12,11 @@ impl ColorParser {
     pub fn new(x: f64, y: f64, z: f64) -> Self {
         Self(x, y, z)
     }
+}
 
-    pub fn to_color(self) -> Color {
+impl ObjectParser<Color> for ColorParser {
+    fn parse(&self) -> Color {
         Color::new(self.0, self.1, self.2)
-    }
-
-    pub fn from_value(value: Value) -> Option<Color> {
-        let parser: ColorParser = serde_yaml::from_value(value).ok()?;
-        Some(parser.to_color())
     }
 }
 
@@ -31,6 +29,8 @@ impl Default for ColorParser {
 
 #[cfg(test)]
 mod test {
+
+    use serde_yaml::Value;
 
     use super::*;
 
@@ -46,7 +46,7 @@ mod test {
     fn parse_to_color() {
         let color = default_color();
         let parser = default_parser();
-        assert_eq!(parser.to_color(), color);
+        assert_eq!(parser.parse(), color);
     }
 
     #[test]

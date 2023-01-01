@@ -3,7 +3,7 @@ use crate::{
     shapes::shape::Shape,
 };
 
-use super::{camera::CameraParser, light::LightParser, shape::ShapeParser};
+use super::{camera::CameraParser, light::LightParser, shape::ShapeParser, ObjectParser};
 
 #[allow(clippy::large_enum_variant)]
 #[derive(Debug, Clone, Copy, PartialEq)]
@@ -15,13 +15,13 @@ pub(crate) enum Object {
 
 #[allow(dead_code)]
 impl Object {
-    pub fn from_attribute(attr: &AddAttribute) -> Option<Object> {
+    pub fn from_attribute(attr: &AddAttribute) -> Result<Object, serde_yaml::Error> {
         let value = attr.value();
         let attribute_type = attr.attribute_type();
         match attribute_type {
-            "camera" => Some(Object::Camera(CameraParser::from_value(value)?)),
-            "light" => Some(Object::Light(LightParser::from_value(value)?)),
-            "sphere" | "plane" | "cube" => Some(Object::Shape(ShapeParser::from_value(
+            "camera" => Ok(Object::Camera(CameraParser::from_value(value)?)),
+            "light" => Ok(Object::Light(LightParser::from_value(value)?)),
+            "sphere" | "plane" | "cube" => Ok(Object::Shape(ShapeParser::from_value(
                 value,
                 attribute_type,
             )?)),

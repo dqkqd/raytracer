@@ -13,7 +13,7 @@ pub(crate) enum SingleTransformParser {
 
 #[allow(dead_code)]
 impl SingleTransformParser {
-    pub fn to_transform(&self) -> Transform {
+    pub fn parse(&self) -> Transform {
         match self {
             SingleTransformParser::Rotation(s, a) => match s.as_str() {
                 "rotate-x" => Transform::rotation_x(*a),
@@ -33,9 +33,9 @@ impl SingleTransformParser {
         }
     }
 
-    pub fn from_value(value: Value) -> Option<Transform> {
-        let parser: SingleTransformParser = serde_yaml::from_value(value).ok()?;
-        Some(parser.to_transform())
+    pub fn from_value(value: Value) -> Result<Transform, serde_yaml::Error> {
+        let parser: SingleTransformParser = serde_yaml::from_value(value)?;
+        Ok(parser.parse())
     }
 }
 
@@ -52,7 +52,7 @@ impl TransformParser {
         self.0
             .iter()
             .rev()
-            .map(|t| t.to_transform())
+            .map(|t| t.parse())
             .reduce(|acc, t| acc * t)
             .unwrap_or_else(Transform::identity)
     }
@@ -72,7 +72,7 @@ mod test {
     fn parse_to_rotate() {
         let transform = Transform::rotation_y(1.5);
         let parser = SingleTransformParser::Rotation("rotate-y".to_string(), 1.5);
-        assert_eq!(parser.to_transform(), transform);
+        assert_eq!(parser.parse(), transform);
     }
 
     #[test]
@@ -89,7 +89,7 @@ mod test {
         let transform = Transform::translation(1.5, 2.5, 3.5);
         let parser =
             SingleTransformParser::TranslationScaling("translate".to_string(), 1.5, 2.5, 3.5);
-        assert_eq!(parser.to_transform(), transform);
+        assert_eq!(parser.parse(), transform);
     }
 
     #[test]
@@ -105,7 +105,7 @@ mod test {
     fn parse_to_scale() {
         let transform = Transform::scaling(1.5, 2.5, 3.5);
         let parser = SingleTransformParser::TranslationScaling("scale".to_string(), 1.5, 2.5, 3.5);
-        assert_eq!(parser.to_transform(), transform);
+        assert_eq!(parser.parse(), transform);
     }
 
     #[test]
@@ -122,7 +122,7 @@ mod test {
         let transform = Transform::shearing(1.5, 2.5, 3.5, 7.5, 6.4, -5.3);
         let parser =
             SingleTransformParser::Shearing("shear".to_string(), 1.5, 2.5, 3.5, 7.5, 6.4, -5.3);
-        assert_eq!(parser.to_transform(), transform);
+        assert_eq!(parser.parse(), transform);
     }
 
     #[test]

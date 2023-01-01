@@ -1,9 +1,8 @@
 use serde::Deserialize;
-use serde_yaml::Value;
 
 use crate::light::PointLight;
 
-use super::{color::ColorParser, point::PointParser};
+use super::{color::ColorParser, point::PointParser, ObjectParser};
 
 #[derive(Debug, Clone, Copy, PartialEq, Deserialize)]
 pub(crate) struct LightParser {
@@ -11,21 +10,18 @@ pub(crate) struct LightParser {
     intensity: ColorParser,
 }
 
-impl LightParser {
-    pub fn to_light(self) -> PointLight {
-        let position = self.at.to_point();
-        let intensity = self.intensity.to_color();
+impl ObjectParser<PointLight> for LightParser {
+    fn parse(&self) -> PointLight {
+        let position = self.at.parse();
+        let intensity = self.intensity.parse();
         PointLight::new(position, intensity)
-    }
-
-    pub fn from_value(value: Value) -> Option<PointLight> {
-        let parser: LightParser = serde_yaml::from_value(value).ok()?;
-        Some(parser.to_light())
     }
 }
 
 #[cfg(test)]
 mod test {
+
+    use serde_yaml::Value;
 
     use crate::{color::Color, parser::yaml::Parser, point::Point};
 
@@ -48,7 +44,7 @@ mod test {
     fn parse_to_point_light() {
         let light = default_point_light();
         let parser = default_parser();
-        assert_eq!(parser.to_light(), light);
+        assert_eq!(parser.parse(), light);
     }
 
     #[test]

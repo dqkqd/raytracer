@@ -1,9 +1,8 @@
 use serde::Deserialize;
-use serde_yaml::Value;
 
 use crate::material::Material;
 
-use super::{color::ColorParser, pattern::PatternParser};
+use super::{color::ColorParser, pattern::PatternParser, ObjectParser};
 
 fn default_color() -> ColorParser {
     let color = Material::default().color();
@@ -92,27 +91,6 @@ impl Default for MaterialParser {
 
 #[allow(dead_code)]
 impl MaterialParser {
-    pub fn to_material(&self) -> Material {
-        let material = Material::default()
-            .with_color(self.color.to_color())
-            .with_diffuse(self.diffuse)
-            .with_ambient(self.ambient)
-            .with_specular(self.specular)
-            .with_shininess(self.shininess)
-            .with_reflective(self.reflective)
-            .with_transparency(self.transparency)
-            .with_refractive_index(self.refractive_index);
-        match &self.pattern {
-            Some(p) => material.with_pattern(p.to_pattern()),
-            _ => material,
-        }
-    }
-
-    pub fn from_value(value: Value) -> Option<Material> {
-        let parser: MaterialParser = serde_yaml::from_value(value).ok()?;
-        Some(parser.to_material())
-    }
-
     #[allow(clippy::too_many_arguments)]
     pub fn new(
         color: [f64; 3],
@@ -138,8 +116,28 @@ impl MaterialParser {
     }
 }
 
+impl ObjectParser<Material> for MaterialParser {
+    fn parse(&self) -> Material {
+        let material = Material::default()
+            .with_color(self.color.parse())
+            .with_diffuse(self.diffuse)
+            .with_ambient(self.ambient)
+            .with_specular(self.specular)
+            .with_shininess(self.shininess)
+            .with_reflective(self.reflective)
+            .with_transparency(self.transparency)
+            .with_refractive_index(self.refractive_index);
+        match &self.pattern {
+            Some(p) => material.with_pattern(p.parse()),
+            _ => material,
+        }
+    }
+}
+
 #[cfg(test)]
 mod test {
+
+    use serde_yaml::Value;
 
     use crate::{
         color::Color,
@@ -179,7 +177,7 @@ mod test {
     fn parse_to_material() {
         let material = default_material();
         let parser = default_parser();
-        assert_eq!(parser.to_material(), material);
+        assert_eq!(parser.parse(), material);
     }
 
     #[test]
@@ -200,7 +198,7 @@ refractive-index: 1.3
     }
 
     #[test]
-    fn parse_from_value_with_pattern() {
+    fn parse_from_value_with_pattern() -> Result<(), serde_yaml::Error> {
         let yaml = "
 color: [0.1, 0.2, 0.3]
 refractive-index: 1.3
@@ -216,8 +214,7 @@ pattern:
 ";
 
         let value: Value = serde_yaml::from_str(yaml).unwrap();
-        let material = MaterialParser::from_value(value);
-
+        let material = MaterialParser::from_value(value)?;
         let pattern = Pattern::stripe(Color::new(0.1, 0.2, 0.3), Color::new(0.4, 0.5, 0.6))
             .with_transform(
                 Transform::translation(1.0, 2.0, 3.0)
@@ -229,6 +226,7 @@ pattern:
             .with_refractive_index(1.3)
             .with_pattern(pattern);
 
-        assert_eq!(material, Some(expected));
+        assert_eq!(material, expected);
+        Ok(())
     }
 }

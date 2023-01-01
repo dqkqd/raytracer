@@ -1,6 +1,11 @@
 This is my pet project while learning Rust.
 I implemented ray tracing following the awesome book [The Ray Tracer Challenge](http://raytracerchallenge.com/).
 
+### How to run
+```
+cargo run examples/yaml/refraction.yaml examples/images/refraction.png
+```
+
 ### Examples
 ![cover](./examples/images/cover.png)
 ![refraction](./examples/images/refraction.png)

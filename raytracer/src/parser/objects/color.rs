@@ -32,6 +32,8 @@ mod test {
 
     use serde_yaml::Value;
 
+    use crate::parser::objects::ParseResult;
+
     use super::*;
 
     fn default_color() -> Color {
@@ -50,12 +52,13 @@ mod test {
     }
 
     #[test]
-    fn parse_from_value() {
+    fn parse_from_value() -> ParseResult<()> {
         let yaml = "
 [0.1, 0.2, 0.3]
 ";
-        let value: Value = serde_yaml::from_str(yaml).unwrap();
-        let color = ColorParser::from_value(value).unwrap();
+        let value: Value = serde_yaml::from_str(yaml)?;
+        let color = ColorParser::from_value(value)?;
         assert_eq!(color, default_color());
+        Ok(())
     }
 }

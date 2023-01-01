@@ -25,6 +25,8 @@ mod test {
 
     use serde_yaml::Value;
 
+    use crate::parser::objects::ParseResult;
+
     use super::*;
 
     fn default_point() -> Point {
@@ -43,12 +45,13 @@ mod test {
     }
 
     #[test]
-    fn parse_from_value() {
+    fn parse_from_value() -> ParseResult<()> {
         let yaml = "
 [1.0, 2.0, 3.0]
 ";
-        let value: Value = serde_yaml::from_str(yaml).unwrap();
-        let point = PointParser::from_value(value).unwrap();
+        let value: Value = serde_yaml::from_str(yaml)?;
+        let point = PointParser::from_value(value)?;
         assert_eq!(point, default_point());
+        Ok(())
     }
 }

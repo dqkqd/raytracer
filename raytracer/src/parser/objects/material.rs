@@ -141,6 +141,7 @@ mod test {
 
     use crate::{
         color::Color,
+        parser::objects::ParseResult,
         patterns::pattern::Pattern,
         transform::{Transform, Transformable},
     };
@@ -181,7 +182,7 @@ mod test {
     }
 
     #[test]
-    fn parse_from_value() {
+    fn parse_from_value() -> ParseResult<()> {
         let yaml = "
 color: [0.1, 0.2, 0.3]
 diffuse: 0.4
@@ -192,13 +193,14 @@ reflective: 0.8
 transparency: 0.9
 refractive-index: 1.3
 ";
-        let value: Value = serde_yaml::from_str(yaml).unwrap();
-        let material = MaterialParser::from_value(value).unwrap();
+        let value: Value = serde_yaml::from_str(yaml)?;
+        let material = MaterialParser::from_value(value)?;
         assert_eq!(material, default_material());
+        Ok(())
     }
 
     #[test]
-    fn parse_from_value_with_pattern() -> Result<(), serde_yaml::Error> {
+    fn parse_from_value_with_pattern() -> ParseResult<()> {
         let yaml = "
 color: [0.1, 0.2, 0.3]
 refractive-index: 1.3
@@ -213,7 +215,7 @@ pattern:
     - [rotate-z, 0.5]
 ";
 
-        let value: Value = serde_yaml::from_str(yaml).unwrap();
+        let value: Value = serde_yaml::from_str(yaml)?;
         let material = MaterialParser::from_value(value)?;
         let pattern = Pattern::stripe(Color::new(0.1, 0.2, 0.3), Color::new(0.4, 0.5, 0.6))
             .with_transform(

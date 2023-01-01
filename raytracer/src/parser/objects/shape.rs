@@ -27,7 +27,7 @@ impl ShapeParser {
         };
         let material = self.material.parse();
         let shape = shape.with_material(material);
-        let transform = self.transform.to_transform();
+        let transform = self.transform.parse();
         shape.with_transform(transform)
     }
 
@@ -43,7 +43,10 @@ mod test {
     use crate::{
         color::Color,
         material::Material,
-        parser::{objects::transform::SingleTransformParser, yaml::Parser},
+        parser::{
+            objects::{transform::SingleTransformParser, ParseResult},
+            yaml::Parser,
+        },
         transform::Transform,
     };
 
@@ -93,7 +96,7 @@ mod test {
     }
 
     #[test]
-    fn parse_from_value() {
+    fn parse_from_value() -> ParseResult<()> {
         let yaml = "
 material:
   color: [0.1, 0.2, 0.3]
@@ -110,14 +113,15 @@ transform:
   - ['scale', -2.0, -3.0, 5.0]
   - ['shear', 1.0, 2.0, 3.0, 4.0, 5.0, 6.0]
     ";
-        let value: Value = serde_yaml::from_str(yaml).unwrap();
+        let value: Value = serde_yaml::from_str(yaml)?;
         let (shape_type, default_shape) = default_object();
-        let shape = ShapeParser::from_value(value, &shape_type).unwrap();
+        let shape = ShapeParser::from_value(value, &shape_type)?;
         assert_eq!(shape, default_shape);
+        Ok(())
     }
 
     #[test]
-    fn parse_from_str() {
+    fn parse_from_str() -> ParseResult<()> {
         let yaml = "
 - add: sphere
   material:
@@ -135,12 +139,13 @@ transform:
   - ['scale', -2.0, -3.0, 5.0]
   - ['shear', 1.0, 2.0, 3.0, 4.0, 5.0, 6.0]
     ";
-        let parser = Parser::from_yaml(yaml).unwrap();
+        let parser = Parser::from_yaml(yaml)?;
         let add_attributes = parser.add_attributes();
         let (shape_type, default_shape) = default_object();
         assert_eq!(add_attributes.len(), 1);
         assert_eq!(add_attributes[0].attribute_type(), shape_type);
-        let shape = ShapeParser::from_value(add_attributes[0].value(), &shape_type).unwrap();
+        let shape = ShapeParser::from_value(add_attributes[0].value(), &shape_type)?;
         assert_eq!(shape, default_shape);
+        Ok(())
     }
 }

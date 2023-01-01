@@ -25,6 +25,8 @@ mod test {
 
     use serde_yaml::Value;
 
+    use crate::parser::objects::ParseResult;
+
     use super::*;
 
     fn default_vector() -> Vector {
@@ -43,12 +45,13 @@ mod test {
     }
 
     #[test]
-    fn parse_from_value() {
+    fn parse_from_value() -> ParseResult<()> {
         let yaml = "
 [1.0, 2.0, 3.0]
 ";
-        let value: Value = serde_yaml::from_str(yaml).unwrap();
-        let vector = VectorParser::from_value(value).unwrap();
+        let value: Value = serde_yaml::from_str(yaml)?;
+        let vector = VectorParser::from_value(value)?;
         assert_eq!(vector, default_vector());
+        Ok(())
     }
 }

@@ -3,7 +3,9 @@ use crate::{
     shapes::shape::Shape,
 };
 
-use super::{camera::CameraParser, light::LightParser, shape::ShapeParser, ObjectParser};
+use super::{
+    camera::CameraParser, light::LightParser, shape::ShapeParser, ObjectParser, ParseResult,
+};
 
 #[allow(clippy::large_enum_variant)]
 #[derive(Debug, Clone, Copy, PartialEq)]
@@ -15,7 +17,7 @@ pub(crate) enum Object {
 
 #[allow(dead_code)]
 impl Object {
-    pub fn from_attribute(attr: &AddAttribute) -> Result<Object, serde_yaml::Error> {
+    pub fn from_attribute(attr: &AddAttribute) -> ParseResult<Object> {
         let value = attr.value();
         let attribute_type = attr.attribute_type();
         match attribute_type {
@@ -25,7 +27,7 @@ impl Object {
                 value,
                 attribute_type,
             )?)),
-            _ => unimplemented!(),
+            s => unimplemented!("Parser for `{}` is not implemented", s),
         }
     }
     pub fn as_camera(&self) -> Option<&Camera> {

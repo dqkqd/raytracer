@@ -35,7 +35,11 @@ mod test {
 
     use serde_yaml::Value;
 
-    use crate::{parser::yaml::Parser, point::Point, vector::Vector};
+    use crate::{
+        parser::{objects::ParseResult, yaml::Parser},
+        point::Point,
+        vector::Vector,
+    };
 
     use super::*;
 
@@ -71,7 +75,7 @@ mod test {
     }
 
     #[test]
-    fn parse_from_value() {
+    fn parse_from_value() -> ParseResult<()> {
         let yaml = "
   width: 10
   height: 20
@@ -79,13 +83,14 @@ mod test {
   from: [ 1, 2, 3 ]
   to: [ 4, 5, 6 ]
   up: [ 7, 8, 9 ]";
-        let value: Value = serde_yaml::from_str(yaml).unwrap();
-        let camera = CameraParser::from_value(value).unwrap();
+        let value: Value = serde_yaml::from_str(yaml)?;
+        let camera = CameraParser::from_value(value)?;
         assert_eq!(camera, default_camera());
+        Ok(())
     }
 
     #[test]
-    fn parse_from_str() {
+    fn parse_from_str() -> ParseResult<()> {
         let yaml = "
 - add : camera
   width: 10
@@ -95,11 +100,12 @@ mod test {
   to: [ 4, 5, 6 ]
   up: [ 7, 8, 9 ]
 ";
-        let parser = Parser::from_yaml(yaml).unwrap();
+        let parser = Parser::from_yaml(yaml)?;
         let add_attributes = parser.add_attributes();
         assert_eq!(add_attributes.len(), 1);
         assert_eq!(add_attributes[0].attribute_type(), "camera");
-        let camera = CameraParser::from_value(add_attributes[0].value()).unwrap();
+        let camera = CameraParser::from_value(add_attributes[0].value())?;
         assert_eq!(camera, default_camera());
+        Ok(())
     }
 }

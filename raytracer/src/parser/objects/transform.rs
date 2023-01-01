@@ -3,6 +3,8 @@ use serde_yaml::Value;
 
 use crate::transform::Transform;
 
+use super::ObjectParser;
+
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(untagged)]
 pub(crate) enum SingleTransformParser {
@@ -47,8 +49,9 @@ impl TransformParser {
     pub fn new(transform_list: Vec<SingleTransformParser>) -> Self {
         Self(transform_list)
     }
-
-    pub fn to_transform(&self) -> Transform {
+}
+impl ObjectParser<Transform> for TransformParser {
+    fn parse(&self) -> Transform {
         self.0
             .iter()
             .rev()
@@ -56,15 +59,12 @@ impl TransformParser {
             .reduce(|acc, t| acc * t)
             .unwrap_or_else(Transform::identity)
     }
-
-    pub fn from_value(value: Value) -> Option<Transform> {
-        let parser: TransformParser = serde_yaml::from_value(value).ok()?;
-        Some(parser.to_transform())
-    }
 }
 
 #[cfg(test)]
 mod test {
+
+    use crate::parser::objects::ParseResult;
 
     use super::*;
 
@@ -76,12 +76,13 @@ mod test {
     }
 
     #[test]
-    fn parse_rotate_value() {
+    fn parse_rotate_value() -> ParseResult<()> {
         let yaml = "[rotate-y, 1.5]";
         let transform = Transform::rotation_y(1.5);
-        let value: Value = serde_yaml::from_str(yaml).unwrap();
-        let expected = SingleTransformParser::from_value(value).unwrap();
+        let value: Value = serde_yaml::from_str(yaml)?;
+        let expected = SingleTransformParser::from_value(value)?;
         assert_eq!(expected, transform);
+        Ok(())
     }
 
     #[test]
@@ -93,12 +94,13 @@ mod test {
     }
 
     #[test]
-    fn parse_translate_value() {
+    fn parse_translate_value() -> ParseResult<()> {
         let yaml = "[translate, 1.5, 2.5, 3.5]";
         let transform = Transform::translation(1.5, 2.5, 3.5);
-        let value: Value = serde_yaml::from_str(yaml).unwrap();
-        let expected = SingleTransformParser::from_value(value).unwrap();
+        let value: Value = serde_yaml::from_str(yaml)?;
+        let expected = SingleTransformParser::from_value(value)?;
         assert_eq!(expected, transform);
+        Ok(())
     }
 
     #[test]
@@ -109,12 +111,13 @@ mod test {
     }
 
     #[test]
-    fn parse_scale_value() {
+    fn parse_scale_value() -> ParseResult<()> {
         let yaml = "[scale, 1.5, 2.5, 3.5]";
         let transform = Transform::scaling(1.5, 2.5, 3.5);
-        let value: Value = serde_yaml::from_str(yaml).unwrap();
-        let expected = SingleTransformParser::from_value(value).unwrap();
+        let value: Value = serde_yaml::from_str(yaml)?;
+        let expected = SingleTransformParser::from_value(value)?;
         assert_eq!(expected, transform);
+        Ok(())
     }
 
     #[test]
@@ -126,12 +129,13 @@ mod test {
     }
 
     #[test]
-    fn parse_shear_value() {
+    fn parse_shear_value() -> ParseResult<()> {
         let yaml = "[shear, 1.5, 2.5, 3.5, 7.5, 6.4, -5.3]";
         let transform = Transform::shearing(1.5, 2.5, 3.5, 7.5, 6.4, -5.3);
-        let value: Value = serde_yaml::from_str(yaml).unwrap();
-        let expected = SingleTransformParser::from_value(value).unwrap();
+        let value: Value = serde_yaml::from_str(yaml)?;
+        let expected = SingleTransformParser::from_value(value)?;
         assert_eq!(expected, transform);
+        Ok(())
     }
 
     fn default_transform() -> Transform {
@@ -165,13 +169,14 @@ mod test {
     fn parser_to_combined_transform() {
         let transform = default_transform();
         let parser = default_parser();
-        assert_eq!(parser.to_transform(), transform);
+        assert_eq!(parser.parse(), transform);
     }
 
     #[test]
-    fn parse_combined_transform_from_value() {
-        let value: Value = serde_yaml::from_str(&default_yaml()).unwrap();
-        let transform = TransformParser::from_value(value).unwrap();
+    fn parse_combined_transform_from_value() -> ParseResult<()> {
+        let value: Value = serde_yaml::from_str(&default_yaml())?;
+        let transform = TransformParser::from_value(value)?;
         assert_eq!(transform, default_transform());
+        Ok(())
     }
 }

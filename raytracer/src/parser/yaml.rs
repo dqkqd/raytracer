@@ -136,6 +136,7 @@ mod test {
     use crate::{
         color::Color,
         material::Material,
+        parser::objects::ParseResult,
         patterns::pattern::Pattern,
         transform::{Transform, Transformable},
     };
@@ -146,7 +147,7 @@ mod test {
         include_str!("sample.yaml").to_string()
     }
 
-    fn assert_value(value: &Value, expected: &str) -> Result<(), serde_yaml::Error> {
+    fn assert_value(value: &Value, expected: &str) -> ParseResult<()> {
         let parsed_string = serde_yaml::to_string(value)?;
         let value_from_expected: Value = serde_yaml::from_str(expected)?;
         let parsed_expected_string = serde_yaml::to_string(&value_from_expected)?;
@@ -155,7 +156,7 @@ mod test {
     }
 
     #[test]
-    fn parse_from_yaml() -> Result<(), serde_yaml::Error> {
+    fn parse_from_yaml() -> ParseResult<()> {
         let yaml = default_yaml();
         let parser = Parser::from_yaml_without_preprocessing(&yaml)?;
         assert_eq!(parser.add_attributes.len(), 22);
@@ -178,9 +179,9 @@ mod test {
     }
 
     #[test]
-    fn extend_defined_attribute() -> Result<(), serde_yaml::Error> {
+    fn extend_defined_attribute() -> ParseResult<()> {
         let yaml = default_yaml();
-        let mut parser = Parser::from_yaml_without_preprocessing(&yaml).unwrap();
+        let mut parser = Parser::from_yaml_without_preprocessing(&yaml)?;
 
         let white_material = parser
             .define_attributes
@@ -215,7 +216,7 @@ value:
     }
 
     #[test]
-    fn substitute_define_attribute() -> Result<(), serde_yaml::Error> {
+    fn substitute_define_attribute() -> ParseResult<()> {
         let yaml = "
 - define: standard-transform
   value:
@@ -243,7 +244,7 @@ value:
     }
 
     #[test]
-    fn substitute_add_attributes() -> Result<(), serde_yaml::Error> {
+    fn substitute_add_attributes() -> ParseResult<()> {
         let yaml = "
 - define: white-material
   value:
@@ -271,7 +272,7 @@ value:
     - [ translate, 8.5, 1.5, -0.5 ]
 ";
 
-        let mut parser = Parser::from_yaml_without_preprocessing(yaml).unwrap();
+        let mut parser = Parser::from_yaml_without_preprocessing(yaml)?;
         parser.extend();
         parser.substitute_defined_attributes();
         parser.substitute_add_attributes();
@@ -295,7 +296,7 @@ transform:
     }
 
     #[test]
-    fn parse_camera_from_str() {
+    fn parse_camera_from_str() -> ParseResult<()> {
         let yaml = "
 - add : camera
   width: 10
@@ -305,12 +306,14 @@ transform:
   to: [ 4, 5, 6 ]
   up: [ 7, 8, 9 ]
 ";
-        let objects = from_str(yaml).unwrap();
+        let objects = from_str(yaml)?;
         assert!(objects[0].as_camera().is_some());
+
+        Ok(())
     }
 
     #[test]
-    fn parse_point_light_from_str() {
+    fn parse_point_light_from_str() -> ParseResult<()> {
         let yaml = "
 - add : camera
   width: 10
@@ -323,13 +326,14 @@ transform:
   at: [50, 100, -50]
   intensity: [1, 2, 3]
 ";
-        let objects = from_str(yaml).unwrap();
+        let objects = from_str(yaml)?;
         assert!(objects[0].as_camera().is_some());
         assert!(objects[1].as_light().is_some());
+        Ok(())
     }
 
     #[test]
-    fn parse_sphere_without_transform_full_material() {
+    fn parse_sphere_without_transform_full_material() -> ParseResult<()> {
         let yaml = "
 - add: sphere
   material:
@@ -342,33 +346,35 @@ transform:
     transparency: 0.7
     refractive-index: 1.5
         ";
-        let objects = from_str(yaml).unwrap();
+        let objects = from_str(yaml)?;
         let shape = objects[0].as_shape();
         assert!(shape.is_some());
         let sphere = shape.unwrap();
         assert!(sphere.as_sphere().is_some());
+        Ok(())
     }
 
     #[test]
-    fn parse_sphere_without_transform_missing_material() {
+    fn parse_sphere_without_transform_missing_material() -> ParseResult<()> {
         let yaml = "
 - add: sphere
   material:
     diffuse: 0.2
         ";
-        let objects = from_str(yaml).unwrap();
+        let objects = from_str(yaml)?;
         let shape = objects[0].as_shape();
         assert!(shape.is_some());
         let sphere = shape.unwrap();
         assert!(sphere.as_sphere().is_some());
+        Ok(())
     }
 
     #[test]
-    fn parse_sphere_without_transform_and_material() {
+    fn parse_sphere_without_transform_and_material() -> ParseResult<()> {
         let yaml = "
 - add: sphere
         ";
-        let objects = from_str(yaml).unwrap();
+        let objects = from_str(yaml)?;
         let shape = objects[0].as_shape();
         assert!(shape.is_some());
         let sphere = shape.unwrap();
@@ -379,11 +385,12 @@ transform:
 
         let inversed = sphere.inversed_transform();
         let expected = Transform::identity().inverse();
-        assert_eq!(inversed, expected)
+        assert_eq!(inversed, expected);
+        Ok(())
     }
 
     #[test]
-    fn parse_sphere_with_transformation() {
+    fn parse_sphere_with_transformation() -> ParseResult<()> {
         let yaml = "
 - add: sphere
   transform:
@@ -391,7 +398,7 @@ transform:
   - ['scale', 4.0, 5.0, 6.0]
   - ['rotate-x', 1.5]
         ";
-        let objects = from_str(yaml).unwrap();
+        let objects = from_str(yaml)?;
         let shape = objects[0].as_shape();
         assert!(shape.is_some());
         let sphere = shape.unwrap();
@@ -401,16 +408,18 @@ transform:
             .rotate_x(1.5)
             .inverse();
         assert_eq!(inversed, expected);
+        Ok(())
     }
 
     #[test]
-    fn parse_sample_yaml_without_panic() {
+    fn parse_sample_yaml_without_panic() -> ParseResult<()> {
         let yaml = default_yaml();
-        let _ = from_str(&yaml).unwrap();
+        let _ = from_str(&yaml)?;
+        Ok(())
     }
 
     #[test]
-    fn parse_sphere_with_pattern() {
+    fn parse_sphere_with_pattern() -> ParseResult<()> {
         let yaml = "
 - add: sphere
   material:
@@ -423,7 +432,7 @@ transform:
         - [translate, 1, 2, 3]
         - [scale, 0.4, 0.5, 0.6]
         - [rotate-z, 0.5]";
-        let objects = from_str(yaml).unwrap();
+        let objects = from_str(yaml)?;
         let shape = objects[0].as_shape();
         assert!(shape.is_some());
         let sphere = shape.unwrap();
@@ -438,5 +447,6 @@ transform:
         let expected = Material::default().with_pattern(pattern);
 
         assert_eq!(material, &expected);
+        Ok(())
     }
 }

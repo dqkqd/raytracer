@@ -26,7 +26,7 @@ impl ObjectParser<Pattern> for PatternParser {
             "checkers" => Pattern::checker(left_color, right_color),
             _ => unimplemented!(),
         };
-        let transform = self.transform.to_transform();
+        let transform = self.transform.parse();
         pattern.with_transform(transform)
     }
 }
@@ -37,7 +37,9 @@ mod test {
     use serde_yaml::Value;
 
     use crate::{
-        color::Color, parser::objects::transform::SingleTransformParser, transform::Transform,
+        color::Color,
+        parser::objects::{transform::SingleTransformParser, ParseResult},
+        transform::Transform,
     };
 
     use super::*;
@@ -90,24 +92,26 @@ transform:
     }
 
     #[test]
-    fn parse_from_value() {
-        let value: Value = serde_yaml::from_str(&default_yaml()).unwrap();
-        let pattern = PatternParser::from_value(value).unwrap();
+    fn parse_from_value() -> ParseResult<()> {
+        let value: Value = serde_yaml::from_str(&default_yaml())?;
+        let pattern = PatternParser::from_value(value)?;
         assert_eq!(pattern, default_pattern());
+        Ok(())
     }
 
     #[test]
-    fn parse_without_transform() {
+    fn parse_without_transform() -> ParseResult<()> {
         let yaml = "
 type: stripes
 colors:
 - [0.1, 0.2, 0.3]
 - [0.4, 0.5, 0.6]
 ";
-        let value: Value = serde_yaml::from_str(yaml).unwrap();
-        let pattern = PatternParser::from_value(value).unwrap();
+        let value: Value = serde_yaml::from_str(yaml)?;
+        let pattern = PatternParser::from_value(value)?;
         let inversed = pattern.inversed_transform();
         let expected = Some(Transform::identity());
         assert_eq!(inversed, expected);
+        Ok(())
     }
 }

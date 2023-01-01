@@ -23,7 +23,11 @@ mod test {
 
     use serde_yaml::Value;
 
-    use crate::{color::Color, parser::yaml::Parser, point::Point};
+    use crate::{
+        color::Color,
+        parser::{objects::ParseResult, yaml::Parser},
+        point::Point,
+    };
 
     use super::*;
 
@@ -48,28 +52,30 @@ mod test {
     }
 
     #[test]
-    fn parse_from_value() {
+    fn parse_from_value() -> ParseResult<()> {
         let yaml = "
 at: [1.0, 2.0, 3.0]
 intensity: [0.4, 0.5, 0.6]
 ";
-        let value: Value = serde_yaml::from_str(yaml).unwrap();
-        let light = LightParser::from_value(value).unwrap();
+        let value: Value = serde_yaml::from_str(yaml)?;
+        let light = LightParser::from_value(value)?;
         assert_eq!(light, default_point_light());
+        Ok(())
     }
 
     #[test]
-    fn parse_from_str() {
+    fn parse_from_str() -> ParseResult<()> {
         let yaml = "
 - add : light
   at: [1.0, 2.0, 3.0]
   intensity: [0.4, 0.5, 0.6]
 ";
-        let parser = Parser::from_yaml(yaml).unwrap();
+        let parser = Parser::from_yaml(yaml)?;
         let add_attributes = parser.add_attributes();
         assert_eq!(add_attributes.len(), 1);
         assert_eq!(add_attributes[0].attribute_type(), "light");
-        let light = LightParser::from_value(add_attributes[0].value()).unwrap();
+        let light = LightParser::from_value(add_attributes[0].value())?;
         assert_eq!(light, default_point_light());
+        Ok(())
     }
 }

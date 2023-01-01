@@ -44,13 +44,13 @@ impl ShapeLocal for Cube {
 #[cfg(test)]
 mod test {
 
-    use crate::{ray::Ray, shapes::shape::Shape, util::assert_float_eq};
+    use crate::{ray::Ray, util::assert_float_eq};
 
     use super::*;
 
     #[test]
     fn ray_intersect_a_cube() {
-        let c = Shape::cube();
+        let c = Cube::default();
         let test_intersect = |origin: Point, direction: Vector, t1, t2| {
             let r = Ray::new(origin, direction);
             let xs = c.local_intersection(&r);
@@ -105,7 +105,7 @@ mod test {
 
     #[test]
     fn ray_misses_cube() {
-        let c = Shape::cube();
+        let c = Cube::default();
         let test_intersect = |origin: Point, direction: Vector| {
             let r = Ray::new(origin, direction);
             let xs = c.local_intersection(&r);
@@ -131,7 +131,7 @@ mod test {
 
     #[test]
     fn normal_on_surface_of_cube() {
-        let c = Shape::cube();
+        let c = Cube::default();
         let test_normal = |point: Point, expected_normal: Vector| {
             let normal = c.local_normal_at(&point);
             assert_eq!(normal, expected_normal);

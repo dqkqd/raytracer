@@ -22,13 +22,13 @@ impl ShapeLocal for Plane {
 #[cfg(test)]
 mod test {
 
-    use crate::{ray::Ray, shapes::shape::Shape};
+    use crate::ray::Ray;
 
     use super::*;
 
     #[test]
     fn normal_of_plane_is_constant_everywhere() {
-        let p = Shape::plane();
+        let p = Plane::default();
         let n1 = p.local_normal_at(&Point::new(0.0, 0.0, 0.0));
         let n2 = p.local_normal_at(&Point::new(10.0, 0.0, -10.0));
         let n3 = p.local_normal_at(&Point::new(-5.0, 0.0, 150.0));
@@ -40,7 +40,7 @@ mod test {
 
     #[test]
     fn intersect_with_a_ray_parallel_to_plane() {
-        let p = Shape::plane();
+        let p = Plane::default();
         let r = Ray::new(Point::new(0.0, 10.0, 0.0), Vector::new(0.0, 0.0, 1.0));
         let xs = p.local_intersection(&r);
         assert!(xs.is_empty());
@@ -48,7 +48,7 @@ mod test {
 
     #[test]
     fn intersect_with_coplanar_ray() {
-        let p = Shape::plane();
+        let p = Plane::default();
         let r = Ray::new(Point::new(0.0, 0.0, 0.0), Vector::new(0.0, 0.0, 1.0));
         let xs = p.local_intersection(&r);
         assert!(xs.is_empty());
@@ -56,7 +56,7 @@ mod test {
 
     #[test]
     fn ray_intersecting_plane_from_above() {
-        let p = Shape::plane();
+        let p = Plane::default();
         let r = Ray::new(Point::new(0.0, 1.0, 0.0), Vector::new(0.0, -1.0, 0.0));
         let xs = p.local_intersection(&r);
         assert_eq!(xs, [1.0]);
@@ -64,7 +64,7 @@ mod test {
 
     #[test]
     fn ray_intersecting_plane_from_below() {
-        let p = Shape::plane();
+        let p = Plane::default();
         let r = Ray::new(Point::new(0.0, -1.0, 0.0), Vector::new(0.0, 1.0, 0.0));
         let xs = p.local_intersection(&r);
         assert_eq!(xs, [1.0]);

@@ -32,14 +32,12 @@ impl ShapeLocal for Sphere {
 #[cfg(test)]
 mod test {
 
-    use crate::shapes::shape::Shape;
-
     use super::*;
 
     #[test]
     fn ray_intersects_sphere_at_two_points() {
         let ray = Ray::new(Point::new(0.0, 0.0, -5.0), Vector::new(0.0, 0.0, 1.0));
-        let sphere = Shape::sphere();
+        let sphere = Sphere::default();
         let intersections = sphere.local_intersection(&ray);
         assert_eq!(intersections, [4.0, 6.0]);
     }
@@ -47,7 +45,7 @@ mod test {
     #[test]
     fn ray_intersects_sphere_at_a_tangent() {
         let ray = Ray::new(Point::new(0.0, 1.0, -5.0), Vector::new(0.0, 0.0, 1.0));
-        let sphere = Shape::sphere();
+        let sphere = Sphere::default();
         let intersections = sphere.local_intersection(&ray);
         assert_eq!(intersections, [5.0]);
     }
@@ -55,7 +53,7 @@ mod test {
     #[test]
     fn ray_misses_sphere() {
         let ray = Ray::new(Point::new(0.0, 2.0, -5.0), Vector::new(0.0, 0.0, 1.0));
-        let sphere = Shape::sphere();
+        let sphere = Sphere::default();
         let intersections = sphere.local_intersection(&ray);
         assert_eq!(intersections, []);
     }
@@ -63,7 +61,7 @@ mod test {
     #[test]
     fn ray_originate_inside_sphere() {
         let ray = Ray::new(Point::new(0.0, 0.0, 0.0), Vector::new(0.0, 0.0, 1.0));
-        let sphere = Shape::sphere();
+        let sphere = Sphere::default();
         let intersections = sphere.local_intersection(&ray);
         assert_eq!(intersections, [-1.0, 1.0]);
     }
@@ -71,35 +69,35 @@ mod test {
     #[test]
     fn sphere_is_behind_ray() {
         let ray = Ray::new(Point::new(0.0, 0.0, 5.0), Vector::new(0.0, 0.0, 1.0));
-        let sphere = Shape::sphere();
+        let sphere = Sphere::default();
         let intersections = sphere.local_intersection(&ray);
         assert_eq!(intersections, [-6.0, -4.0]);
     }
 
     #[test]
     fn normal_on_sphere_at_point_on_x_axis() {
-        let s = Shape::sphere();
+        let s = Sphere::default();
         let n = s.local_normal_at(&Point::new(1.0, 0.0, 0.0));
         assert_eq!(n, Vector::new(1.0, 0.0, 0.0));
     }
 
     #[test]
     fn normal_on_sphere_at_point_on_y_axis() {
-        let s = Shape::sphere();
+        let s = Sphere::default();
         let n = s.local_normal_at(&Point::new(0.0, 1.0, 0.0));
         assert_eq!(n, Vector::new(0.0, 1.0, 0.0));
     }
 
     #[test]
     fn normal_on_sphere_at_point_on_z_axis() {
-        let s = Shape::sphere();
+        let s = Sphere::default();
         let n = s.local_normal_at(&Point::new(0.0, 0.0, 1.0));
         assert_eq!(n, Vector::new(0.0, 0.0, 1.0));
     }
 
     #[test]
     fn normal_on_sphere_at_nonaxial_point() {
-        let s = Shape::sphere();
+        let s = Sphere::default();
         let v = f64::sqrt(3.0) / 3.0;
         let n = s.local_normal_at(&Point::new(v, v, v));
         assert_eq!(n, Vector::new(v, v, v));
@@ -107,7 +105,7 @@ mod test {
 
     #[test]
     fn normal_is_normalized_vector() {
-        let s = Shape::sphere();
+        let s = Sphere::default();
         let v = f64::sqrt(3.0);
         let n = s.local_normal_at(&Point::new(v, v, v));
         assert_eq!(n, n.normalize());

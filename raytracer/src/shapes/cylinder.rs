@@ -95,13 +95,13 @@ impl ShapeLocal for Cylinder {
 #[cfg(test)]
 mod test {
 
-    use crate::{shapes::shape::Shape, util::assert_float_eq};
+    use crate::util::assert_float_eq;
 
     use super::*;
 
     #[test]
     fn ray_misses_cylinder() {
-        let cyl = Shape::cylinder();
+        let cyl = Cylinder::default();
         let test_intersect = |origin: Point, direction: Vector| {
             let r = Ray::new(origin, direction.normalize());
             let xs = cyl.local_intersection(&r);
@@ -115,7 +115,7 @@ mod test {
 
     #[test]
     fn ray_strikes_cylinder() {
-        let cyl = Shape::cylinder();
+        let cyl = Cylinder::default();
         let test_intersect = |origin: Point, direction: Vector, nroots: usize, t0: f64, t1: f64| {
             let r = Ray::new(origin, direction.normalize());
             let xs = cyl.local_intersection(&r);
@@ -153,7 +153,7 @@ mod test {
 
     #[test]
     fn normal_vector_on_cylinder() {
-        let cyl = Shape::cylinder();
+        let cyl = Cylinder::default();
         let test_local_normal = |p: Point, expected_normal: Vector| {
             let n = cyl.local_normal_at(&p);
             assert_eq!(n, expected_normal);

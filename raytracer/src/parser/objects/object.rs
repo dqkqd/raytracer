@@ -23,10 +23,9 @@ impl Object {
         match attribute_type {
             "camera" => Ok(Object::Camera(CameraParser::from_value(value)?)),
             "light" => Ok(Object::Light(LightParser::from_value(value)?)),
-            "sphere" | "plane" | "cube" => Ok(Object::Shape(ShapeParser::from_value(
-                value,
-                attribute_type,
-            )?)),
+            "sphere" | "plane" | "cube" | "cylinder" | "cone" => Ok(Object::Shape(
+                ShapeParser::from_value(value, attribute_type)?,
+            )),
             s => unimplemented!("Parser for `{}` is not implemented", s),
         }
     }

@@ -36,7 +36,10 @@ impl AddAttribute {
     }
 
     fn is_shape(&self) -> bool {
-        matches!(self.attribute_type.as_str(), "sphere" | "plane" | "cube")
+        matches!(
+            self.attribute_type.as_str(),
+            "sphere" | "plane" | "cube" | "cylinder" | "cone"
+        )
     }
 
     pub fn substitute(&mut self, attributes: &DefineAttributes) -> bool {

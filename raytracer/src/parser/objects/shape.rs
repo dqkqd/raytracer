@@ -4,6 +4,7 @@ use serde_yaml::Value;
 use crate::{
     shapes::{shape::Shape, ShapeMaterial},
     transform::Transformable,
+    util::INFINITY,
 };
 
 use super::{material::MaterialParser, transform::TransformParser, ObjectParser};
@@ -12,6 +13,11 @@ use super::{material::MaterialParser, transform::TransformParser, ObjectParser};
 pub(crate) struct ShapeParser {
     #[serde(default)]
     material: MaterialParser,
+
+    #[serde(default)]
+    min: Option<f64>,
+    #[serde(default)]
+    max: Option<f64>,
 
     #[serde(default)]
     transform: TransformParser,
@@ -23,6 +29,24 @@ impl ShapeParser {
             "sphere" => Shape::sphere(),
             "plane" => Shape::plane(),
             "cube" => Shape::cube(),
+            "cylinder" => {
+                if self.min.is_none() && self.max.is_none() {
+                    Shape::cylinder()
+                } else {
+                    let minimum = self.min.unwrap_or(INFINITY);
+                    let maximum = self.max.unwrap_or(INFINITY);
+                    Shape::closed_cylinder(minimum, maximum)
+                }
+            }
+            "cone" => {
+                if self.min.is_none() && self.max.is_none() {
+                    Shape::cone()
+                } else {
+                    let minimum = self.min.unwrap_or(INFINITY);
+                    let maximum = self.max.unwrap_or(INFINITY);
+                    Shape::closed_cone(minimum, maximum)
+                }
+            }
             _ => unimplemented!(),
         };
         let material = self.material.parse();
@@ -84,6 +108,8 @@ mod test {
         ]);
         ShapeParser {
             material: material_parser,
+            min: None,
+            max: None,
             transform: transform_parser,
         }
     }

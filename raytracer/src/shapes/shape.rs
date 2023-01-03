@@ -10,8 +10,8 @@ use crate::{
 };
 
 use super::{
-    cube::Cube, cylinder::Cylinder, dummy::Dummy, plane::Plane, sphere::Sphere, ShapeKind,
-    ShapeLocal, ShapeMaterial, ShapeWorld,
+    cone::Cone, cube::Cube, cylinder::Cylinder, dummy::Dummy, plane::Plane, sphere::Sphere,
+    ShapeKind, ShapeLocal, ShapeMaterial, ShapeWorld,
 };
 
 #[derive(Debug, Clone, Copy, PartialEq)]
@@ -85,6 +85,21 @@ impl Shape {
         }
     }
 
+    pub fn cone() -> Shape {
+        Shape::new(ShapeKind::Cone(Cone::default()))
+    }
+
+    pub fn closed_cone(minimum: f64, maximum: f64) -> Shape {
+        Shape::new(ShapeKind::Cone(Cone::new(minimum, maximum)))
+    }
+
+    pub fn as_cone(&self) -> Option<&Cone> {
+        match &self.shape {
+            ShapeKind::Cone(cone) => Some(cone),
+            _ => None,
+        }
+    }
+
     pub fn dummy() -> Shape {
         Shape::new(ShapeKind::Dummy(Dummy::default()))
     }
@@ -108,6 +123,7 @@ impl ShapeLocal for Shape {
             ShapeKind::Plane(p) => p.local_intersection(local_ray),
             ShapeKind::Cube(c) => c.local_intersection(local_ray),
             ShapeKind::Cylinder(c) => c.local_intersection(local_ray),
+            ShapeKind::Cone(c) => c.local_intersection(local_ray),
         }
     }
 
@@ -118,6 +134,7 @@ impl ShapeLocal for Shape {
             ShapeKind::Plane(p) => p.local_normal_at(object_point),
             ShapeKind::Cube(c) => c.local_normal_at(object_point),
             ShapeKind::Cylinder(c) => c.local_normal_at(object_point),
+            ShapeKind::Cone(c) => c.local_normal_at(object_point),
         }
     }
 }

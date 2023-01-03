@@ -7,12 +7,11 @@ use super::{
     camera::CameraParser, light::LightParser, shape::ShapeParser, ObjectParser, ParseResult,
 };
 
-#[allow(clippy::large_enum_variant)]
-#[derive(Debug, Clone, Copy, PartialEq)]
+#[derive(Debug, Clone, PartialEq)]
 pub(crate) enum Object {
-    Camera(Camera),
-    Light(PointLight),
-    Shape(Shape),
+    Camera(Box<Camera>),
+    Light(Box<PointLight>),
+    Shape(Box<Shape>),
 }
 
 #[allow(dead_code)]
@@ -21,11 +20,11 @@ impl Object {
         let value = attr.value();
         let attribute_type = attr.attribute_type();
         match attribute_type {
-            "camera" => Ok(Object::Camera(CameraParser::from_value(value)?)),
-            "light" => Ok(Object::Light(LightParser::from_value(value)?)),
-            "sphere" | "plane" | "cube" | "cylinder" | "cone" => Ok(Object::Shape(
+            "camera" => Ok(Object::Camera(Box::new(CameraParser::from_value(value)?))),
+            "light" => Ok(Object::Light(Box::new(LightParser::from_value(value)?))),
+            "sphere" | "plane" | "cube" | "cylinder" | "cone" => Ok(Object::Shape(Box::new(
                 ShapeParser::from_value(value, attribute_type)?,
-            )),
+            ))),
             s => unimplemented!("Parser for `{}` is not implemented", s),
         }
     }

@@ -29,12 +29,11 @@ pub fn render_image(yaml_file: &std::path::PathBuf, image_file: &std::path::Path
     let mut shapes = Vec::new();
     for object in objects {
         match object {
-            Object::Camera(c) => camera = Some(c),
-            Object::Light(light) => lights.push(light),
-            Object::Shape(shape) => shapes.push(shape),
+            Object::Camera(c) => camera = Some(*c),
+            Object::Light(light) => lights.push(*light),
+            Object::Shape(shape) => shapes.push(*shape),
         }
     }
-
     let camera = camera.expect("Camera does not exist in yaml file");
     let world = World::new(lights, shapes);
     let canvas = camera.render(&world);

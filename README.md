@@ -10,3 +10,4 @@ cargo run examples/yaml/refraction.yaml examples/images/refraction.png
 ![cover](./examples/images/cover.png)
 ![refraction](./examples/images/refraction.png)
 ![reflect-refract](./examples/images/reflect-refract.png)
+![pencil](./examples/images/pencil.png)

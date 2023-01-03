@@ -1,6 +1,6 @@
 - add: camera
-  width: 512
-  height: 512
+  width: 1024
+  height: 1024
   field-of-view: 1.152
   from: [-2.6, 1.5, -3.9]
   to: [-0.6, 1, -0.8]
@@ -21,7 +21,7 @@
     pattern:
       type: stripes
       colors:
-        - [1.0, 0.45, 0.45]
+        - [0.45, 0.45, 0.45]
         - [0.55, 0.55, 0.55]
       transform:
         - [scale, 0.25, 0.25, 0.25]

@@ -13,6 +13,7 @@ use super::{
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub(crate) struct Pattern {
     pattern: PatternKind,
+    transform: Transform,
     inversed_transform: InversedTransform,
     transpose_inversed_transform: InversedTransform,
 }
@@ -24,6 +25,7 @@ impl Pattern {
     fn new(pattern: PatternKind) -> Pattern {
         Pattern {
             pattern,
+            transform: Transform::identity(),
             inversed_transform: Some(Transform::identity()),
             transpose_inversed_transform: Some(Transform::identity()),
         }

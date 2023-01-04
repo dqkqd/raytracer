@@ -17,6 +17,7 @@ use super::{
 #[derive(Debug, Clone, PartialEq)]
 pub(crate) struct Shape {
     shape: ShapeKind,
+    transform: Transform,
     inversed_transform: InversedTransform,
     transpose_inversed_transform: InversedTransform,
     material: Material,
@@ -29,6 +30,7 @@ impl Shape {
     pub fn new(shape: ShapeKind) -> Shape {
         Shape {
             shape,
+            transform: Transform::identity(),
             inversed_transform: Some(Transform::identity()),
             transpose_inversed_transform: Some(Transform::identity()),
             material: Material::default(),

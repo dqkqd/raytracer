@@ -67,11 +67,19 @@ pub(crate) trait ShapeWorld: Transformable + ShapeLocal {
         Some(ray.transform(self.inversed_transform()?))
     }
 
+    fn world_to_object(&self, point: &Point) -> Option<Point> {
+        Some(point.transform(self.inversed_transform()?))
+    }
+
+    fn normal_to_world(&self, normal: &Vector) -> Option<Vector> {
+        Some((self.transpose_inversed_transform()? * *normal).normalize())
+    }
+
     fn normal_at(&self, point: &Point) -> Option<Vector> {
-        let object_point = point.transform(self.inversed_transform()?);
+        let object_point = self.world_to_object(point)?;
         let local_normal = self.local_normal_at(&object_point);
-        let world_normal = self.transpose_inversed_transform()? * local_normal;
-        Some(world_normal.normalize())
+        let world_normal = self.normal_to_world(&local_normal)?;
+        Some(world_normal)
     }
 
     fn intersect(&self, ray: &Ray) -> Intersections;

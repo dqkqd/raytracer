@@ -117,6 +117,12 @@ impl Shape {
         self.as_group().is_some()
     }
 
+    pub fn add_shape(&mut self, shape: Shape) {
+        if let ShapeKind::Group(g) = &mut self.shape {
+            g.add_shape(shape);
+        }
+    }
+
     pub fn dummy() -> Shape {
         Shape::new(ShapeKind::Dummy(Dummy::default()))
     }

@@ -27,7 +27,7 @@ use self::{
     cone::Cone, cube::Cube, cylinder::Cylinder, dummy::Dummy, plane::Plane, sphere::Sphere,
 };
 
-#[derive(Debug, Clone, Copy, PartialEq)]
+#[derive(Debug, Clone, PartialEq)]
 pub(crate) enum ShapeKind {
     Sphere(Sphere),
     Plane(Plane),

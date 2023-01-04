@@ -14,7 +14,7 @@ use super::{
     ShapeKind, ShapeLocal, ShapeMaterial, ShapeWorld,
 };
 
-#[derive(Debug, Clone, Copy, PartialEq)]
+#[derive(Debug, Clone, PartialEq)]
 pub(crate) struct Shape {
     shape: ShapeKind,
     inversed_transform: InversedTransform,
@@ -150,39 +150,48 @@ impl ShapeMaterial for Shape {
     }
 
     fn with_color(self, color: Color) -> Self {
-        self.with_material(self.material.with_color(color))
+        let material = self.material.with_color(color);
+        self.with_material(material)
     }
 
     fn with_ambient(self, ambient: f64) -> Self {
-        self.with_material(self.material.with_ambient(ambient))
+        let material = self.material.with_ambient(ambient);
+        self.with_material(material)
     }
 
     fn with_diffuse(self, diffuse: f64) -> Self {
-        self.with_material(self.material.with_diffuse(diffuse))
+        let material = self.material.with_diffuse(diffuse);
+        self.with_material(material)
     }
 
     fn with_specular(self, specular: f64) -> Self {
-        self.with_material(self.material.with_specular(specular))
+        let material = self.material.with_specular(specular);
+        self.with_material(material)
     }
 
     fn with_shininess(self, shininess: f64) -> Self {
-        self.with_material(self.material.with_shininess(shininess))
+        let material = self.material.with_shininess(shininess);
+        self.with_material(material)
     }
 
     fn with_reflective(self, reflective: f64) -> Self {
-        self.with_material(self.material.with_reflective(reflective))
+        let material = self.material.with_reflective(reflective);
+        self.with_material(material)
     }
 
     fn with_pattern(self, pattern: Pattern) -> Self {
-        self.with_material(self.material.with_pattern(pattern))
+        let material = self.material.with_pattern(pattern);
+        self.with_material(material)
     }
 
     fn with_transparency(self, transparency: f64) -> Self {
-        self.with_material(self.material.with_transparency(transparency))
+        let material = self.material.with_transparency(transparency);
+        self.with_material(material)
     }
 
     fn with_refractive_index(self, refractive_index: f64) -> Self {
-        self.with_material(self.material.with_refractive_index(refractive_index))
+        let material = self.material.with_refractive_index(refractive_index);
+        self.with_material(material)
     }
 }
 

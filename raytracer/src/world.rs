@@ -171,7 +171,7 @@ mod test {
     fn shading_an_intersection() {
         let w = default_world();
         let r = Ray::new(Point::new(0.0, 0.0, -5.0), Vector::new(0.0, 0.0, 1.0));
-        let s = w.objects[0];
+        let s = w.objects[0].clone();
         let comp = Intersection::new(4.0, &s).prepare_computations(&r).unwrap();
         let c = w.shade_hit(&comp, 0);
         assert_eq!(c, Color::new(0.38066, 0.47583, 0.2855));
@@ -182,7 +182,7 @@ mod test {
         let mut w = default_world();
         w.lights = vec![PointLight::new(Point::new(0.0, 0.25, 0.0), color::WHITE)];
         let r = Ray::new(Point::new(0.0, 0.0, 0.0), Vector::new(0.0, 0.0, 1.0));
-        let s = w.objects[1];
+        let s = w.objects[1].clone();
         let comp = Intersection::new(0.5, &s).prepare_computations(&r).unwrap();
         let c = w.shade_hit(&comp, 0);
         assert_eq!(c, Color::new(0.90498, 0.90498, 0.90498));
@@ -207,9 +207,9 @@ mod test {
     #[test]
     fn color_with_intersection_behind_the_ray() {
         let mut w = default_world();
-        w.objects[0] = w.objects[0].with_ambient(1.0);
-        w.objects[1] = w.objects[1].with_ambient(1.0);
-        let inner = w.objects[1];
+        w.objects[0] = w.objects[0].clone().with_ambient(1.0);
+        w.objects[1] = w.objects[1].clone().with_ambient(1.0);
+        let inner = w.objects[1].clone();
         let r = Ray::new(Point::new(0.0, 0.0, 0.75), Vector::new(0.0, 0.0, -1.0));
         let c = w.color_at(&r);
         assert_eq!(c, inner.material().color());
@@ -265,7 +265,7 @@ mod test {
         let light_source = PointLight::new(Point::new(0.0, 0.0, -10.0), color::WHITE);
         let s1 = Shape::sphere();
         let s2 = Shape::sphere().with_transform(Transform::translation(0.0, 0.0, 10.0));
-        let w = World::new(vec![light_source], vec![s1, s2]);
+        let w = World::new(vec![light_source], vec![s1, s2.clone()]);
         let r = Ray::new(Point::new(0.0, 0.0, 5.0), Vector::new(0.0, 0.0, 1.0));
         let comp = Intersection::new(4.0, &s2)
             .prepare_computations(&r)
@@ -278,7 +278,7 @@ mod test {
     fn reflected_color_for_a_nonreflective_material() {
         let r = Ray::new(Point::new(0.0, 0.0, 0.0), Vector::new(0.0, 0.0, 1.0));
         let mut w = default_world();
-        w.objects[1] = w.objects[1].with_ambient(1.0);
+        w.objects[1] = w.objects[1].clone().with_ambient(1.0);
         let comp = Intersection::new(1.0, &w.objects[1])
             .prepare_computations(&r)
             .unwrap();
@@ -379,7 +379,7 @@ mod test {
     #[test]
     fn refracted_color_with_an_opaque_surface() {
         let w = default_world();
-        let s = w.objects[0];
+        let s = w.objects[0].clone();
         let r = Ray::new(Point::new(0.0, 0.0, -5.0), Vector::new(0.0, 0.0, 1.0));
         let comps = Intersections::new(vec![4.0, 6.0], &s, &r).update_refractive_index();
         let c = w.refracted_color(comps.get(0).unwrap(), 0);
@@ -390,6 +390,7 @@ mod test {
     fn refracted_color_at_the_maximum_recursive_depth() {
         let mut w = default_world();
         w.objects[0] = w.objects[0]
+            .clone()
             .with_transparency(1.0)
             .with_refractive_index(1.5);
         let r = Ray::new(Point::new(0.0, 0.0, -5.0), Vector::new(0.0, 0.0, 1.0));
@@ -402,6 +403,7 @@ mod test {
     fn refracted_color_under_total_internal_reflection() {
         let mut w = default_world();
         w.objects[0] = w.objects[0]
+            .clone()
             .with_transparency(1.0)
             .with_refractive_index(1.5);
         let r = Ray::new(
@@ -425,9 +427,11 @@ mod test {
     fn refracted_color_with_refracted_ray() {
         let mut w = default_world();
         w.objects[0] = w.objects[0]
+            .clone()
             .with_ambient(1.0)
             .with_pattern(Pattern::dummy());
         w.objects[1] = w.objects[1]
+            .clone()
             .with_transparency(1.0)
             .with_refractive_index(1.5);
 

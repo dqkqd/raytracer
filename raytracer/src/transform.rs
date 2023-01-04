@@ -3,6 +3,7 @@ use std::ops::Mul;
 pub(crate) type InversedTransform = Option<Transform>;
 pub(crate) trait Transformable {
     fn inversed_transform(&self) -> InversedTransform;
+    fn transpose_inversed_transform(&self) -> InversedTransform;
     fn set_transform(&mut self, transform: Transform);
     fn with_transform(self, transform: Transform) -> Self;
 }
@@ -13,8 +14,14 @@ macro_rules! transformable {
             fn inversed_transform(&self) -> $crate::transform::InversedTransform {
                 self.inversed_transform
             }
+
+            fn transpose_inversed_transform(&self) -> $crate::transform::InversedTransform {
+                self.transpose_inversed_transform
+            }
+
             fn set_transform(&mut self, transform: $crate::transform::Transform) {
                 self.inversed_transform = transform.inverse();
+                self.transpose_inversed_transform = self.inversed_transform.map(|t| t.tranpose());
             }
 
             fn with_transform(mut self, transform: $crate::transform::Transform) -> Self {

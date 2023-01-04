@@ -66,7 +66,7 @@ pub(crate) trait ShapeWorld: Transformable + ShapeLocal {
     fn normal_at(&self, point: &Point) -> Option<Vector> {
         let object_point = point.transform(self.inversed_transform()?);
         let local_normal = self.local_normal_at(&object_point);
-        let world_normal = self.inversed_transform()?.tranpose() * local_normal;
+        let world_normal = self.transpose_inversed_transform()? * local_normal;
         Some(world_normal.normalize())
     }
 

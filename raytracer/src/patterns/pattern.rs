@@ -14,6 +14,7 @@ use super::{
 pub(crate) struct Pattern {
     pattern: PatternKind,
     inversed_transform: InversedTransform,
+    transpose_inversed_transform: InversedTransform,
 }
 
 transformable!(Pattern);
@@ -24,6 +25,7 @@ impl Pattern {
         Pattern {
             pattern,
             inversed_transform: Some(Transform::identity()),
+            transpose_inversed_transform: Some(Transform::identity()),
         }
     }
 

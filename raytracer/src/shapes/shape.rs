@@ -18,6 +18,7 @@ use super::{
 pub(crate) struct Shape {
     shape: ShapeKind,
     inversed_transform: InversedTransform,
+    transpose_inversed_transform: InversedTransform,
     material: Material,
 }
 
@@ -29,6 +30,7 @@ impl Shape {
         Shape {
             shape,
             inversed_transform: Some(Transform::identity()),
+            transpose_inversed_transform: Some(Transform::identity()),
             material: Material::default(),
         }
     }

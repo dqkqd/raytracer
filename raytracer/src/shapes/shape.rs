@@ -10,8 +10,8 @@ use crate::{
 };
 
 use super::{
-    cone::Cone, cube::Cube, cylinder::Cylinder, dummy::Dummy, plane::Plane, sphere::Sphere,
-    ShapeKind, ShapeLocal, ShapeMaterial, ShapeWorld,
+    cone::Cone, cube::Cube, cylinder::Cylinder, dummy::Dummy, group::Group, plane::Plane,
+    sphere::Sphere, ShapeKind, ShapeLocal, ShapeMaterial, ShapeWorld,
 };
 
 #[derive(Debug, Clone, PartialEq)]
@@ -26,7 +26,7 @@ transformable!(Shape);
 
 #[allow(dead_code)]
 impl Shape {
-    fn new(shape: ShapeKind) -> Shape {
+    pub fn new(shape: ShapeKind) -> Shape {
         Shape {
             shape,
             inversed_transform: Some(Transform::identity()),
@@ -102,6 +102,21 @@ impl Shape {
         }
     }
 
+    pub fn group() -> Shape {
+        Shape::new(ShapeKind::Group(Group::default()))
+    }
+
+    pub fn as_group(&self) -> Option<&Group> {
+        match &self.shape {
+            ShapeKind::Group(g) => Some(g),
+            _ => None,
+        }
+    }
+
+    pub fn is_group(&self) -> bool {
+        self.as_group().is_some()
+    }
+
     pub fn dummy() -> Shape {
         Shape::new(ShapeKind::Dummy(Dummy::default()))
     }
@@ -110,33 +125,44 @@ impl Shape {
 impl ShapeWorld for Shape {
     fn intersect(&self, ray: &Ray) -> Intersections {
         self.transform_ray(ray)
-            .map_or(Default::default(), |local_ray| {
-                let roots = self.local_intersection(&local_ray);
-                Intersections::new(roots, self, ray)
+            .map_or(Default::default(), |local_ray| match &self.shape {
+                ShapeKind::Group(g) => g
+                    .iter()
+                    .map(|child| child.intersect(ray))
+                    .reduce(|merged_intersections, intersections| {
+                        merged_intersections.merge(intersections)
+                    })
+                    .unwrap_or_default(),
+                _ => {
+                    let roots = self.local_intersection(&local_ray);
+                    Intersections::new(roots, self, ray)
+                }
             })
     }
 }
 
 impl ShapeLocal for Shape {
     fn local_intersection(&self, local_ray: &Ray) -> IntersectionsFactor {
-        match self.shape {
+        match &self.shape {
             ShapeKind::Sphere(s) => s.local_intersection(local_ray),
             ShapeKind::Dummy(s) => s.local_intersection(local_ray),
             ShapeKind::Plane(p) => p.local_intersection(local_ray),
             ShapeKind::Cube(c) => c.local_intersection(local_ray),
             ShapeKind::Cylinder(c) => c.local_intersection(local_ray),
             ShapeKind::Cone(c) => c.local_intersection(local_ray),
+            ShapeKind::Group(_) => unimplemented!(),
         }
     }
 
     fn local_normal_at(&self, object_point: &Point) -> Vector {
-        match self.shape {
+        match &self.shape {
             ShapeKind::Sphere(s) => s.local_normal_at(object_point),
             ShapeKind::Dummy(s) => s.local_normal_at(object_point),
             ShapeKind::Plane(p) => p.local_normal_at(object_point),
             ShapeKind::Cube(c) => c.local_normal_at(object_point),
             ShapeKind::Cylinder(c) => c.local_normal_at(object_point),
             ShapeKind::Cone(c) => c.local_normal_at(object_point),
+            ShapeKind::Group(_) => unimplemented!(),
         }
     }
 }

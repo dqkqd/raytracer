@@ -12,6 +12,8 @@ pub(crate) mod cylinder;
 
 pub(crate) mod cone;
 
+pub(crate) mod group;
+
 use crate::{
     color::Color,
     intersect::{intersection::IntersectionsFactor, multiple_intersections::Intersections},
@@ -24,7 +26,8 @@ use crate::{
 };
 
 use self::{
-    cone::Cone, cube::Cube, cylinder::Cylinder, dummy::Dummy, plane::Plane, sphere::Sphere,
+    cone::Cone, cube::Cube, cylinder::Cylinder, dummy::Dummy, group::Group, plane::Plane,
+    sphere::Sphere,
 };
 
 #[derive(Debug, Clone, PartialEq)]
@@ -35,6 +38,7 @@ pub(crate) enum ShapeKind {
     Dummy(Dummy),
     Cylinder(Cylinder),
     Cone(Cone),
+    Group(Group),
 }
 
 pub(crate) trait ShapeMaterial {

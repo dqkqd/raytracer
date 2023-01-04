@@ -1,4 +1,4 @@
-use std::ops::Deref;
+use std::ops::{Deref, DerefMut};
 
 use crate::{
     intersect::intersection::IntersectionsFactor, point::Point, util::solve_linear_equation,
@@ -23,6 +23,12 @@ impl Deref for Group {
     type Target = Vec<Shape>;
     fn deref(&self) -> &Self::Target {
         &self.children
+    }
+}
+
+impl DerefMut for Group {
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        &mut self.children
     }
 }
 

@@ -119,10 +119,19 @@ impl Shape {
         self.as_group().is_some()
     }
 
-    pub fn add_shape(&mut self, shape: Shape) {
+    fn polulate_transform(&mut self, transform: Transform) {
+        match &mut self.shape {
+            ShapeKind::Group(g) => g
+                .iter_mut()
+                .for_each(|child| child.polulate_transform(transform)),
+            _ => self.set_transform(transform * self.transform),
+        }
+    }
+
+    pub fn add_shape(&mut self, mut shape: Shape) {
         if let ShapeKind::Group(g) = &mut self.shape {
-            let transform = self.transform * shape.transform;
-            g.add_shape(shape.with_transform(transform));
+            shape.polulate_transform(self.transform);
+            g.add_shape(shape);
         }
     }
 

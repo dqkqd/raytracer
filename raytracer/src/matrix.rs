@@ -38,7 +38,7 @@ macro_rules! create_simple_matrix {
                 $matrix { matrix }
             }
 
-            pub fn tranpose(&self) -> $matrix {
+            pub fn transpose(&self) -> $matrix {
                 let mut matrix = $matrix::default();
                 for i in 0..$size {
                     for j in 0..$size {
@@ -618,7 +618,7 @@ mod test {
             [0.0, 0.0, 5.0, 8.0],
         ]);
 
-        let tranposed = matrix.tranpose();
+        let transposed = matrix.transpose();
         let expected = Matrix4::new([
             [0.0, 9.0, 1.0, 0.0],
             [9.0, 8.0, 8.0, 0.0],
@@ -626,7 +626,7 @@ mod test {
             [0.0, 8.0, 3.0, 8.0],
         ]);
 
-        assert_eq!(tranposed, expected);
+        assert_eq!(transposed, expected);
     }
 
     #[test]

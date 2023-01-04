@@ -21,7 +21,7 @@ macro_rules! transformable {
 
             fn set_transform(&mut self, transform: $crate::transform::Transform) {
                 self.inversed_transform = transform.inverse();
-                self.transpose_inversed_transform = self.inversed_transform.map(|t| t.tranpose());
+                self.transpose_inversed_transform = self.inversed_transform.map(|t| t.transpose());
             }
 
             fn with_transform(mut self, transform: $crate::transform::Transform) -> Self {
@@ -113,8 +113,8 @@ impl Transform {
         Some(Transform { matrix })
     }
 
-    pub(crate) fn tranpose(self) -> Transform {
-        let matrix = self.matrix.tranpose();
+    pub(crate) fn transpose(self) -> Transform {
+        let matrix = self.matrix.transpose();
         Transform { matrix }
     }
 

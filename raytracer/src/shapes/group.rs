@@ -1,11 +1,6 @@
 use std::ops::{Deref, DerefMut};
 
-use crate::{
-    intersect::intersection::IntersectionsFactor, point::Point, util::solve_linear_equation,
-    vector::Vector,
-};
-
-use super::{shape::Shape, ShapeLocal};
+use super::shape::Shape;
 
 #[derive(Debug, Clone, PartialEq, Default)]
 pub(crate) struct Group {
@@ -32,24 +27,15 @@ impl DerefMut for Group {
     }
 }
 
-impl ShapeLocal for Group {
-    fn local_normal_at(&self, _: &Point) -> Vector {
-        Vector::new(0.0, 1.0, 0.0)
-    }
-    fn local_intersection(&self, local_ray: &crate::ray::Ray) -> IntersectionsFactor {
-        let a = local_ray.direction().y();
-        let b = local_ray.origin().y();
-        solve_linear_equation(a, b)
-    }
-}
-
 #[cfg(test)]
 mod test {
 
     use crate::{
+        point::Point,
         ray::Ray,
         shapes::ShapeWorld,
         transform::{Transform, Transformable},
+        vector::Vector,
     };
 
     use super::*;

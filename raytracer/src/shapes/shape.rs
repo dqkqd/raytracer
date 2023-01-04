@@ -168,7 +168,7 @@ impl ShapeLocal for Shape {
             ShapeKind::Cube(c) => c.local_intersection(local_ray),
             ShapeKind::Cylinder(c) => c.local_intersection(local_ray),
             ShapeKind::Cone(c) => c.local_intersection(local_ray),
-            ShapeKind::Group(_) => unimplemented!(),
+            ShapeKind::Group(_) => unreachable!("Group `local_intersection` should not be called."),
         }
     }
 
@@ -180,7 +180,7 @@ impl ShapeLocal for Shape {
             ShapeKind::Cube(c) => c.local_normal_at(object_point),
             ShapeKind::Cylinder(c) => c.local_normal_at(object_point),
             ShapeKind::Cone(c) => c.local_normal_at(object_point),
-            ShapeKind::Group(_) => unimplemented!(),
+            ShapeKind::Group(_) => unreachable!("Group `local_normal_at` should not be called."),
         }
     }
 }

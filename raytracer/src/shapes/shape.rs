@@ -5,7 +5,7 @@ use crate::{
     patterns::pattern::Pattern,
     point::Point,
     ray::Ray,
-    transform::{transformable, InversedTransform, Transform},
+    transform::{transformable, InversedTransform, Transform, Transformable},
     vector::Vector,
 };
 
@@ -121,7 +121,8 @@ impl Shape {
 
     pub fn add_shape(&mut self, shape: Shape) {
         if let ShapeKind::Group(g) = &mut self.shape {
-            g.add_shape(shape);
+            let transform = self.transform * shape.transform;
+            g.add_shape(shape.with_transform(transform));
         }
     }
 

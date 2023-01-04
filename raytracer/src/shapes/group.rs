@@ -42,7 +42,7 @@ mod test {
 
     use crate::{
         ray::Ray,
-        shapes::{ShapeKind, ShapeWorld},
+        shapes::ShapeWorld,
         transform::{Transform, Transformable},
     };
 
@@ -84,5 +84,15 @@ mod test {
             xs.get(3).map(|v| v.object()),
             g.as_group().map(|g| &g.children[0])
         );
+    }
+
+    #[test]
+    fn intersecting_transformed_group() {
+        let s = Shape::sphere().with_transform(Transform::translation(5.0, 0.0, 0.0));
+        let mut g = Shape::group().with_transform(Transform::scaling(2.0, 2.0, 2.0));
+        g.add_shape(s);
+        let r = Ray::new(Point::new(10.0, 0.0, -10.0), Vector::new(0.0, 0.0, 1.0));
+        let xs = g.intersect(&r);
+        assert_eq!(xs.count(), 2);
     }
 }
